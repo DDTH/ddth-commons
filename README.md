@@ -9,6 +9,22 @@ Project home:
 [https://github.com/DDTH/ddth-commons](https://github.com/DDTH/ddth-commons)
 
 
+Installation
+------------
+
+Latest release version: `0.1.0`.
+
+Maven dependency:
+
+```xml
+<dependency>
+	<groupId>com.github.ddth</groupId>
+	<artifactId>ddth-commons</artifactId>
+	<version>0.1.0</version>
+</dependency>
+```
+
+
 Utility/Helper Classes
 ----------------------
 
