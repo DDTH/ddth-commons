@@ -12,7 +12,7 @@ Project home:
 Installation
 ------------
 
-Latest release version: `0.1.0`.
+Latest release version: `0.1.1`.
 
 Maven dependency:
 
@@ -20,7 +20,7 @@ Maven dependency:
 <dependency>
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 </dependency>
 ```
 

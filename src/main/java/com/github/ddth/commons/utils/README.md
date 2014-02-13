@@ -131,3 +131,22 @@ Utility to work with unsigned `long`s and `int`s, radix up to `62` (`0-9`, `A-Z`
 * `parseLong(s, radix)`: parse a unsigned long with the given radix, up to `62`.
 * `toString(intValue, radix)`: convert a unsigned int to string for the given radix, up to `62`.
 * `toString(longValue, radix)`: convert a unsigned long to string for the given radix, up to `62`.
+
+SpringUtils
+-----------
+
+Some helper methods to obtain Spring's beans from an `ApplicationContext`.
+
+
+VersionUtils
+------------
+
+Utility to compare two version strings.
+
+```java
+/* "0.1.2" < "0.1.10", returns a negative number */
+VersionUtils.compareVersions("0.1.2", "0.1.10");
+
+/* "0.2.0" > "0.1.19", returns a positive number */
+VersionUtils.compareVersions("0.2.0", "0.1.19");
+```
