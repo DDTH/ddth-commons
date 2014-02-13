@@ -9,10 +9,16 @@ Project home:
 [https://github.com/DDTH/ddth-commons](https://github.com/DDTH/ddth-commons)
 
 
-Installation
-------------
+## License ##
 
-Latest release version: `0.1.1`.
+See LICENSE.txt for details. Copyright (c) 2013 Thanh Ba Nguyen.
+
+Third party libraries are distributed under their own license(s).
+
+
+## Installation #
+
+Latest release version: `0.1.1`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 Maven dependency:
 
@@ -25,8 +31,7 @@ Maven dependency:
 ```
 
 
-Utility/Helper Classes
-----------------------
+## Utility/Helper Classes ##
 
 Some utility/helper classes.
 
