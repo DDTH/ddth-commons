@@ -14,7 +14,7 @@
 
 	<name>ddth-commons</name>
 	<description>DDTH's Java Common Libraries and Utilities</description>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/DDTH/ddth-commons</url>
 
 	<licenses>
 		<license>
