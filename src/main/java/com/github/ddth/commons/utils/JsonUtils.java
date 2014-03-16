@@ -11,6 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Serialize Java object to JSON-string and vice versa.
  * 
  * <p>
+ * Note: this class is deprecated as of 0.2.0 and will be removed in future
+ * releases. Use {@link SerializationUtils} instead.
+ * </p>
+ * 
+ * <p>
  * Many times you just want to serialize your Java object to JSON-string and
  * vice versa, without touching any JsonNode object. This utility class provides
  * methods to do just that.
@@ -19,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Thanh Nguyen <btnguyen2k@gmail.com>
  * @since 0.1.0
  */
+@Deprecated
 public class JsonUtils {
 
     private final static ObjectMapper mapper = new ObjectMapper();

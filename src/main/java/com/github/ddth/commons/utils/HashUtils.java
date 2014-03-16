@@ -2,9 +2,11 @@ package com.github.ddth.commons.utils;
 
 import java.nio.charset.Charset;
 
-import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -17,45 +19,75 @@ import com.google.common.hash.Hashing;
  */
 public class HashUtils {
     private final static ObjectPool<HashFunction> poolLinearHash = new GenericObjectPool<HashFunction>(
-            new BasePoolableObjectFactory<HashFunction>() {
+            new BasePooledObjectFactory<HashFunction>() {
                 @Override
-                public HashFunction makeObject() throws Exception {
+                public HashFunction create() throws Exception {
                     return Hashing.murmur3_128(0);
+                }
+
+                @Override
+                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
+                    return new DefaultPooledObject<HashFunction>(hashFunc);
                 }
             });
     private final static ObjectPool<HashFunction> poolCrc32 = new GenericObjectPool<HashFunction>(
-            new BasePoolableObjectFactory<HashFunction>() {
+            new BasePooledObjectFactory<HashFunction>() {
                 @Override
-                public HashFunction makeObject() throws Exception {
+                public HashFunction create() throws Exception {
                     return Hashing.crc32();
+                }
+
+                @Override
+                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
+                    return new DefaultPooledObject<HashFunction>(hashFunc);
                 }
             });
     private final static ObjectPool<HashFunction> poolMd5 = new GenericObjectPool<HashFunction>(
-            new BasePoolableObjectFactory<HashFunction>() {
+            new BasePooledObjectFactory<HashFunction>() {
                 @Override
-                public HashFunction makeObject() throws Exception {
+                public HashFunction create() throws Exception {
                     return Hashing.md5();
+                }
+
+                @Override
+                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
+                    return new DefaultPooledObject<HashFunction>(hashFunc);
                 }
             });
     private final static ObjectPool<HashFunction> poolSha1 = new GenericObjectPool<HashFunction>(
-            new BasePoolableObjectFactory<HashFunction>() {
+            new BasePooledObjectFactory<HashFunction>() {
                 @Override
-                public HashFunction makeObject() throws Exception {
+                public HashFunction create() throws Exception {
                     return Hashing.sha1();
+                }
+
+                @Override
+                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
+                    return new DefaultPooledObject<HashFunction>(hashFunc);
                 }
             });
     private final static ObjectPool<HashFunction> poolSha256 = new GenericObjectPool<HashFunction>(
-            new BasePoolableObjectFactory<HashFunction>() {
+            new BasePooledObjectFactory<HashFunction>() {
                 @Override
-                public HashFunction makeObject() throws Exception {
+                public HashFunction create() throws Exception {
                     return Hashing.sha256();
+                }
+
+                @Override
+                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
+                    return new DefaultPooledObject<HashFunction>(hashFunc);
                 }
             });
     private final static ObjectPool<HashFunction> poolSha512 = new GenericObjectPool<HashFunction>(
-            new BasePoolableObjectFactory<HashFunction>() {
+            new BasePooledObjectFactory<HashFunction>() {
                 @Override
-                public HashFunction makeObject() throws Exception {
+                public HashFunction create() throws Exception {
                     return Hashing.sha512();
+                }
+
+                @Override
+                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
+                    return new DefaultPooledObject<HashFunction>(hashFunc);
                 }
             });
     private final static Charset UTF8 = Charset.forName("UTF-8");

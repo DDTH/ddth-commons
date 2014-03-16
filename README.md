@@ -8,6 +8,8 @@ By Thanh Ba Nguyen (btnguyen2k (at) gmail.com)
 Project home:
 [https://github.com/DDTH/ddth-commons](https://github.com/DDTH/ddth-commons)
 
+OSGi Environment: ddth-commons is packaged as an OSGi bundle.
+
 
 ## License ##
 
@@ -18,7 +20,7 @@ Third party libraries are distributed under their own license(s).
 
 ## Installation #
 
-Latest release version: `0.1.2`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
+Latest release version: `0.2.0`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 Maven dependency:
 
@@ -26,13 +28,12 @@ Maven dependency:
 <dependency>
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons</artifactId>
-	<version>0.1.2</version>
+	<version>0.2.0</version>
 </dependency>
 ```
 
 
 ## Utility/Helper Classes ##
 
-Some utility/helper classes.
-
 * See: [com.github.ddth.commons.utils](src/main/java/com/github/ddth/commons/utils/README.md).
+* See: [com.github.ddth.commons.osgi](src/main/java/com/github/ddth/commons/osgi/README.md).

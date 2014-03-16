@@ -71,6 +71,8 @@ Long age2 = DPathUtils.getValue(company, "employees.[1].age", Long.class);
 //got a Long value of 30
 ```
 
+Since v0.1.2, `DPathUtils.getValue(Object target, String dPath, Class clazz)` now tries its best to convert returned value to the specified type. For example, the value extracted by `dPath` is a string `"12345"` and the clazz is of type `Integer`, the method will parse the string `"12345"` to the integer `12345`.
+
 
 HashUtils
 ---------
@@ -103,23 +105,22 @@ String id128Hex = idGen.generateId128Hex();
 JsonUtils
 ---------
 
-Many times you just want to serialize your Java object to JSON-string and vice-versa, without touching any `JsonNode` object. This utility class provides methods to do just that.
+***Deprecated since v0.2.0!*** Use class `SerializationUtils` instead!
 
-Sample usage:
 
-```java
-import com.github.ddth.plommon.utils.JsonUtils;
-. . .
+SerializationUtils
+-------------------
 
-List<String> objList = new ArrayList<String>();
-. . .
+***New since v0.2.0***
 
-String jsonString = JsonUtils.toJsonString(objList);
-. . .
+- Serialize/De-serialize object to/from JSON string (use FasterXML's Jackson library).
+- Serialize/De-serialize objecct to/from `byte[]` (use Jboss Serialization libary).
 
-List<?> anotherObj = JsonUtils.fromJsonString(jsonString, List.class);
-. . .
-```
+
+SpringUtils
+-----------
+
+Helper methods to obtain Spring's beans from an `ApplicationContext`.
 
 
 UnsignedUtils
@@ -131,11 +132,6 @@ Utility to work with unsigned `long`s and `int`s, radix up to `62` (`0-9`, `A-Z`
 * `parseLong(s, radix)`: parse a unsigned long with the given radix, up to `62`.
 * `toString(intValue, radix)`: convert a unsigned int to string for the given radix, up to `62`.
 * `toString(longValue, radix)`: convert a unsigned long to string for the given radix, up to `62`.
-
-SpringUtils
------------
-
-Some helper methods to obtain Spring's beans from an `ApplicationContext`.
 
 
 VersionUtils

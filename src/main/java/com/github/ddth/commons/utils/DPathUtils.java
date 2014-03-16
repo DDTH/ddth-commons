@@ -2,8 +2,6 @@ package com.github.ddth.commons.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -69,8 +67,7 @@ import java.util.regex.Pattern;
  * 
  * <pre>
  * Object user1 = DPathUtils.getValue(company, &quot;employees.[0]&quot;);
- * Map&lt;String, Object&gt; user2 = DPathUtils.getValue(company, &quot;employees.[1]&quot;,
- * 		Map.class);
+ * Map&lt;String, Object&gt; user2 = DPathUtils.getValue(company, &quot;employees.[1]&quot;, Map.class);
  * </pre>
  * 
  * <p>
@@ -78,8 +75,7 @@ import java.util.regex.Pattern;
  * </p>
  * 
  * <pre>
- * String firstName1 = DPathUtils.getValue(company, &quot;employees.[0].first_name&quot;,
- * 		String.class);
+ * String firstName1 = DPathUtils.getValue(company, &quot;employees.[0].first_name&quot;, String.class);
  * Object email2 = DPathUtils.getValue(company, &quot;employees.[1].email&quot;);
  * Long age2 = DPathUtils.getValue(company, &quot;employees.[1].age&quot;, Long.class);
  * </pre>
@@ -89,226 +85,180 @@ import java.util.regex.Pattern;
  */
 public class DPathUtils {
 
-	private final static Pattern PATTERN_INDEX = Pattern
-			.compile("^\\[(\\d+)\\]$");
+    private final static Pattern PATTERN_INDEX = Pattern.compile("^\\[(\\-?\\d+)\\]$");
 
-	@SuppressWarnings("unchecked")
-	private static <N> N _convertNumber(Object target, Class<N> clazz) {
-		if (clazz == Byte.class || clazz == byte.class) {
-			byte value = target instanceof Number ? ((Number) target)
-					.byteValue() : Byte.parseByte(target.toString());
-			return (N) Byte.valueOf(value);
-		}
-		if (clazz == Short.class || clazz == short.class) {
-			short value = target instanceof Number ? ((Number) target)
-					.shortValue() : Short.parseShort(target.toString());
-			return (N) Short.valueOf(value);
-		}
-		if (clazz == Integer.class || clazz == int.class) {
-			int value = target instanceof Number ? ((Number) target).intValue()
-					: Integer.parseInt(target.toString());
-			return (N) Integer.valueOf(value);
-		}
-		if (clazz == Long.class || clazz == long.class) {
-			long value = target instanceof Number ? ((Number) target)
-					.longValue() : Long.parseLong(target.toString());
-			return (N) Long.valueOf(value);
-		}
-		if (clazz == Float.class || clazz == float.class) {
-			float value = target instanceof Number ? ((Number) target)
-					.floatValue() : Float.parseFloat(target.toString());
-			return (N) Float.valueOf(value);
-		}
-		if (clazz == Double.class || clazz == double.class) {
-			double value = target instanceof Number ? ((Number) target)
-					.doubleValue() : Double.parseDouble(target.toString());
-			return (N) Double.valueOf(value);
-		}
-		if (clazz == BigInteger.class) {
-			if (target instanceof BigInteger) {
-				return (N) target;
-			}
-			if (target instanceof Number) {
-				return (N) BigInteger.valueOf(((Number) target).longValue());
-			}
-			return (N) BigInteger.valueOf(Long.parseLong(target.toString()));
-		}
-		if (clazz == BigDecimal.class) {
-			if (target instanceof BigDecimal) {
-				return (N) target;
-			}
-			if (target instanceof Number) {
-				return (N) BigDecimal.valueOf(((Number) target).doubleValue());
-			}
-			return (N) BigDecimal
-					.valueOf(Double.parseDouble(target.toString()));
-		}
-		return null;
-	}
+    @SuppressWarnings("unchecked")
+    private static <N> N _convertNumber(Object target, Class<N> clazz) {
+        if (clazz == Byte.class || clazz == byte.class) {
+            byte value = target instanceof Number ? ((Number) target).byteValue() : Byte
+                    .parseByte(target.toString());
+            return (N) Byte.valueOf(value);
+        }
+        if (clazz == Short.class || clazz == short.class) {
+            short value = target instanceof Number ? ((Number) target).shortValue() : Short
+                    .parseShort(target.toString());
+            return (N) Short.valueOf(value);
+        }
+        if (clazz == Integer.class || clazz == int.class) {
+            int value = target instanceof Number ? ((Number) target).intValue() : Integer
+                    .parseInt(target.toString());
+            return (N) Integer.valueOf(value);
+        }
+        if (clazz == Long.class || clazz == long.class) {
+            long value = target instanceof Number ? ((Number) target).longValue() : Long
+                    .parseLong(target.toString());
+            return (N) Long.valueOf(value);
+        }
+        if (clazz == Float.class || clazz == float.class) {
+            float value = target instanceof Number ? ((Number) target).floatValue() : Float
+                    .parseFloat(target.toString());
+            return (N) Float.valueOf(value);
+        }
+        if (clazz == Double.class || clazz == double.class) {
+            double value = target instanceof Number ? ((Number) target).doubleValue() : Double
+                    .parseDouble(target.toString());
+            return (N) Double.valueOf(value);
+        }
+        if (clazz == BigInteger.class) {
+            if (target instanceof BigInteger) {
+                return (N) target;
+            }
+            if (target instanceof Number) {
+                return (N) BigInteger.valueOf(((Number) target).longValue());
+            }
+            return (N) BigInteger.valueOf(Long.parseLong(target.toString()));
+        }
+        if (clazz == BigDecimal.class) {
+            if (target instanceof BigDecimal) {
+                return (N) target;
+            }
+            if (target instanceof Number) {
+                return (N) BigDecimal.valueOf(((Number) target).doubleValue());
+            }
+            return (N) BigDecimal.valueOf(Double.parseDouble(target.toString()));
+        }
+        return null;
+    }
 
-	private static Boolean _convertBoolean(Object target) {
-		if (target instanceof Boolean) {
-			return (Boolean) target;
-		}
-		return Boolean.parseBoolean(target.toString());
-	}
+    private static Boolean _convertBoolean(Object target) {
+        if (target instanceof Boolean) {
+            return (Boolean) target;
+        }
+        return Boolean.parseBoolean(target.toString());
+    }
 
-	/**
-	 * Extracts a value from the target object using DPath expression (generic
-	 * version).
-	 * 
-	 * @param target
-	 * @param dPath
-	 * @param clazz
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T getValue(final Object target, final String dPath,
-			final Class<T> clazz) {
-		if (clazz == null) {
-			throw new NullPointerException("Class parameter is null!");
-		}
-		Object temp = getValue(target, dPath);
-		if (temp == null) {
-			return null;
-		}
-		if (Number.class.isAssignableFrom(clazz)) {
-			return _convertNumber(temp, clazz);
-		}
-		if (clazz == Boolean.class || clazz == boolean.class) {
-			return (T) _convertBoolean(temp);
-		}
-		if (clazz.isAssignableFrom(temp.getClass())) {
-			return (T) temp;
-		}
-		if (clazz == String.class) {
-			return (T) temp.toString();
-		}
-		return null;
-	}
+    /**
+     * Extracts a value from the target object using DPath expression (generic
+     * version).
+     * 
+     * @param target
+     * @param dPath
+     * @param clazz
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getValue(final Object target, final String dPath, final Class<T> clazz) {
+        if (clazz == null) {
+            throw new NullPointerException("Class parameter is null!");
+        }
+        Object temp = getValue(target, dPath);
+        if (temp == null) {
+            return null;
+        }
+        if (Number.class.isAssignableFrom(clazz)) {
+            return _convertNumber(temp, clazz);
+        }
+        if (clazz == Boolean.class || clazz == boolean.class) {
+            return (T) _convertBoolean(temp);
+        }
+        if (clazz.isAssignableFrom(temp.getClass())) {
+            return (T) temp;
+        }
+        if (clazz == String.class) {
+            return (T) temp.toString();
+        }
+        return null;
+    }
 
-	/**
-	 * Extracts a value from the target object using DPath expression.
-	 * 
-	 * @param target
-	 * @param dPath
-	 */
-	public static Object getValue(final Object target, final String dPath) {
-		String[] paths = dPath.split("\\.");
-		Object result = target;
-		for (String path : paths) {
-			result = extractValue(result, path);
-		}
-		return result;
-	}
+    /**
+     * Extracts a value from the target object using DPath expression.
+     * 
+     * @param target
+     * @param dPath
+     */
+    public static Object getValue(final Object target, final String dPath) {
+        String[] paths = dPath.split("\\.");
+        Object result = target;
+        for (String path : paths) {
+            result = extractValue(result, path);
+        }
+        return result;
+    }
 
-	/**
-	 * Sets a value to the target object using DPath expression.
-	 * 
-	 * @param target
-	 * @param dPath
-	 * @param value
-	 */
-	@SuppressWarnings("unchecked")
-	public static void setValue(final Object target, final String dPath,
-			final Object value) {
-		String[] paths = dPath.split("\\.");
-		Object cursor = target;
-		// "seek"to the correct position
-		for (int i = 0; i < paths.length - 1; i++) {
-			cursor = extractValue(cursor, paths[i]);
-		}
-		String index = paths[paths.length - 1];
-		Matcher m = PATTERN_INDEX.matcher(index);
-		if (m.matches() || "[]".equals(index)) {
-			int i = "[]".equals(index) ? Integer.MAX_VALUE : Integer.parseInt(m
-					.group(1));
-			if (cursor instanceof List<?>) {
-				List<Object> temp = (List<Object>) cursor;
-				if (i < 0) {
-					throw new IllegalArgumentException("Invalid index [" + i
-							+ "]!");
-				}
-				if (i >= temp.size()) {
-					temp.add(value);
-				} else {
-					temp.remove(i);
-					temp.add(i, value);
-				}
-			} else {
-				throw new IllegalArgumentException(
-						"Target object is not a list or readonly!");
-			}
-		} else if (cursor instanceof Map<?, ?>) {
-			((Map<Object, Object>) cursor).put(index, value);
-		} else {
-			throw new IllegalArgumentException("Target object is not writable!");
-		}
-	}
+    /**
+     * Sets a value to the target object using DPath expression.
+     * 
+     * @param target
+     * @param dPath
+     * @param value
+     */
+    @SuppressWarnings("unchecked")
+    public static void setValue(final Object target, final String dPath, final Object value) {
+        String[] paths = dPath.split("\\.");
+        Object cursor = target;
+        // "seek"to the correct position
+        for (int i = 0; i < paths.length - 1; i++) {
+            cursor = extractValue(cursor, paths[i]);
+        }
+        String index = paths[paths.length - 1];
+        Matcher m = PATTERN_INDEX.matcher(index);
+        if (m.matches() || "[]".equals(index)) {
+            int i = "[]".equals(index) ? Integer.MAX_VALUE : Integer.parseInt(m.group(1));
+            if (cursor instanceof List<?>) {
+                List<Object> temp = (List<Object>) cursor;
+                if (i < 0) {
+                    throw new IllegalArgumentException("Invalid index [" + i + "]!");
+                }
+                if (i >= temp.size()) {
+                    temp.add(value);
+                } else {
+                    temp.remove(i);
+                    temp.add(i, value);
+                }
+            } else {
+                throw new IllegalArgumentException("Target object is not a list or readonly!");
+            }
+        } else if (cursor instanceof Map<?, ?>) {
+            ((Map<Object, Object>) cursor).put(index, value);
+        } else {
+            throw new IllegalArgumentException("Target object is not writable!");
+        }
+    }
 
-	private static Object extractValue(Object target, String index) {
-		if (target == null) {
-			return null;
-		}
-		Matcher m = PATTERN_INDEX.matcher(index);
-		if (m.matches()) {
-			int i = Integer.parseInt(m.group(1));
-			if (target instanceof Object[]) {
-				return ((Object[]) target)[i];
-			}
-			if (target instanceof List<?>) {
-				return ((List<?>) target).get(i);
-			}
-			throw new IllegalArgumentException("Expect an array or list!");
-		}
-		if (target instanceof Map<?, ?>) {
-			return ((Map<?, ?>) target).get(index);
-		}
-		throw new IllegalArgumentException();
-	}
-
-	@SuppressWarnings({ "unused", "unchecked" })
-	public static void main(String[] args) {
-		Map<String, Object> company = new HashMap<String, Object>();
-		company.put("name", "Monster Corp.");
-		company.put("year", 2003);
-
-		List<Map<String, Object>> employees = new ArrayList<Map<String, Object>>();
-		company.put("employees", employees);
-
-		Map<String, Object> employee1 = new HashMap<String, Object>();
-		employee1.put("first_name", "Mike");
-		employee1.put("last_name", "Wazowski");
-		employee1.put("email", "mike.wazowski@monster.com");
-		employee1.put("age", 29);
-		employees.add(employee1);
-
-		Map<String, Object> employee2 = new HashMap<String, Object>();
-		employee2.put("first_name", "Sulley");
-		employee2.put("last_name", "Sullivan");
-		employee2.put("email", "sulley.sullivan@monster.com");
-		employee2.put("age", 30);
-		employees.add(employee2);
-
-		String companyName = DPathUtils.getValue(company, "name", String.class);
-		Integer companyYear = DPathUtils.getValue(company, "year",
-				Integer.class);
-
-		Object user1 = DPathUtils.getValue(company, "employees.[0]");
-		Map<String, Object> user2 = DPathUtils.getValue(company,
-				"employees.[1]", Map.class);
-
-		String firstName1 = DPathUtils.getValue(company,
-				"employees.[0].first_name", String.class);
-		Object email2 = DPathUtils.getValue(company, "employees.[1].email");
-		Long age2 = DPathUtils.getValue(company, "employees.[1].age",
-				Long.class);
-
-		System.out.println(user1);
-		System.out.println(user2);
-
-		System.out.println(firstName1);
-		System.out.println(email2);
-		System.out.println(age2);
-	}
+    private static Object extractValue(Object target, String index) {
+        if (target == null) {
+            return null;
+        }
+        Matcher m = PATTERN_INDEX.matcher(index);
+        if (m.matches()) {
+            int i = Integer.parseInt(m.group(1));
+            try {
+                if (target instanceof Object[]) {
+                    return ((Object[]) target)[i];
+                }
+                if (target instanceof List<?>) {
+                    return ((List<?>) target).get(i);
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                return null;
+            } catch (IndexOutOfBoundsException e) {
+                return null;
+            }
+            throw new IllegalArgumentException("Expect an array or list!");
+        }
+        if (target instanceof Map<?, ?>) {
+            return ((Map<?, ?>) target).get(index);
+        }
+        throw new IllegalArgumentException();
+    }
 }

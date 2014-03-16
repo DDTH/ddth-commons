@@ -1,6 +1,13 @@
 ddth-commons release notes
 ==========================
 
+0.2.0 - 2013-03-16
+------------------
+- Merged with [ddth-osgicommons](https://github.com/DDTH/ddth-osgicommons) and packaged as an OSGi bundle.
+- Some bug fixed in `DPathUtils` class.
+- Use `common-pool2` instead of `common-pool`.
+
+
 0.1.2 - 2013-02-28
 ------------------
 - `DPathUtils.getValue(Object target, String dPath, Class clazz)` now tries its best to convert returned value to the specified type. For example, the value extracted by `dPath` is a string `"12345"` and the clazz is of type `Integer`, the method will parse the string `"12345"` to the integer `12345`.
