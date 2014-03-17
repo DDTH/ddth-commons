@@ -32,25 +32,7 @@
 		<dependencySet>
 			<outputDirectory></outputDirectory>
 			<useProjectArtifact>true</useProjectArtifact>
-			<scope>provided</scope>
-			<useTransitiveDependencies>true</useTransitiveDependencies>
-			<excludes>
-				<exclude>org.osgi:*</exclude>
-			</excludes>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory></outputDirectory>
-			<useProjectArtifact>true</useProjectArtifact>
-			<scope>runtime</scope>
-			<useTransitiveDependencies>true</useTransitiveDependencies>
-			<excludes>
-				<exclude>org.osgi:*</exclude>
-			</excludes>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory></outputDirectory>
-			<useProjectArtifact>true</useProjectArtifact>
-			<scope>compile</scope>
+			<!-- <scope>provided</scope> -->
 			<useTransitiveDependencies>true</useTransitiveDependencies>
 			<excludes>
 				<exclude>org.osgi:*</exclude>

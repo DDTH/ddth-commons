@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -43,7 +44,7 @@
 		<version.osgi>4.3.0</version.osgi>
 		<version.spring>3.2.4.RELEASE</version.spring>
 		<version.spring.osgi>1.2.1</version.spring.osgi>
-		<version.guava>16.0</version.guava>
+		<version.guava>14.0</version.guava>
 		<version.jackson>2.3.2</version.jackson>
 		<version.slf4j>1.7.6</version.slf4j>
 		<version.log4j>1.2.17</version.log4j>
@@ -83,7 +84,6 @@
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
 			<version>${version.osgi}</version>
-			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
 
@@ -91,13 +91,11 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${version.slf4j}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${version.log4j}</version>
-			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
 
@@ -105,7 +103,6 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${version.guava}</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -123,21 +120,18 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${version.commons-lang3}</version>
-			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>${version.commons-io}</version>
-			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-pool2</artifactId>
 			<version>${version.commons-pool2}</version>
-			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
 
@@ -146,21 +140,18 @@
 			<artifactId>jackson-core</artifactId>
 			<version>${version.jackson}</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${version.jackson}</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 			<version>${version.jackson}</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -168,49 +159,42 @@
 			<artifactId>org.springframework.core</artifactId>
 			<version>${version.spring}</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.expression</artifactId>
 			<version>${version.spring}</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.beans</artifactId>
 			<version>${version.spring}</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.aop</artifactId>
 			<version>${version.spring}</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.context</artifactId>
 			<version>${version.spring}</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.context.support</artifactId>
 			<version>${version.spring}</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.osgi</groupId>
 			<artifactId>org.springframework.osgi.core</artifactId>
 			<version>${version.spring.osgi}</version>
-			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
 
@@ -219,7 +203,6 @@
 			<artifactId>com.springsource.net.sf.cglib</artifactId>
 			<version>2.2.0</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
@@ -244,7 +227,7 @@
 						<!-- <Bundle-Activator></Bundle-Activator> -->
 						<Export-Package>com.github.ddth.commons.osgi,com.github.ddth.commons.utils</Export-Package>
 						<!-- <Import-Package>org.springframework.*;resolution:=optional,*</Import-Package> -->
-						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Dependency>groupId=jboss;artifactId=jboss-serialization,groupId=trove;artifactId=trove</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 						<Embed-Directory>lib</Embed-Directory>
 						<Include-Resource>README.md,RELEASE-NOTES.md,LICENSE.txt</Include-Resource>

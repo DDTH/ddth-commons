@@ -1,6 +1,11 @@
 ddth-commons release notes
 ==========================
 
+0.2.1 - 2013-03-17
+------------------
+- POM fix.
+
+
 0.2.0 - 2013-03-16
 ------------------
 - Merged with [ddth-osgicommons](https://github.com/DDTH/ddth-osgicommons) and packaged as an OSGi bundle.
