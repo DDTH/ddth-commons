@@ -147,4 +147,10 @@ public class SerializationTest extends TestCase {
         assertEquals(company, COMPANY);
         assertFalse(company == COMPANY);
     }
+
+    public static void main(String[] args) {
+        System.out.println(SerializationUtils.fromJsonString(""));
+        System.out.println(SerializationUtils.fromJsonString("{}"));
+        System.out.println(SerializationUtils.fromJsonString("{a}"));
+    }
 }
