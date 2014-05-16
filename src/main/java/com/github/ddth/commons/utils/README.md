@@ -1,6 +1,14 @@
 com.github.ddth.commons.utils
 =============================
 
+DateFormatUtils
+---------------
+
+Utility to format a `java.util.Date` to string, and parse a string to `java.util.Date`.
+
+- Use a pool of `java.text.DateFormat`s for multi-threading environment.
+
+
 DPathUtils
 ----------
 
