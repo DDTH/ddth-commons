@@ -1,6 +1,11 @@
 ddth-commons release notes
 ==========================
 
+0.2.2.1 - 2013-05-31
+--------------------
+- Fix/Enhancement: `DPathUtils.getValue(...)` now supports primitive types.
+
+
 0.2.2 - 2013-05-17
 ------------------
 - New class `com.github.ddth.commons.utils.DateFormatUtils`.

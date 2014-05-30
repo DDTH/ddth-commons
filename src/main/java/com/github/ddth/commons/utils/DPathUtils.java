@@ -2,6 +2,7 @@ package com.github.ddth.commons.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -147,6 +148,16 @@ public class DPathUtils {
         return Boolean.parseBoolean(target.toString());
     }
 
+    /*
+     * @since 0.2.2.1
+     */
+    private static Character _convertChar(Object target) {
+        if (target instanceof Character) {
+            return (Character) target;
+        }
+        return null;
+    }
+
     /**
      * Extracts a value from the target object using DPath expression (generic
      * version).
@@ -165,11 +176,16 @@ public class DPathUtils {
         if (temp == null) {
             return null;
         }
-        if (Number.class.isAssignableFrom(clazz)) {
+        if (Number.class.isAssignableFrom(clazz) || byte.class == clazz || short.class == clazz
+                || int.class == clazz || long.class == clazz || float.class == clazz
+                || double.class == clazz) {
             return _convertNumber(temp, clazz);
         }
         if (clazz == Boolean.class || clazz == boolean.class) {
             return (T) _convertBoolean(temp);
+        }
+        if (clazz == Character.class || clazz == char.class) {
+            return (T) _convertChar(temp);
         }
         if (clazz.isAssignableFrom(temp.getClass())) {
             return (T) temp;
@@ -260,5 +276,13 @@ public class DPathUtils {
             return ((Map<?, ?>) target).get(index);
         }
         throw new IllegalArgumentException();
+    }
+
+    public static void main(String[] args) {
+        Map<String, Object> obj = new HashMap<String, Object>();
+        obj.put("key", 'c');
+
+        char value = DPathUtils.getValue(obj, "key", char.class);
+        System.out.println(value);
     }
 }

@@ -13,14 +13,14 @@ OSGi Environment: ddth-commons is packaged as an OSGi bundle.
 
 ## License ##
 
-See LICENSE.txt for details. Copyright (c) 2013 Thanh Ba Nguyen.
+See LICENSE.txt for details. Copyright (c) 2013-2014 Thanh Ba Nguyen.
 
 Third party libraries are distributed under their own license(s).
 
 
 ## Installation #
 
-Latest release version: `0.2.2`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
+Latest release version: `0.2.2.1`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 Maven dependency:
 
@@ -28,7 +28,7 @@ Maven dependency:
 <dependency>
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons</artifactId>
-	<version>0.2.2</version>
+	<version>0.2.2.1</version>
 </dependency>
 ```
 
