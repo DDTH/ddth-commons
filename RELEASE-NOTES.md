@@ -1,6 +1,11 @@
 ddth-commons release notes
 ==========================
 
+0.2.2.2 - 2014-06-06
+--------------------
+- Fix a bug with `DPathUtils.getValue(...)` and `java.util.Date` type.
+
+
 0.2.2.1 - 2014-05-31
 --------------------
 - Fix/Enhancement: `DPathUtils.getValue(...)` now supports primitive types.

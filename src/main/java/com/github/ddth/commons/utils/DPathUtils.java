@@ -2,6 +2,10 @@ package com.github.ddth.commons.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +159,32 @@ public class DPathUtils {
         if (target instanceof Character) {
             return (Character) target;
         }
+        if (target instanceof String) {
+            String temp = (String) target;
+            return temp.length() > 0 ? temp.charAt(0) : null;
+        }
+        if (target instanceof Number) {
+            return (char) ((Number) target).shortValue();
+        }
         return null;
+    }
+
+    /*
+     * @since 0.2.2.2
+     */
+    private static Date _convertDate(Object target) {
+        if (target instanceof Date) {
+            return (Date) target;
+        }
+        if (target instanceof Number) {
+            return new Date(((Number) target).longValue());
+        }
+        DateFormat df = new SimpleDateFormat();
+        try {
+            return df.parse(target.toString());
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     /**
@@ -186,6 +215,9 @@ public class DPathUtils {
         }
         if (clazz == Character.class || clazz == char.class) {
             return (T) _convertChar(temp);
+        }
+        if (Date.class.isAssignableFrom(clazz)) {
+            return (T) _convertDate(temp);
         }
         if (clazz.isAssignableFrom(temp.getClass())) {
             return (T) temp;
