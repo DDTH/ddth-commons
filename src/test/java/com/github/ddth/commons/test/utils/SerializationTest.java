@@ -1,4 +1,4 @@
-package com.github.ddth.commons.utils;
+package com.github.ddth.commons.test.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +13,8 @@ import junit.framework.TestSuite;
 
 import org.junit.After;
 import org.junit.Before;
+
+import com.github.ddth.commons.utils.SerializationUtils;
 
 public class SerializationTest extends TestCase {
 
