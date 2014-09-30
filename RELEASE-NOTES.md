@@ -1,6 +1,11 @@
 ddth-commons release notes
 ==========================
 
+0.2.2.3 - 2014-10-01
+--------------------
+- Bug fix: multithread with `SimpleDateFormat` in class `DateFormatUtils`.
+
+
 0.2.2.2 - 2014-06-06
 --------------------
 - Fix a bug with `DPathUtils.getValue(...)` and `java.util.Date` type.
