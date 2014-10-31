@@ -1,7 +1,7 @@
 ddth-commons release notes
 ==========================
 
-0.3.0.1 - 2014-11-01
+0.3.0.2 - 2014-11-01
 --------------------
 - Switch pom's parent to `com.github.ddth:ddth-parent:2`: `ddth-commons` now requires `Java 7+`!
 
