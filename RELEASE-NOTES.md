@@ -1,6 +1,11 @@
 ddth-commons release notes
 ==========================
 
+0.3.0 - 2014-11-01
+------------------
+- Switch pom's parent to `com.github.ddth:ddth-parent:2`: `ddth-commons` now requires `Java 7+`!
+
+
 0.2.2.3 - 2014-10-01
 --------------------
 - Bug fix: multithread with `SimpleDateFormat` in class `DateFormatUtils`.

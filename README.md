@@ -20,7 +20,7 @@ Third party libraries are distributed under their own license(s).
 
 ## Installation #
 
-Latest release version: `0.2.2.3`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
+Latest release version: `0.3.0`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 Maven dependency:
 
@@ -28,7 +28,7 @@ Maven dependency:
 <dependency>
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons</artifactId>
-	<version>0.2.2.3</version>
+	<version>0.3.0</version>
 </dependency>
 ```
 
