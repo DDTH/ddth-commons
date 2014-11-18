@@ -5,6 +5,9 @@ import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -187,6 +190,19 @@ public class DPathUtils {
         }
     }
 
+    /*
+     * @since 0.3.0.6
+     */
+    private static List<?> _convertArrayOrList(Object target) {
+        if (target instanceof Object[]) {
+            return Arrays.asList((Object[]) target);
+        }
+        if (target instanceof Collection) {
+            return new ArrayList<Object>((Collection<?>) target);
+        }
+        return null;
+    }
+
     /**
      * Extracts a value from the target object using DPath expression (generic
      * version).
@@ -218,6 +234,9 @@ public class DPathUtils {
         }
         if (Date.class.isAssignableFrom(clazz)) {
             return (T) _convertDate(temp);
+        }
+        if (Object[].class.isAssignableFrom(clazz) || List.class.isAssignableFrom(clazz)) {
+            return (T) _convertArrayOrList(temp);
         }
         if (clazz.isAssignableFrom(temp.getClass())) {
             return (T) temp;
