@@ -1,6 +1,11 @@
 ddth-commons release notes
 ==========================
 
+0.3.1 - 2015-04-08
+------------------
+- New class `DateTimeUtils`.
+
+
 0.3.0.6 - 2014-11-18
 --------------------
 - `DPathUtils`: bug fix to handle array (`Object[]`) and `List<>`

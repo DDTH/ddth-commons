@@ -9,6 +9,12 @@ Utility to format a `java.util.Date` to string, and parse a string to `java.util
 - Use a pool of `java.text.DateFormat`s for multi-threading environment.
 
 
+DateTimeUtils
+---------------
+
+Helper class to work with `Date` and `Calendar`.
+
+
 DPathUtils
 ----------
 
