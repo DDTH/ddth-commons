@@ -1,6 +1,11 @@
 ddth-commons release notes
 ==========================
 
+0.3.2 - 2015-07-24
+------------------
+- New class `Ipv4Utils`.
+
+
 0.3.1 - 2015-04-08
 ------------------
 - New class `DateTimeUtils`.
