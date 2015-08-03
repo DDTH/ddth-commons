@@ -81,7 +81,7 @@ public class DateTimeUtils {
      */
     public static Calendar nextHour(Calendar origin) {
         Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.HOUR, 1);
+        cal.add(Calendar.HOUR_OF_DAY, 1);
         return cal;
     }
 
@@ -93,7 +93,7 @@ public class DateTimeUtils {
      */
     public static Calendar prevHour(Calendar origin) {
         Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.HOUR, -1);
+        cal.add(Calendar.HOUR_OF_DAY, -1);
         return cal;
     }
 
@@ -108,7 +108,7 @@ public class DateTimeUtils {
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
         return cal;
     }
 
@@ -147,7 +147,7 @@ public class DateTimeUtils {
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
         return cal;
     }
@@ -187,7 +187,7 @@ public class DateTimeUtils {
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.DAY_OF_MONTH, 1);
         return cal;
     }
@@ -227,7 +227,7 @@ public class DateTimeUtils {
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.DAY_OF_YEAR, 1);
         return cal;
     }
