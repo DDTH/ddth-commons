@@ -2,12 +2,6 @@ package com.github.ddth.commons.utils;
 
 import java.nio.charset.Charset;
 
-import org.apache.commons.pool2.BasePooledObjectFactory;
-import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
-import org.apache.commons.pool2.impl.GenericObjectPool;
-
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 
@@ -18,78 +12,13 @@ import com.google.common.hash.Hashing;
  * @since 0.1.0
  */
 public class HashUtils {
-    private final static ObjectPool<HashFunction> poolLinearHash = new GenericObjectPool<HashFunction>(
-            new BasePooledObjectFactory<HashFunction>() {
-                @Override
-                public HashFunction create() throws Exception {
-                    return Hashing.murmur3_128(0);
-                }
+    private final static HashFunction linearHash = Hashing.murmur3_128(0);
+    private final static HashFunction crc32 = Hashing.crc32();
+    private final static HashFunction md5 = Hashing.md5();
+    private final static HashFunction sha1 = Hashing.sha1();
+    private final static HashFunction sha256 = Hashing.sha256();
+    private final static HashFunction sha512 = Hashing.sha512();
 
-                @Override
-                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
-                    return new DefaultPooledObject<HashFunction>(hashFunc);
-                }
-            });
-    private final static ObjectPool<HashFunction> poolCrc32 = new GenericObjectPool<HashFunction>(
-            new BasePooledObjectFactory<HashFunction>() {
-                @Override
-                public HashFunction create() throws Exception {
-                    return Hashing.crc32();
-                }
-
-                @Override
-                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
-                    return new DefaultPooledObject<HashFunction>(hashFunc);
-                }
-            });
-    private final static ObjectPool<HashFunction> poolMd5 = new GenericObjectPool<HashFunction>(
-            new BasePooledObjectFactory<HashFunction>() {
-                @Override
-                public HashFunction create() throws Exception {
-                    return Hashing.md5();
-                }
-
-                @Override
-                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
-                    return new DefaultPooledObject<HashFunction>(hashFunc);
-                }
-            });
-    private final static ObjectPool<HashFunction> poolSha1 = new GenericObjectPool<HashFunction>(
-            new BasePooledObjectFactory<HashFunction>() {
-                @Override
-                public HashFunction create() throws Exception {
-                    return Hashing.sha1();
-                }
-
-                @Override
-                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
-                    return new DefaultPooledObject<HashFunction>(hashFunc);
-                }
-            });
-    private final static ObjectPool<HashFunction> poolSha256 = new GenericObjectPool<HashFunction>(
-            new BasePooledObjectFactory<HashFunction>() {
-                @Override
-                public HashFunction create() throws Exception {
-                    return Hashing.sha256();
-                }
-
-                @Override
-                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
-                    return new DefaultPooledObject<HashFunction>(hashFunc);
-                }
-            });
-    private final static ObjectPool<HashFunction> poolSha512 = new GenericObjectPool<HashFunction>(
-            new BasePooledObjectFactory<HashFunction>() {
-                @Override
-                public HashFunction create() throws Exception {
-                    return Hashing.sha512();
-                }
-
-                @Override
-                public PooledObject<HashFunction> wrap(HashFunction hashFunc) {
-                    return new DefaultPooledObject<HashFunction>(hashFunc);
-                }
-            });
     private final static Charset UTF8 = Charset.forName("UTF-8");
 
     /**
@@ -103,20 +32,11 @@ public class HashUtils {
         if (object == null) {
             return 0;
         }
-        try {
-            HashFunction hashFunction = poolLinearHash.borrowObject();
-            try {
-                if (object instanceof Boolean || object instanceof Number
-                        || object instanceof String) {
-                    return hashFunction.hashString(object.toString(), UTF8).asLong();
-                }
-                return hashFunction.hashInt(object.hashCode()).asLong();
-            } finally {
-                poolLinearHash.returnObject(hashFunction);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        HashFunction hashFunction = linearHash;
+        if (object instanceof Boolean || object instanceof Number || object instanceof String) {
+            return hashFunction.hashString(object.toString(), UTF8).asLong();
         }
+        return hashFunction.hashInt(object.hashCode()).asLong();
     }
 
     /**
@@ -172,16 +92,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        try {
-            HashFunction crc32 = poolCrc32.borrowObject();
-            try {
-                return crc32.hashString(value, UTF8).toString().toLowerCase();
-            } finally {
-                poolCrc32.returnObject(crc32);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return crc32.hashString(value, UTF8).toString().toLowerCase();
     }
 
     /**
@@ -194,16 +105,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        try {
-            HashFunction crc32 = poolCrc32.borrowObject();
-            try {
-                return crc32.hashBytes(value).toString().toLowerCase();
-            } finally {
-                poolCrc32.returnObject(crc32);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return crc32.hashBytes(value).toString().toLowerCase();
     }
 
     /**
@@ -216,16 +118,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        try {
-            HashFunction md5 = poolMd5.borrowObject();
-            try {
-                return md5.hashString(value, UTF8).toString().toLowerCase();
-            } finally {
-                poolMd5.returnObject(md5);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return md5.hashString(value, UTF8).toString().toLowerCase();
     }
 
     /**
@@ -238,16 +131,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        try {
-            HashFunction md5 = poolMd5.borrowObject();
-            try {
-                return md5.hashBytes(value).toString().toLowerCase();
-            } finally {
-                poolMd5.returnObject(md5);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return md5.hashBytes(value).toString().toLowerCase();
     }
 
     /**
@@ -260,16 +144,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        try {
-            HashFunction sha1 = poolSha1.borrowObject();
-            try {
-                return sha1.hashString(value, UTF8).toString().toLowerCase();
-            } finally {
-                poolSha1.returnObject(sha1);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return sha1.hashString(value, UTF8).toString().toLowerCase();
     }
 
     /**
@@ -282,16 +157,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        try {
-            HashFunction sha1 = poolSha1.borrowObject();
-            try {
-                return sha1.hashBytes(value).toString().toLowerCase();
-            } finally {
-                poolSha1.returnObject(sha1);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return sha1.hashBytes(value).toString().toLowerCase();
     }
 
     /**
@@ -304,16 +170,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        try {
-            HashFunction sha256 = poolSha256.borrowObject();
-            try {
-                return sha256.hashString(value, UTF8).toString().toLowerCase();
-            } finally {
-                poolSha256.returnObject(sha256);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return sha256.hashString(value, UTF8).toString().toLowerCase();
     }
 
     /**
@@ -326,16 +183,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        try {
-            HashFunction sha256 = poolSha256.borrowObject();
-            try {
-                return sha256.hashBytes(value).toString().toLowerCase();
-            } finally {
-                poolSha256.returnObject(sha256);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return sha256.hashBytes(value).toString().toLowerCase();
     }
 
     /**
@@ -348,16 +196,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        try {
-            HashFunction sha512 = poolSha512.borrowObject();
-            try {
-                return sha512.hashString(value, UTF8).toString().toLowerCase();
-            } finally {
-                poolSha512.returnObject(sha512);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return sha512.hashString(value, UTF8).toString().toLowerCase();
     }
 
     /**
@@ -370,15 +209,6 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        try {
-            HashFunction sha512 = poolSha512.borrowObject();
-            try {
-                return sha512.hashBytes(value).toString().toLowerCase();
-            } finally {
-                poolSha512.returnObject(sha512);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return sha512.hashBytes(value).toString().toLowerCase();
     }
 }
