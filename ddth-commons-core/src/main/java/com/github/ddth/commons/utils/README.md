@@ -12,7 +12,7 @@ Utility to format a `java.util.Date` to string, and parse a string to `java.util
 DateTimeUtils
 ---------------
 
-Helper class to work with `Date` and `Calendar`.
+Helper class to work with `java.util.Date` and `java.util.Calendar`.
 
 
 DPathUtils
@@ -116,12 +116,6 @@ String id128Hex = idGen.generateId128Hex();
 ```
 
 
-JsonUtils
----------
-
-***Deprecated since v0.2.0!*** Use class `SerializationUtils` instead!
-
-
 SerializationUtils
 -------------------
 
@@ -135,6 +129,17 @@ SpringUtils
 -----------
 
 Helper methods to obtain Spring's beans from an `ApplicationContext`.
+
+
+ThriftUtils
+-----------
+
+***New since v0.4.0***
+
+Helper methods to work with Apache Thrift.
+
+- Serialize/De-serialize a thrift `TBase` object to/from `byte[]`.
+- Helper methods to create various thrift servers.
 
 
 UnsignedUtils

@@ -18,17 +18,50 @@ See LICENSE.txt for details. Copyright (c) 2013-2015 Thanh Ba Nguyen.
 Third party libraries are distributed under their own license(s).
 
 
-## Installation #
+## Installation ##
 
-Latest release version: `0.3.2.2`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
+Latest release version: `0.4.0`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
-Maven dependency:
+Maven dependency: if only a sub-set of `ddth-commons` functionality is used, choose the corresponding
+dependency artifact(s) to reduce the number of unused jar files.
+
+*ddth-commons-core*: all Spring, Apache Thrift, Jboss-serialization, FasterXML Jackson and Kryo dependencies are *optional*
 
 ```xml
 <dependency>
 	<groupId>com.github.ddth</groupId>
-	<artifactId>ddth-commons</artifactId>
-	<version>0.3.2.2</version>
+	<artifactId>ddth-commons-core</artifactId>
+	<version>0.4.0</version>
+</dependency>
+```
+
+*ddth-commons-spring*: include all *ddth-commons-core* and Spring dependencies.
+
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-spring</artifactId>
+    <version>0.4.0</version>
+</dependency>
+```
+
+*ddth-commons-thrift*: include all *ddth-commons-core* and Apache Thrift dependencies.
+
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-thrift</artifactId>
+    <version>0.4.0</version>
+</dependency>
+```
+
+*ddth-commons-serialization*: include all *ddth-commons-core* and Jboss-serialization, FasterXML Jackson and Kryo dependencies.
+
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-serialization</artifactId>
+    <version>0.4.0</version>
 </dependency>
 ```
 

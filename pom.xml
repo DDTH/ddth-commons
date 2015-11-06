@@ -1,20 +1,28 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>com.github.ddth</groupId>
 		<artifactId>ddth-parent</artifactId>
-		<version>2</version>
+		<version>5.1</version>
 	</parent>
 
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons</artifactId>
 	<version>0.3.2.3-SNAPSHOT</version>
-	<packaging>bundle</packaging>
+	<packaging>pom</packaging>
 
 	<name>ddth-commons</name>
 	<description>DDTH's Java Common Libraries and Utilities</description>
 	<url>https://github.com/DDTH/ddth-commons</url>
+
+	<modules>
+		<module>ddth-commons-core</module>
+		<module>ddth-commons-serialization</module>
+		<module>ddth-commons-spring</module>
+		<module>ddth-commons-thrift</module>
+	</modules>
 
 	<licenses>
 		<license>
@@ -39,29 +47,25 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.java>1.6</version.java>
-		<version.osgi>4.3.0</version.osgi>
-		<version.spring>3.2.4.RELEASE</version.spring>
+		<skipTests>true</skipTests>
+
+		<version.spring>4.2.2.RELEASE</version.spring>
 		<version.spring.osgi>1.2.1</version.spring.osgi>
-		<version.guava>14.0</version.guava>
-		<version.jackson>2.3.2</version.jackson>
-		<version.slf4j>1.7.6</version.slf4j>
-		<version.log4j>1.2.17</version.log4j>
-		<version.commons-pool2>2.2</version.commons-pool2>
-		<version.commons-lang3>3.3</version.commons-lang3>
-		<version.commons-io>2.4</version.commons-io>
+		<version.spring_cglib>2.2.0</version.spring_cglib>
+
+		<version.libthrift>0.9.3</version.libthrift>
+
+		<version.jackson>2.6.3</version.jackson>
+		<version.kryo>3.0.3</version.kryo>
+		<version.jboss_serialization>4.2.2.GA</version.jboss_serialization>
+		<version.trove>1.0.2</version.trove>
 	</properties>
 
 	<repositories>
 		<repository>
-			<id>com.springsource.repository.bundles.release</id>
-			<name>EBR Spring Release Repository</name>
-			<url>http://repository.springsource.com/maven/bundles/release</url>
-		</repository>
-		<repository>
-			<id>com.springsource.repository.bundles.external</id>
-			<name>EBR External Release Repository</name>
-			<url>http://repository.springsource.com/maven/bundles/external</url>
+			<id>sonatype-org</id>
+			<name>Sonatype Releases</name>
+			<url>http://oss.sonatype.org/content/repositories/releases/</url>
 		</repository>
 	</repositories>
 
@@ -96,7 +100,6 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${version.log4j}</version>
-			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -104,37 +107,85 @@
 			<artifactId>guava</artifactId>
 			<version>${version.guava}</version>
 		</dependency>
-
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-serialization</artifactId>
-			<version>4.2.2.GA</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>2.4.2</version>
 		</dependency>
-		<dependency>
-			<groupId>trove</groupId>
-			<artifactId>trove</artifactId>
-			<version>1.0.2</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>${version.commons-lang3}</version>
-			<optional>true</optional>
+			<version>3.4</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>${version.commons-io}</version>
+			<version>2.4</version>
+		</dependency>
+
+		<!-- for SpringUtils -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${version.spring}</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-			<version>${version.commons-pool2}</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<version>${version.spring}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${version.spring}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${version.spring}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${version.spring}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${version.spring}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.osgi</groupId>
+			<artifactId>org.springframework.osgi.core</artifactId>
+			<version>${version.spring.osgi}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.cglib</groupId>
+			<artifactId>com.springsource.net.sf.cglib</artifactId>
+			<version>${version.spring_cglib}</version>
 			<optional>true</optional>
 		</dependency>
 
+		<!-- for SerializationUtils -->
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-serialization</artifactId>
+			<version>${version.jboss_serialization}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>trove</groupId>
+			<artifactId>trove</artifactId>
+			<version>${version.trove}</version>
+			<optional>true</optional>
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
@@ -153,55 +204,18 @@
 			<version>${version.jackson}</version>
 			<optional>true</optional>
 		</dependency>
-
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.core</artifactId>
-			<version>${version.spring}</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.expression</artifactId>
-			<version>${version.spring}</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.beans</artifactId>
-			<version>${version.spring}</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.aop</artifactId>
-			<version>${version.spring}</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.context</artifactId>
-			<version>${version.spring}</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.context.support</artifactId>
-			<version>${version.spring}</version>
+			<groupId>com.esotericsoftware</groupId>
+			<artifactId>kryo-shaded</artifactId>
+			<version>${version.kryo}</version>
 			<optional>true</optional>
 		</dependency>
 
+		<!-- for ThriftUtils -->
 		<dependency>
-			<groupId>org.springframework.osgi</groupId>
-			<artifactId>org.springframework.osgi.core</artifactId>
-			<version>${version.spring.osgi}</version>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>net.sourceforge.cglib</groupId>
-			<artifactId>com.springsource.net.sf.cglib</artifactId>
-			<version>2.2.0</version>
+			<groupId>org.apache.thrift</groupId>
+			<artifactId>libthrift</artifactId>
+			<version>${version.libthrift}</version>
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
@@ -209,48 +223,14 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<source>${version.java}</source>
-					<target>${version.java}</target>
+					<forkMode>always</forkMode>
+					<skipTests>${skipTests}</skipTests>
+					<systemPropertyVariables>
+						<!-- <log4j.configuration>file:${basedir}/../etc/log4j.xml</log4j.configuration> -->
+					</systemPropertyVariables>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>2.4.0</version>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<!-- <Bundle-Activator></Bundle-Activator> -->
-						<Export-Package>com.github.ddth.commons.osgi,com.github.ddth.commons.utils</Export-Package>
-						<Import-Package>com.google.common.*;version="${version.guava}",*</Import-Package>
-						<Embed-Dependency>groupId=jboss;artifactId=jboss-serialization,groupId=trove;artifactId=trove</Embed-Dependency>
-						<Embed-Transitive>true</Embed-Transitive>
-						<Embed-Directory>lib</Embed-Directory>
-						<Include-Resource>README.md,RELEASE-NOTES.md,LICENSE.txt</Include-Resource>
-					</instructions>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>distro-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<descriptors>
-								<descriptor>assembly/ddth-commons-withdeps.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.ddth</groupId>
+		<artifactId>ddth-commons</artifactId>
+		<version>0.3.2.3-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>ddth-commons-core</artifactId>
+	<version>0.3.2.3-SNAPSHOT</version>
+	<packaging>bundle</packaging>
+
+	<name>ddth-commons-core</name>
+	<description>DDTH's Java Common Libraries and Utilities</description>
+	<url>https://github.com/DDTH/ddth-commons</url>
+
+	<developers>
+		<developer>
+			<id>btnguyen2k</id>
+			<name>Thanh Ba Nguyen</name>
+			<email>btnguyen2k@gmail.com</email>
+		</developer>
+	</developers>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${version.java}</source>
+					<target>${version.java}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<!-- <Bundle-Activator></Bundle-Activator> -->
+						<Export-Package>com.github.ddth.commons.osgi,com.github.ddth.commons.utils</Export-Package>
+						<Import-Package>com.google.common.*;version="${version.guava}",*</Import-Package>
+						<Embed-Dependency>groupId=jboss;artifactId=jboss-serialization,groupId=trove;artifactId=trove</Embed-Dependency>
+						<Embed-Transitive>true</Embed-Transitive>
+						<Embed-Directory>lib</Embed-Directory>
+						<Include-Resource>../README.md,../RELEASE-NOTES.md,../LICENSE.txt</Include-Resource>
+					</instructions>
+				</configuration>
+			</plugin>
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-assembly-plugin</artifactId> 
+				<executions> <execution> <id>distro-assembly</id> <phase>package</phase> 
+				<goals> <goal>single</goal> </goals> <configuration> <descriptors> <descriptor>assembly/ddth-commons-withdeps.xml</descriptor> 
+				</descriptors> </configuration> </execution> </executions> </plugin> -->
+		</plugins>
+	</build>
+</project>

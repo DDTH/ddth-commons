@@ -1,6 +1,14 @@
 ddth-commons release notes
 ==========================
 
+0.4.0 - 2015-10-06
+------------------
+
+- New class `ThriftUtils`.
+- `SerializationUtils`: add Kryo serialization/deserialzation.
+- Separated artifacts: `ddth-commons-core`, `ddth-commons-serialization`, `ddth-commons-spring` and `ddth-commons-thrift`.
+
+
 0.3.2.2 - 2015-08-28
 --------------------
 

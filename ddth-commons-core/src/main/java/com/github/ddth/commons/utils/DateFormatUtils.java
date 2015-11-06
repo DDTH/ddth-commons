@@ -86,12 +86,12 @@ public class DateFormatUtils {
     }
 
     private final static LoadingCache<String, ObjectPool<DateFormat>> cachedDateFormat = CacheBuilder
-            .newBuilder().expireAfterAccess(3600, TimeUnit.SECONDS).concurrencyLevel(1)
+            .newBuilder().maximumSize(100).expireAfterAccess(3600, TimeUnit.SECONDS)
+            .concurrencyLevel(2)
             .removalListener(new RemovalListener<String, ObjectPool<DateFormat>>() {
                 @Override
-                public void onRemoval(
-                        RemovalNotification<String, ObjectPool<DateFormat>> notification) {
-                    notification.getValue().close();
+                public void onRemoval(RemovalNotification<String, ObjectPool<DateFormat>> event) {
+                    event.getValue().close();
                 }
             }).build(new CacheLoader<String, ObjectPool<DateFormat>>() {
                 @Override
@@ -121,7 +121,8 @@ public class DateFormatUtils {
                     pool.returnObject(df);
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw e instanceof RuntimeException ? (RuntimeException) e
+                        : new RuntimeException(e);
             }
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
@@ -146,7 +147,8 @@ public class DateFormatUtils {
                     pool.returnObject(df);
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw e instanceof RuntimeException ? (RuntimeException) e
+                        : new RuntimeException(e);
             }
         } catch (ExecutionException e) {
             throw new RuntimeException(e);

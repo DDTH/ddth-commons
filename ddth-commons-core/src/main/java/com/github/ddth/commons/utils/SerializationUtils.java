@@ -2,6 +2,8 @@ package com.github.ddth.commons.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
@@ -11,6 +13,12 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.jboss.serial.io.JBossObjectInputStream;
 import org.jboss.serial.io.JBossObjectOutputStream;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.pool.KryoCallback;
+import com.esotericsoftware.kryo.pool.KryoFactory;
+import com.esotericsoftware.kryo.pool.KryoPool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -18,7 +26,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * <ul>
  * <li>JSON serialization: use {@code com.fasterxml.jackson} library.</li>
- * <li>Binary serialization: use {@code jboss-serialization} library.</li>
+ * <li>Binary serialization: 2 choices of API
+ * <ul>
+ * <li>{@code jboss-serialization} library, or</li>
+ * <li>{@code Kryo} library</li>
+ * </ul>
+ * </li>
  * </ul>
  * 
  * @author Thanh Nguyen <btnguyen2k@gmail.com>
@@ -26,6 +39,140 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class SerializationUtils {
 
+    /*----------------------------------------------------------------------*/
+    private static KryoPool kryoPool;
+    static {
+        KryoFactory factory = new KryoFactory() {
+            public Kryo create() {
+                Kryo kryo = new Kryo();
+                return kryo;
+            }
+        };
+        Queue<Kryo> queue = new LinkedBlockingQueue<Kryo>(100);
+        kryoPool = new KryoPool.Builder(factory).queue(queue).softReferences().build();
+    }
+
+    /**
+     * Serializes an object to byte array.
+     * 
+     * <p>
+     * This method uses Kryo lib.
+     * </p>
+     * 
+     * @param obj
+     * @return
+     */
+    public static byte[] toByteArrayKryo(Object obj) {
+        return toByteArrayKryo(obj, null);
+    }
+
+    /**
+     * Serializes an object to byte array, with a custom class loader.
+     * 
+     * <p>
+     * This method uses Kryo lib.
+     * </p>
+     * 
+     * @param obj
+     * @param classLoader
+     * @return
+     */
+    public static byte[] toByteArrayKryo(final Object obj, ClassLoader classLoader) {
+        ClassLoader oldClassLoader = classLoader != null ? Thread.currentThread()
+                .getContextClassLoader() : null;
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        try {
+            return kryoPool.run(new KryoCallback<byte[]>() {
+                @Override
+                public byte[] execute(Kryo kryo) {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    Output output = new Output(baos);
+                    kryo.writeObject(output, obj);
+                    output.flush();
+                    output.close();
+                    return baos.toByteArray();
+                }
+            });
+        } catch (Exception e) {
+            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+        } finally {
+            if (oldClassLoader != null) {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
+        }
+    }
+
+    /**
+     * Deserializes a byte array back to an object.
+     * 
+     * <p>
+     * This method uses Kryo lib.
+     * </p>
+     * 
+     * @param data
+     * @return
+     */
+    public static Object fromByteArrayKryo(byte[] data) {
+        return fromByteArrayKryo(data, Object.class, null);
+    }
+
+    /**
+     * Deserializes a byte array back to an object, with custom class loader.
+     * 
+     * @param data
+     * @param classLoader
+     * @return
+     */
+    public static Object fromByteArrayKryo(byte[] data, ClassLoader classLoader) {
+        return fromByteArrayKryo(data, Object.class, classLoader);
+    }
+
+    /**
+     * Deserializes a byte array back to an object.
+     * 
+     * @param data
+     * @param clazz
+     * @return
+     */
+    public static <T> T fromByteArrayKryo(byte[] data, Class<T> clazz) {
+        return fromByteArrayKryo(data, clazz, null);
+    }
+
+    /**
+     * Deserializes a byte array back to an object, with custom class loader.
+     * 
+     * @param data
+     * @param clazz
+     * @param classLoader
+     * @return
+     */
+    public static <T> T fromByteArrayKryo(final byte[] data, final Class<T> clazz,
+            ClassLoader classLoader) {
+        ClassLoader oldClassLoader = classLoader != null ? Thread.currentThread()
+                .getContextClassLoader() : null;
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        try {
+            return kryoPool.run(new KryoCallback<T>() {
+                @Override
+                public T execute(Kryo kryo) {
+                    Input input = new Input(new ByteArrayInputStream(data));
+                    return kryo.readObject(input, clazz);
+                }
+            });
+        } catch (Exception e) {
+            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+        } finally {
+            if (oldClassLoader != null) {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
+        }
+    }
+
+    /*----------------------------------------------------------------------*/
     private final static ObjectPool<ObjectMapper> poolMapper = new GenericObjectPool<ObjectMapper>(
             new BasePooledObjectFactory<ObjectMapper>() {
                 @Override
@@ -38,9 +185,19 @@ public class SerializationUtils {
                     return new DefaultPooledObject<ObjectMapper>(objMapper);
                 }
             });
+    static {
+        GenericObjectPool<ObjectMapper> pool = (GenericObjectPool<ObjectMapper>) poolMapper;
+        pool.setMaxIdle(1);
+        pool.setMaxTotal(100);
+        pool.setMaxWaitMillis(5000);
+    }
 
     /**
      * Serializes an object to byte array.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
      * 
      * @param obj
      * @return
@@ -51,6 +208,10 @@ public class SerializationUtils {
 
     /**
      * Serializes an object to byte array, with a custom class loader.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
      * 
      * @param obj
      * @param classLoader
@@ -76,16 +237,16 @@ public class SerializationUtils {
                 }
             }
         } catch (Exception e) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(e);
-            }
+            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
         }
     }
 
     /**
-     * Deserializes a byte array.
+     * Deserializes a byte array back to an object.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
      * 
      * @param data
      * @return
@@ -95,7 +256,11 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array, with custom class loader.
+     * Deserializes a byte array back to an object, with custom class loader.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
      * 
      * @param data
      * @param classLoader
@@ -106,7 +271,11 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array.
+     * Deserializes a byte array back to an object.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
      * 
      * @param data
      * @param clazz
@@ -117,7 +286,11 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array, with custom class loader.
+     * Deserializes a byte array back to an object, with custom class loader.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
      * 
      * @param data
      * @param clazz
@@ -142,14 +315,11 @@ public class SerializationUtils {
                 return null;
             }
         } catch (Exception e) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(e);
-            }
+            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
         }
     }
 
+    /*----------------------------------------------------------------------*/
     /**
      * Serializes an object to JSON string.
      * 
@@ -178,8 +348,6 @@ public class SerializationUtils {
             try {
                 try {
                     return mapper.writeValueAsString(obj);
-                    // return obj != null ? mapper.writeValueAsString(obj) :
-                    // null;
                 } finally {
                     poolMapper.returnObject(mapper);
                 }
@@ -189,11 +357,7 @@ public class SerializationUtils {
                 }
             }
         } catch (Exception e) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(e);
-            }
+            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
         }
     }
 
@@ -256,11 +420,7 @@ public class SerializationUtils {
                 }
             }
         } catch (Exception e) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(e);
-            }
+            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
         }
     }
 }
