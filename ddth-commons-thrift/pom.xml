@@ -1,16 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>com.github.ddth</groupId>
 		<artifactId>ddth-commons</artifactId>
-		<version>0.3.2.3-SNAPSHOT</version>
+		<version>0.4.0</version>
 	</parent>
 
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons-thrift</artifactId>
-	<version>0.3.2.3-SNAPSHOT</version>
+	<version>0.4.0</version>
 	<packaging>pom</packaging>
 
 	<name>ddth-commons-thrift</name>
@@ -33,7 +32,7 @@
 		<dependency>
 			<groupId>com.github.ddth</groupId>
 			<artifactId>ddth-commons-core</artifactId>
-			<version>0.3.2.3-SNAPSHOT</version>
+			<version>0.4.0</version>
 		</dependency>
 
 		<!-- for ThriftUtils -->
