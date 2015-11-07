@@ -42,6 +42,7 @@ dependency artifact(s) to reduce the number of unused jar files.
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-spring</artifactId>
     <version>0.4.0</version>
+    <type>pom</type>
 </dependency>
 ```
 
@@ -52,6 +53,7 @@ dependency artifact(s) to reduce the number of unused jar files.
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-thrift</artifactId>
     <version>0.4.0</version>
+    <type>pom</type>
 </dependency>
 ```
 
@@ -62,6 +64,7 @@ dependency artifact(s) to reduce the number of unused jar files.
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-serialization</artifactId>
     <version>0.4.0</version>
+    <type>pom</type>
 </dependency>
 ```
 
