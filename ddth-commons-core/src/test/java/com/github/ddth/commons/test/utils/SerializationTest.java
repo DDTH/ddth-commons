@@ -3,18 +3,19 @@ package com.github.ddth.commons.test.utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.junit.After;
 import org.junit.Before;
 
 import com.github.ddth.commons.utils.SerializationUtils;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class SerializationTest extends TestCase {
 
@@ -109,41 +110,85 @@ public class SerializationTest extends TestCase {
     }
 
     @org.junit.Test
-    public void testBinary1() {
+    public void testJboss1() {
         byte[] bytearr;
         Object obj;
 
         Object objNull = null;
-        bytearr = SerializationUtils.toByteArray(objNull);
-        obj = SerializationUtils.fromByteArray(bytearr);
+        bytearr = SerializationUtils.toByteArrayJboss(objNull);
+        obj = SerializationUtils.fromByteArrayJboss(bytearr);
         assertNull(obj);
 
         Map<String, Object> emptyMap = new HashMap<String, Object>();
-        bytearr = SerializationUtils.toByteArray(emptyMap);
-        obj = SerializationUtils.fromByteArray(bytearr);
+        bytearr = SerializationUtils.toByteArrayJboss(emptyMap);
+        obj = SerializationUtils.fromByteArrayJboss(bytearr);
         assertTrue(obj instanceof Map);
 
         List<Object> emptyList = new ArrayList<Object>();
-        bytearr = SerializationUtils.toByteArray(emptyList);
-        obj = SerializationUtils.fromByteArray(bytearr);
+        bytearr = SerializationUtils.toByteArrayJboss(emptyList);
+        obj = SerializationUtils.fromByteArrayJboss(bytearr);
         assertTrue(obj instanceof List);
 
         int[] emptyArray = new int[0];
-        bytearr = SerializationUtils.toByteArray(emptyArray);
-        obj = SerializationUtils.fromByteArray(bytearr);
+        bytearr = SerializationUtils.toByteArrayJboss(emptyArray);
+        obj = SerializationUtils.fromByteArrayJboss(bytearr);
         assertTrue(obj instanceof int[]);
 
         Set<String> emptySet = new HashSet<String>();
-        bytearr = SerializationUtils.toByteArray(emptySet);
-        obj = SerializationUtils.fromByteArray(bytearr);
+        bytearr = SerializationUtils.toByteArrayJboss(emptySet);
+        obj = SerializationUtils.fromByteArrayJboss(bytearr);
         assertTrue(obj instanceof Set);
     }
 
     @SuppressWarnings("unchecked")
     @org.junit.Test
-    public void testBinary2() {
-        byte[] bytearr = SerializationUtils.toByteArray(COMPANY);
-        Map<String, Object> company = SerializationUtils.fromByteArray(bytearr, Map.class);
+    public void testJboss2() {
+        byte[] bytearr = SerializationUtils.toByteArrayJboss(COMPANY);
+        Map<String, Object> company = SerializationUtils.fromByteArrayJboss(bytearr, Map.class);
+        assertNotNull(company);
+
+        assertEquals(company, COMPANY);
+        assertFalse(company == COMPANY);
+    }
+
+    @org.junit.Test
+    public void testKryo1() {
+        byte[] bytearr;
+        Object obj;
+
+        Object objNull = null;
+        bytearr = SerializationUtils.toByteArrayKryo(objNull);
+        obj = SerializationUtils.fromByteArrayKryo(bytearr);
+        assertNull(obj);
+
+        Map<String, Object> emptyMap = new HashMap<String, Object>();
+        bytearr = SerializationUtils.toByteArrayKryo(emptyMap);
+        obj = SerializationUtils.fromByteArrayKryo(bytearr, HashMap.class);
+        assertTrue(obj instanceof Map);
+
+        List<Object> emptyList = new ArrayList<Object>();
+        bytearr = SerializationUtils.toByteArrayKryo(emptyList);
+        obj = SerializationUtils.fromByteArrayKryo(bytearr, ArrayList.class);
+        assertTrue(obj instanceof List);
+        obj = SerializationUtils.fromByteArrayKryo(bytearr, LinkedList.class);
+        assertTrue(obj instanceof List);
+
+        int[] emptyArray = new int[0];
+        bytearr = SerializationUtils.toByteArrayKryo(emptyArray);
+        obj = SerializationUtils.fromByteArrayKryo(bytearr, int[].class);
+        assertTrue(obj instanceof int[]);
+
+        Set<String> emptySet = new HashSet<String>();
+        bytearr = SerializationUtils.toByteArrayKryo(emptySet);
+        obj = SerializationUtils.fromByteArrayKryo(bytearr, HashSet.class);
+        assertTrue(obj instanceof Set);
+    }
+
+    @SuppressWarnings("unchecked")
+    @org.junit.Test
+    public void testKryo2() {
+        byte[] bytearr = SerializationUtils.toByteArrayKryo(COMPANY);
+        Map<String, Object> company = SerializationUtils.fromByteArrayKryo(bytearr, HashMap.class);
         assertNotNull(company);
 
         assertEquals(company, COMPANY);
@@ -151,8 +196,8 @@ public class SerializationTest extends TestCase {
     }
 
     public static void main(String[] args) {
-        System.out.println(SerializationUtils.fromJsonString(""));
-        System.out.println(SerializationUtils.fromJsonString("{}"));
-        System.out.println(SerializationUtils.fromJsonString("{a}"));
+        // System.out.println(SerializationUtils.fromJsonString(""));
+        // System.out.println(SerializationUtils.fromJsonString("{}"));
+        // System.out.println(SerializationUtils.fromJsonString("{a}"));
     }
 }

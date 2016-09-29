@@ -20,6 +20,9 @@ import com.esotericsoftware.kryo.pool.KryoCallback;
 import com.esotericsoftware.kryo.pool.KryoFactory;
 import com.esotericsoftware.kryo.pool.KryoPool;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.ddth.commons.serialization.DeserializationException;
+import com.github.ddth.commons.serialization.ISerializationSupport;
+import com.github.ddth.commons.serialization.SerializationException;
 
 /**
  * Serialization helper class.
@@ -38,6 +41,87 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @since 0.2.0
  */
 public class SerializationUtils {
+    /*----------------------------------------------------------------------*/
+    /**
+     * Serializes an object to byte array.
+     * 
+     * <p>
+     * If the target object implements {@link ISerializationSupport}, this
+     * method calls its {@link ISerializationSupport#toBytes()} method;
+     * otherwise Jboss-serialization library is used to serialize the object.
+     * </p>
+     * 
+     * @param obj
+     * @return
+     */
+    public static byte[] toByteArray(Object obj) {
+        return toByteArray(obj, null);
+    }
+
+    /**
+     * Serializes an object to byte array, with a custom class loader.
+     * 
+     * <p>
+     * If the target object implements {@link ISerializationSupport}, this
+     * method calls its {@link ISerializationSupport#toBytes()} method;
+     * otherwise Jboss-serialization library is used to serialize the object.
+     * </p>
+     * 
+     * @param obj
+     * @param classLoader
+     * @return
+     */
+    public static byte[] toByteArray(Object obj, ClassLoader classLoader) {
+        if (obj instanceof ISerializationSupport) {
+            return ((ISerializationSupport) obj).toBytes();
+        } else {
+            return toByteArrayJboss(obj, classLoader);
+        }
+    }
+
+    /**
+     * Deserializes a byte array back to an object.
+     * 
+     * <p>
+     * If the target class implements {@link ISerializationSupport}, this method
+     * calls its {@link ISerializationSupport#toBytes()} method; otherwise
+     * Jboss-serialization library is used to serialize the object.
+     * </p>
+     * 
+     * @param data
+     * @param clazz
+     * @return
+     */
+    public static <T> T fromByteArray(byte[] data, Class<T> clazz) {
+        return fromByteArray(data, clazz, null);
+    }
+
+    /**
+     * Deserializes a byte array back to an object, with custom class loader.
+     * 
+     * <p>
+     * If the target class implements {@link ISerializationSupport}, this method
+     * calls its {@link ISerializationSupport#toBytes()} method; otherwise
+     * Jboss-serialization library is used to serialize the object.
+     * </p>
+     * 
+     * @param data
+     * @param clazz
+     * @param classLoader
+     * @return
+     */
+    public static <T> T fromByteArray(byte[] data, Class<T> clazz, ClassLoader classLoader) {
+        if (ReflectionUtils.hasInterface(clazz, ISerializationSupport.class)) {
+            try {
+                T obj = clazz.newInstance();
+                ((ISerializationSupport) obj).fromBytes(data);
+                return obj;
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new DeserializationException(e);
+            }
+        }
+        return SerializationUtils.fromByteArrayJboss(data, clazz, classLoader);
+    }
 
     /*----------------------------------------------------------------------*/
     private static KryoPool kryoPool;
@@ -77,31 +161,36 @@ public class SerializationUtils {
      * @param classLoader
      * @return
      */
-    public static byte[] toByteArrayKryo(final Object obj, ClassLoader classLoader) {
-        ClassLoader oldClassLoader = classLoader != null ? Thread.currentThread()
-                .getContextClassLoader() : null;
-        if (classLoader != null) {
-            Thread.currentThread().setContextClassLoader(classLoader);
+    public static byte[] toByteArrayKryo(final Object obj, final ClassLoader classLoader) {
+        if (obj == null) {
+            return null;
         }
-        try {
-            return kryoPool.run(new KryoCallback<byte[]>() {
-                @Override
-                public byte[] execute(Kryo kryo) {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    Output output = new Output(baos);
-                    kryo.writeObject(output, obj);
-                    output.flush();
-                    output.close();
-                    return baos.toByteArray();
+        return kryoPool.run(new KryoCallback<byte[]>() {
+            @Override
+            public byte[] execute(Kryo kryo) {
+                ClassLoader oldClassLoader = classLoader != null
+                        ? Thread.currentThread().getContextClassLoader() : null;
+                if (classLoader != null) {
+                    Thread.currentThread().setContextClassLoader(classLoader);
                 }
-            });
-        } catch (Exception e) {
-            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
-        } finally {
-            if (oldClassLoader != null) {
-                Thread.currentThread().setContextClassLoader(oldClassLoader);
+                try {
+                    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                        try (Output output = new Output(baos)) {
+                            kryo.writeObject(output, obj);
+                            output.flush();
+                            return baos.toByteArray();
+                        }
+                    } catch (Exception e) {
+                        throw e instanceof SerializationException ? (SerializationException) e
+                                : new SerializationException(e);
+                    }
+                } finally {
+                    if (oldClassLoader != null) {
+                        Thread.currentThread().setContextClassLoader(oldClassLoader);
+                    }
+                }
             }
-        }
+        });
     }
 
     /**
@@ -149,26 +238,169 @@ public class SerializationUtils {
      * @return
      */
     public static <T> T fromByteArrayKryo(final byte[] data, final Class<T> clazz,
-            ClassLoader classLoader) {
-        ClassLoader oldClassLoader = classLoader != null ? Thread.currentThread()
-                .getContextClassLoader() : null;
+            final ClassLoader classLoader) {
+        if (data == null) {
+            return null;
+        }
+        return kryoPool.run(new KryoCallback<T>() {
+            @Override
+            public T execute(Kryo kryo) {
+                ClassLoader oldClassLoader = classLoader != null
+                        ? Thread.currentThread().getContextClassLoader() : null;
+                if (classLoader != null) {
+                    Thread.currentThread().setContextClassLoader(classLoader);
+                }
+                try {
+                    try (Input input = new Input(new ByteArrayInputStream(data))) {
+                        return kryo.readObject(input, clazz);
+                    } catch (Exception e) {
+                        throw e instanceof DeserializationException ? (DeserializationException) e
+                                : new DeserializationException(e);
+                    }
+                } finally {
+                    if (oldClassLoader != null) {
+                        Thread.currentThread().setContextClassLoader(oldClassLoader);
+                    }
+                }
+            }
+        });
+    }
+
+    /*----------------------------------------------------------------------*/
+
+    /**
+     * Serializes an object to byte array.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
+     * 
+     * @param obj
+     * @return
+     * @since 0.5.0
+     */
+    public static byte[] toByteArrayJboss(Object obj) {
+        return toByteArrayJboss(obj, null);
+    }
+
+    /**
+     * Serializes an object to byte array, with a custom class loader.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
+     * 
+     * @param obj
+     * @param classLoader
+     * @return
+     * @since 0.5.0
+     */
+    public static byte[] toByteArrayJboss(Object obj, ClassLoader classLoader) {
+        if (obj == null) {
+            return null;
+        }
+        ClassLoader oldClassLoader = classLoader != null
+                ? Thread.currentThread().getContextClassLoader() : null;
         if (classLoader != null) {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
         try {
-            return kryoPool.run(new KryoCallback<T>() {
-                @Override
-                public T execute(Kryo kryo) {
-                    Input input = new Input(new ByteArrayInputStream(data));
-                    return kryo.readObject(input, clazz);
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                try (JBossObjectOutputStream oos = new JBossObjectOutputStream(baos)) {
+                    oos.writeObject(obj);
+                    oos.flush();
+                    return baos.toByteArray();
                 }
-            });
-        } catch (Exception e) {
-            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+            } catch (Exception e) {
+                throw e instanceof SerializationException ? (SerializationException) e
+                        : new SerializationException(e);
+            }
         } finally {
             if (oldClassLoader != null) {
                 Thread.currentThread().setContextClassLoader(oldClassLoader);
             }
+        }
+    }
+
+    /**
+     * Deserializes a byte array back to an object.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
+     * 
+     * @param data
+     * @return
+     * @since 0.5.0
+     */
+    public static Object fromByteArrayJboss(byte[] data) {
+        return fromByteArrayJboss(data, Object.class, null);
+    }
+
+    /**
+     * Deserializes a byte array back to an object, with custom class loader.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
+     * 
+     * @param data
+     * @param classLoader
+     * @return
+     * @since 0.5.0
+     */
+    public static Object fromByteArrayJboss(byte[] data, ClassLoader classLoader) {
+        return fromByteArrayJboss(data, Object.class, classLoader);
+    }
+
+    /**
+     * Deserializes a byte array back to an object.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
+     * 
+     * @param data
+     * @param clazz
+     * @return
+     * @since 0.5.0
+     */
+    public static <T> T fromByteArrayJboss(byte[] data, Class<T> clazz) {
+        return fromByteArrayJboss(data, clazz, null);
+    }
+
+    /**
+     * Deserializes a byte array back to an object, with custom class loader.
+     * 
+     * <p>
+     * This method uses jboss-serialization lib.
+     * </p>
+     * 
+     * @param data
+     * @param clazz
+     * @param classLoader
+     * @return
+     * @since 0.5.0
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T fromByteArrayJboss(byte[] data, Class<T> clazz, ClassLoader classLoader) {
+        if (data == null) {
+            return null;
+        }
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(data)) {
+            try (JBossObjectInputStream ois = classLoader != null
+                    ? new JBossObjectInputStream(bais, classLoader)
+                    : new JBossObjectInputStream(bais)) {
+                Object obj = ois.readObject();
+                if (obj != null && clazz.isAssignableFrom(obj.getClass())) {
+                    return (T) obj;
+                } else {
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            throw e instanceof DeserializationException ? (DeserializationException) e
+                    : new DeserializationException(e);
         }
     }
 
@@ -190,136 +422,9 @@ public class SerializationUtils {
         pool.setMaxIdle(1);
         pool.setMaxTotal(100);
         pool.setMaxWaitMillis(5000);
+        pool.setBlockWhenExhausted(true);
     }
 
-    /**
-     * Serializes an object to byte array.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param obj
-     * @return
-     */
-    public static byte[] toByteArray(Object obj) {
-        return toByteArray(obj, null);
-    }
-
-    /**
-     * Serializes an object to byte array, with a custom class loader.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param obj
-     * @param classLoader
-     * @return
-     */
-    public static byte[] toByteArray(Object obj, ClassLoader classLoader) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            JBossObjectOutputStream oos = new JBossObjectOutputStream(baos);
-            ClassLoader oldClassLoader = classLoader != null ? Thread.currentThread()
-                    .getContextClassLoader() : null;
-            if (classLoader != null) {
-                Thread.currentThread().setContextClassLoader(classLoader);
-            }
-            try {
-                oos.writeObject(obj);
-                oos.flush();
-                oos.close();
-                return baos.toByteArray();
-            } finally {
-                if (oldClassLoader != null) {
-                    Thread.currentThread().setContextClassLoader(oldClassLoader);
-                }
-            }
-        } catch (Exception e) {
-            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Deserializes a byte array back to an object.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param data
-     * @return
-     */
-    public static Object fromByteArray(byte[] data) {
-        return fromByteArray(data, Object.class, null);
-    }
-
-    /**
-     * Deserializes a byte array back to an object, with custom class loader.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param data
-     * @param classLoader
-     * @return
-     */
-    public static Object fromByteArray(byte[] data, ClassLoader classLoader) {
-        return fromByteArray(data, Object.class, classLoader);
-    }
-
-    /**
-     * Deserializes a byte array back to an object.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param data
-     * @param clazz
-     * @return
-     */
-    public static <T> T fromByteArray(byte[] data, Class<T> clazz) {
-        return fromByteArray(data, clazz, null);
-    }
-
-    /**
-     * Deserializes a byte array back to an object, with custom class loader.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param data
-     * @param clazz
-     * @param classLoader
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T fromByteArray(byte[] data, Class<T> clazz, ClassLoader classLoader) {
-        ByteArrayInputStream bais = new ByteArrayInputStream(data);
-        try {
-            JBossObjectInputStream ois;
-            if (classLoader != null) {
-                ois = new JBossObjectInputStream(bais, classLoader);
-            } else {
-                ois = new JBossObjectInputStream(bais);
-            }
-            Object obj = ois.readObject();
-            ois.close();
-            if (obj != null && clazz.isAssignableFrom(obj.getClass())) {
-                return (T) obj;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
-        }
-    }
-
-    /*----------------------------------------------------------------------*/
     /**
      * Serializes an object to JSON string.
      * 
@@ -338,26 +443,31 @@ public class SerializationUtils {
      * @return
      */
     public static String toJsonString(Object obj, ClassLoader classLoader) {
+        if (obj == null) {
+            return "null";
+        }
+        ClassLoader oldClassLoader = classLoader != null
+                ? Thread.currentThread().getContextClassLoader() : null;
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
         try {
             ObjectMapper mapper = poolMapper.borrowObject();
-            ClassLoader oldClassLoader = classLoader != null ? Thread.currentThread()
-                    .getContextClassLoader() : null;
-            if (classLoader != null) {
-                Thread.currentThread().setContextClassLoader(classLoader);
-            }
-            try {
+            if (mapper != null) {
                 try {
                     return mapper.writeValueAsString(obj);
                 } finally {
                     poolMapper.returnObject(mapper);
                 }
-            } finally {
-                if (oldClassLoader != null) {
-                    Thread.currentThread().setContextClassLoader(oldClassLoader);
-                }
             }
+            throw new SerializationException("No ObjectMapper instance avaialble!");
         } catch (Exception e) {
-            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+            throw e instanceof SerializationException ? (SerializationException) e
+                    : new SerializationException(e);
+        } finally {
+            if (oldClassLoader != null) {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
         }
     }
 
@@ -401,26 +511,31 @@ public class SerializationUtils {
      * @return
      */
     public static <T> T fromJsonString(String jsonString, Class<T> clazz, ClassLoader classLoader) {
+        if (jsonString == null) {
+            return null;
+        }
+        ClassLoader oldClassLoader = classLoader != null
+                ? Thread.currentThread().getContextClassLoader() : null;
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
         try {
             ObjectMapper mapper = poolMapper.borrowObject();
-            ClassLoader oldClassLoader = classLoader != null ? Thread.currentThread()
-                    .getContextClassLoader() : null;
-            if (classLoader != null) {
-                Thread.currentThread().setContextClassLoader(classLoader);
-            }
-            try {
+            if (mapper != null) {
                 try {
                     return jsonString != null ? mapper.readValue(jsonString, clazz) : null;
                 } finally {
                     poolMapper.returnObject(mapper);
                 }
-            } finally {
-                if (oldClassLoader != null) {
-                    Thread.currentThread().setContextClassLoader(oldClassLoader);
-                }
             }
+            throw new DeserializationException("No ObjectMapper instance avaialble!");
         } catch (Exception e) {
-            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+            throw e instanceof DeserializationException ? (DeserializationException) e
+                    : new DeserializationException(e);
+        } finally {
+            if (oldClassLoader != null) {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
         }
     }
 }

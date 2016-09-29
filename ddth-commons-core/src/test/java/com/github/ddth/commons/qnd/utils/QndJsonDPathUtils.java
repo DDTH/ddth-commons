@@ -1,4 +1,4 @@
-package com.github.ddth.commons.test.utils;
+package com.github.ddth.commons.qnd.utils;
 
 import java.util.Collection;
 import java.util.Date;
@@ -31,7 +31,7 @@ public class QndJsonDPathUtils {
         String json = SerializationUtils.toJsonString(obj);
         System.out.println("JSON: " + json);
 
-        Map obj2 = SerializationUtils.fromJsonString(json, Map.class);
+        Map<?, ?> obj2 = SerializationUtils.fromJsonString(json, Map.class);
         System.out.println("Obj2: " + obj2);
         System.out.println("d-class: " + obj2.get("d").getClass());
         System.out.println("d-value: " + DPathUtils.getValue(obj2, "d", Date.class));

@@ -1,6 +1,18 @@
 ddth-commons release notes
 ==========================
 
+0.5.0 - 2016-09-28
+------------------
+
+- Bump to `com.github.ddth:ddth-parent:6`, now requires Java 8+.
+- New interface `com.github.ddth.commons.serialization.ISerializationSupport`.
+- Class `SerializationUtils` has new methods: `toByteArrayJboss()`, `fromByteArrayJboss`.
+- New interface `com.github.ddth.commons.serialization.ISerDeser` and its implementations: `JbossSerDeser`, `JsonSerDeser`, `KryoSerDeser`.
+- New utility class `ReflectionUtils`.
+- Update dependencies.
+- Minor fixes & enhancements.
+
+
 0.4.0 - 2015-10-06
 ------------------
 
