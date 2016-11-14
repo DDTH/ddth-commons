@@ -54,7 +54,7 @@
 
 		<version.libthrift>0.9.3</version.libthrift>
 
-		<version.jackson>2.8.3</version.jackson>
+		<version.jackson>2.8.5</version.jackson>
 		<version.kryo>4.0.0</version.kryo>
 		<version.jboss_serialization>4.2.2.GA</version.jboss_serialization>
 		<version.trove>1.0.2</version.trove>
