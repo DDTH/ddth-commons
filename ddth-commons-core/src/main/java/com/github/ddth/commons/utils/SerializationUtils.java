@@ -2,6 +2,8 @@ package com.github.ddth.commons.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -12,6 +14,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.jboss.serial.io.JBossObjectInputStream;
 import org.jboss.serial.io.JBossObjectOutputStream;
+import org.nustaq.serialization.FSTConfiguration;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -29,10 +32,11 @@ import com.github.ddth.commons.serialization.SerializationException;
  * 
  * <ul>
  * <li>JSON serialization: use {@code com.fasterxml.jackson} library.</li>
- * <li>Binary serialization: 2 choices of API
+ * <li>Binary serialization: 3 choices of API
  * <ul>
- * <li>{@code jboss-serialization} library, or</li>
- * <li>{@code Kryo} library</li>
+ * <li>{@code jboss-serialization} library (deprecated since v0.6.0!), or</li>
+ * <li>{@code Kryo} library or</li>
+ * <li>{@code FST} library</li>
  * </ul>
  * </li>
  * </ul>
@@ -48,7 +52,7 @@ public class SerializationUtils {
      * <p>
      * If the target object implements {@link ISerializationSupport}, this
      * method calls its {@link ISerializationSupport#toBytes()} method;
-     * otherwise Jboss-serialization library is used to serialize the object.
+     * otherwise FST library is used to serialize the object.
      * </p>
      * 
      * @param obj
@@ -64,7 +68,7 @@ public class SerializationUtils {
      * <p>
      * If the target object implements {@link ISerializationSupport}, this
      * method calls its {@link ISerializationSupport#toBytes()} method;
-     * otherwise Jboss-serialization library is used to serialize the object.
+     * otherwise FST library is used to serialize the object.
      * </p>
      * 
      * @param obj
@@ -75,7 +79,7 @@ public class SerializationUtils {
         if (obj instanceof ISerializationSupport) {
             return ((ISerializationSupport) obj).toBytes();
         } else {
-            return toByteArrayJboss(obj, classLoader);
+            return toByteArrayFst(obj, classLoader);
         }
     }
 
@@ -84,8 +88,8 @@ public class SerializationUtils {
      * 
      * <p>
      * If the target class implements {@link ISerializationSupport}, this method
-     * calls its {@link ISerializationSupport#toBytes()} method; otherwise
-     * Jboss-serialization library is used to serialize the object.
+     * calls its {@link ISerializationSupport#toBytes()} method; otherwise FST
+     * library is used to serialize the object.
      * </p>
      * 
      * @param data
@@ -101,8 +105,8 @@ public class SerializationUtils {
      * 
      * <p>
      * If the target class implements {@link ISerializationSupport}, this method
-     * calls its {@link ISerializationSupport#toBytes()} method; otherwise
-     * Jboss-serialization library is used to serialize the object.
+     * calls its {@link ISerializationSupport#toBytes()} method; otherwise FST
+     * library is used to serialize the object.
      * </p>
      * 
      * @param data
@@ -111,16 +115,22 @@ public class SerializationUtils {
      * @return
      */
     public static <T> T fromByteArray(byte[] data, Class<T> clazz, ClassLoader classLoader) {
+        if (data == null) {
+            return null;
+        }
         if (ReflectionUtils.hasInterface(clazz, ISerializationSupport.class)) {
             try {
-                T obj = clazz.newInstance();
+                Constructor<T> constructor = clazz.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                T obj = constructor.newInstance();
                 ((ISerializationSupport) obj).fromBytes(data);
                 return obj;
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+                    | SecurityException | IllegalArgumentException | InvocationTargetException e) {
                 throw new DeserializationException(e);
             }
         }
-        return SerializationUtils.fromByteArrayJboss(data, clazz, classLoader);
+        return SerializationUtils.fromByteArrayFst(data, clazz, classLoader);
     }
 
     /*----------------------------------------------------------------------*/
@@ -176,7 +186,8 @@ public class SerializationUtils {
                 try {
                     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                         try (Output output = new Output(baos)) {
-                            kryo.writeObject(output, obj);
+                            // kryo.writeObject(output, obj);
+                            kryo.writeClassAndObject(output, obj);
                             output.flush();
                             return baos.toByteArray();
                         }
@@ -210,6 +221,10 @@ public class SerializationUtils {
     /**
      * Deserializes a byte array back to an object, with custom class loader.
      * 
+     * <p>
+     * This method uses Kryo lib.
+     * </p>
+     * 
      * @param data
      * @param classLoader
      * @return
@@ -220,6 +235,10 @@ public class SerializationUtils {
 
     /**
      * Deserializes a byte array back to an object.
+     * 
+     * <p>
+     * This method uses Kryo lib.
+     * </p>
      * 
      * @param data
      * @param clazz
@@ -232,6 +251,10 @@ public class SerializationUtils {
     /**
      * Deserializes a byte array back to an object, with custom class loader.
      * 
+     * <p>
+     * This method uses Kryo lib.
+     * </p>
+     * 
      * @param data
      * @param clazz
      * @param classLoader
@@ -243,6 +266,7 @@ public class SerializationUtils {
             return null;
         }
         return kryoPool.run(new KryoCallback<T>() {
+            @SuppressWarnings("unchecked")
             @Override
             public T execute(Kryo kryo) {
                 ClassLoader oldClassLoader = classLoader != null
@@ -252,7 +276,13 @@ public class SerializationUtils {
                 }
                 try {
                     try (Input input = new Input(new ByteArrayInputStream(data))) {
-                        return kryo.readObject(input, clazz);
+                        // return kryo.readObject(input, clazz);
+                        Object result = kryo.readClassAndObject(input);
+                        if (result != null && clazz.isAssignableFrom(result.getClass())) {
+                            return (T) result;
+                        } else {
+                            return null;
+                        }
                     } catch (Exception e) {
                         throw e instanceof DeserializationException ? (DeserializationException) e
                                 : new DeserializationException(e);
@@ -278,6 +308,7 @@ public class SerializationUtils {
      * @param obj
      * @return
      * @since 0.5.0
+     * @deprecated deprecated since 0.6.0
      */
     public static byte[] toByteArrayJboss(Object obj) {
         return toByteArrayJboss(obj, null);
@@ -294,6 +325,7 @@ public class SerializationUtils {
      * @param classLoader
      * @return
      * @since 0.5.0
+     * @deprecated deprecated since 0.6.0
      */
     public static byte[] toByteArrayJboss(Object obj, ClassLoader classLoader) {
         if (obj == null) {
@@ -306,7 +338,7 @@ public class SerializationUtils {
         }
         try {
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                try (JBossObjectOutputStream oos = new JBossObjectOutputStream(baos)) {
+                try (JBossObjectOutputStream oos = new JBossObjectOutputStream(baos, false)) {
                     oos.writeObject(obj);
                     oos.flush();
                     return baos.toByteArray();
@@ -332,6 +364,7 @@ public class SerializationUtils {
      * @param data
      * @return
      * @since 0.5.0
+     * @deprecated deprecated since 0.6.0
      */
     public static Object fromByteArrayJboss(byte[] data) {
         return fromByteArrayJboss(data, Object.class, null);
@@ -348,6 +381,7 @@ public class SerializationUtils {
      * @param classLoader
      * @return
      * @since 0.5.0
+     * @deprecated deprecated since 0.6.0
      */
     public static Object fromByteArrayJboss(byte[] data, ClassLoader classLoader) {
         return fromByteArrayJboss(data, Object.class, classLoader);
@@ -364,6 +398,7 @@ public class SerializationUtils {
      * @param clazz
      * @return
      * @since 0.5.0
+     * @deprecated deprecated since 0.6.0
      */
     public static <T> T fromByteArrayJboss(byte[] data, Class<T> clazz) {
         return fromByteArrayJboss(data, clazz, null);
@@ -381,6 +416,7 @@ public class SerializationUtils {
      * @param classLoader
      * @return
      * @since 0.5.0
+     * @deprecated deprecated since 0.6.0
      */
     @SuppressWarnings("unchecked")
     public static <T> T fromByteArrayJboss(byte[] data, Class<T> clazz, ClassLoader classLoader) {
@@ -529,6 +565,151 @@ public class SerializationUtils {
                 }
             }
             throw new DeserializationException("No ObjectMapper instance avaialble!");
+        } catch (Exception e) {
+            throw e instanceof DeserializationException ? (DeserializationException) e
+                    : new DeserializationException(e);
+        } finally {
+            if (oldClassLoader != null) {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
+        }
+    }
+
+    /*----------------------------------------------------------------------*/
+    private static ThreadLocal<FSTConfiguration> fstConf = new ThreadLocal<FSTConfiguration>() {
+        public FSTConfiguration initialValue() {
+            FSTConfiguration conf = FSTConfiguration.createDefaultConfiguration();
+            conf.setForceSerializable(true);
+            return conf;
+        }
+    };
+
+    /**
+     * Serializes an object to byte array.
+     * 
+     * <p>
+     * This method uses FST lib.
+     * </p>
+     * 
+     * @param obj
+     * @return
+     * @since 0.6.0
+     */
+    public static byte[] toByteArrayFst(Object obj) {
+        return toByteArrayFst(obj, null);
+    }
+
+    /**
+     * Serializes an object to byte array, with a custom class loader.
+     * 
+     * <p>
+     * This method uses FST lib.
+     * </p>
+     * 
+     * @param obj
+     * @param classLoader
+     * @return
+     * @since 0.6.0
+     */
+    public static byte[] toByteArrayFst(final Object obj, final ClassLoader classLoader) {
+        if (obj == null) {
+            return null;
+        }
+        ClassLoader oldClassLoader = classLoader != null
+                ? Thread.currentThread().getContextClassLoader() : null;
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        try {
+            return fstConf.get().asByteArray(obj);
+        } catch (Exception e) {
+            throw e instanceof SerializationException ? (SerializationException) e
+                    : new SerializationException(e);
+        } finally {
+            if (oldClassLoader != null) {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
+        }
+    }
+
+    /**
+     * Deserializes a byte array back to an object.
+     * 
+     * <p>
+     * This method uses FST lib.
+     * </p>
+     * 
+     * @param data
+     * @return
+     * @since 0.6.0
+     */
+    public static Object fromByteArrayFst(byte[] data) {
+        return fromByteArrayFst(data, Object.class, null);
+    }
+
+    /**
+     * Deserializes a byte array back to an object, with custom class loader.
+     * 
+     * <p>
+     * This method uses FST lib.
+     * </p>
+     * 
+     * @param data
+     * @param classLoader
+     * @return
+     * @since 0.6.0
+     */
+    public static Object fromByteArrayFst(byte[] data, ClassLoader classLoader) {
+        return fromByteArrayFst(data, Object.class, classLoader);
+    }
+
+    /**
+     * Deserializes a byte array back to an object.
+     * 
+     * <p>
+     * This method uses FST lib.
+     * </p>
+     * 
+     * @param data
+     * @param clazz
+     * @return
+     * @since 0.6.0
+     */
+    public static <T> T fromByteArrayFst(byte[] data, Class<T> clazz) {
+        return fromByteArrayFst(data, clazz, null);
+    }
+
+    /**
+     * Deserializes a byte array back to an object, with custom class loader.
+     * 
+     * <p>
+     * This method uses FST lib.
+     * </p>
+     * 
+     * @param data
+     * @param clazz
+     * @param classLoader
+     * @return
+     * @since 0.6.0
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T fromByteArrayFst(final byte[] data, final Class<T> clazz,
+            final ClassLoader classLoader) {
+        if (data == null) {
+            return null;
+        }
+        ClassLoader oldClassLoader = classLoader != null
+                ? Thread.currentThread().getContextClassLoader() : null;
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        try {
+            Object result = fstConf.get().asObject(data);
+            if (result != null && clazz.isAssignableFrom(result.getClass())) {
+                return (T) result;
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             throw e instanceof DeserializationException ? (DeserializationException) e
                     : new DeserializationException(e);

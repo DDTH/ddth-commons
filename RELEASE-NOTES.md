@@ -1,6 +1,17 @@
 ddth-commons release notes
 ==========================
 
+0.6.0 - 2016-11-14
+------------------
+
+- Jboss serialization is now deprecated!
+- Kryo serialization: (breaking change!) use `writeClassAndObject` instead of `writeObject`, and `readClassAndObject` instead of `readObject`,
+  so that object is correctly deserialized to its original class.
+- New serialization methods that use [FST lib](https://github.com/RuedigerMoeller/fast-serialization).
+- (breaking change!) The default serialize/deserialize methods now use FST instead of Jboss serialization lib. 
+- Bug fixes and enhancements.
+
+
 0.5.0 - 2016-09-28
 ------------------
 
