@@ -97,34 +97,37 @@ public class DPathUtils {
 
     @SuppressWarnings("unchecked")
     private static <N> N _convertNumber(Object target, Class<N> clazz) {
+        if (clazz == Number.class) {
+            return target instanceof Number ? (N) target : null;
+        }
         if (clazz == Byte.class || clazz == byte.class) {
-            byte value = target instanceof Number ? ((Number) target).byteValue() : Byte
-                    .parseByte(target.toString());
+            byte value = target instanceof Number ? ((Number) target).byteValue()
+                    : Byte.parseByte(target.toString());
             return (N) Byte.valueOf(value);
         }
         if (clazz == Short.class || clazz == short.class) {
-            short value = target instanceof Number ? ((Number) target).shortValue() : Short
-                    .parseShort(target.toString());
+            short value = target instanceof Number ? ((Number) target).shortValue()
+                    : Short.parseShort(target.toString());
             return (N) Short.valueOf(value);
         }
         if (clazz == Integer.class || clazz == int.class) {
-            int value = target instanceof Number ? ((Number) target).intValue() : Integer
-                    .parseInt(target.toString());
+            int value = target instanceof Number ? ((Number) target).intValue()
+                    : Integer.parseInt(target.toString());
             return (N) Integer.valueOf(value);
         }
         if (clazz == Long.class || clazz == long.class) {
-            long value = target instanceof Number ? ((Number) target).longValue() : Long
-                    .parseLong(target.toString());
+            long value = target instanceof Number ? ((Number) target).longValue()
+                    : Long.parseLong(target.toString());
             return (N) Long.valueOf(value);
         }
         if (clazz == Float.class || clazz == float.class) {
-            float value = target instanceof Number ? ((Number) target).floatValue() : Float
-                    .parseFloat(target.toString());
+            float value = target instanceof Number ? ((Number) target).floatValue()
+                    : Float.parseFloat(target.toString());
             return (N) Float.valueOf(value);
         }
         if (clazz == Double.class || clazz == double.class) {
-            double value = target instanceof Number ? ((Number) target).doubleValue() : Double
-                    .parseDouble(target.toString());
+            double value = target instanceof Number ? ((Number) target).doubleValue()
+                    : Double.parseDouble(target.toString());
             return (N) Double.valueOf(value);
         }
         if (clazz == BigInteger.class) {

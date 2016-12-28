@@ -1,6 +1,12 @@
 ddth-commons release notes
 ==========================
 
+0.6.0.2 - yyyy-MM-dd
+--------------------
+
+- `DPathUtils`: [Bug Fix] handling class `Number`.
+
+
 0.6.0.1 - 2016-11-14
 --------------------
 
