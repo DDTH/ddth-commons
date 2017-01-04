@@ -77,7 +77,15 @@ public class SerializationUtils {
      */
     public static byte[] toByteArray(Object obj, ClassLoader classLoader) {
         if (obj instanceof ISerializationSupport) {
-            return ((ISerializationSupport) obj).toBytes();
+            ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader != null) {
+                Thread.currentThread().setContextClassLoader(classLoader);
+            }
+            try {
+                return ((ISerializationSupport) obj).toBytes();
+            } finally {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
         } else {
             return toByteArrayFst(obj, classLoader);
         }
@@ -119,6 +127,10 @@ public class SerializationUtils {
             return null;
         }
         if (ReflectionUtils.hasInterface(clazz, ISerializationSupport.class)) {
+            ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader != null) {
+                Thread.currentThread().setContextClassLoader(classLoader);
+            }
             try {
                 Constructor<T> constructor = clazz.getDeclaredConstructor();
                 constructor.setAccessible(true);
@@ -128,6 +140,8 @@ public class SerializationUtils {
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
                     | SecurityException | IllegalArgumentException | InvocationTargetException e) {
                 throw new DeserializationException(e);
+            } finally {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
             }
         }
         return SerializationUtils.fromByteArrayFst(data, clazz, classLoader);
@@ -178,14 +192,14 @@ public class SerializationUtils {
         return kryoPool.run(new KryoCallback<byte[]>() {
             @Override
             public byte[] execute(Kryo kryo) {
-                ClassLoader oldClassLoader = classLoader != null
-                        ? Thread.currentThread().getContextClassLoader() : null;
+                ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
                 if (classLoader != null) {
                     Thread.currentThread().setContextClassLoader(classLoader);
                 }
                 try {
                     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                         try (Output output = new Output(baos)) {
+                            kryo.setClassLoader(classLoader != null ? classLoader : oldClassLoader);
                             // kryo.writeObject(output, obj);
                             kryo.writeClassAndObject(output, obj);
                             output.flush();
@@ -196,9 +210,7 @@ public class SerializationUtils {
                                 : new SerializationException(e);
                     }
                 } finally {
-                    if (oldClassLoader != null) {
-                        Thread.currentThread().setContextClassLoader(oldClassLoader);
-                    }
+                    Thread.currentThread().setContextClassLoader(oldClassLoader);
                 }
             }
         });
@@ -269,13 +281,13 @@ public class SerializationUtils {
             @SuppressWarnings("unchecked")
             @Override
             public T execute(Kryo kryo) {
-                ClassLoader oldClassLoader = classLoader != null
-                        ? Thread.currentThread().getContextClassLoader() : null;
+                ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
                 if (classLoader != null) {
                     Thread.currentThread().setContextClassLoader(classLoader);
                 }
                 try {
                     try (Input input = new Input(new ByteArrayInputStream(data))) {
+                        kryo.setClassLoader(classLoader != null ? classLoader : oldClassLoader);
                         // return kryo.readObject(input, clazz);
                         Object result = kryo.readClassAndObject(input);
                         if (result != null && clazz.isAssignableFrom(result.getClass())) {
@@ -288,9 +300,7 @@ public class SerializationUtils {
                                 : new DeserializationException(e);
                     }
                 } finally {
-                    if (oldClassLoader != null) {
-                        Thread.currentThread().setContextClassLoader(oldClassLoader);
-                    }
+                    Thread.currentThread().setContextClassLoader(oldClassLoader);
                 }
             }
         });
@@ -482,8 +492,7 @@ public class SerializationUtils {
         if (obj == null) {
             return "null";
         }
-        ClassLoader oldClassLoader = classLoader != null
-                ? Thread.currentThread().getContextClassLoader() : null;
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader != null) {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
@@ -501,9 +510,7 @@ public class SerializationUtils {
             throw e instanceof SerializationException ? (SerializationException) e
                     : new SerializationException(e);
         } finally {
-            if (oldClassLoader != null) {
-                Thread.currentThread().setContextClassLoader(oldClassLoader);
-            }
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     }
 
@@ -550,8 +557,7 @@ public class SerializationUtils {
         if (jsonString == null) {
             return null;
         }
-        ClassLoader oldClassLoader = classLoader != null
-                ? Thread.currentThread().getContextClassLoader() : null;
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader != null) {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
@@ -569,9 +575,7 @@ public class SerializationUtils {
             throw e instanceof DeserializationException ? (DeserializationException) e
                     : new DeserializationException(e);
         } finally {
-            if (oldClassLoader != null) {
-                Thread.currentThread().setContextClassLoader(oldClassLoader);
-            }
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     }
 
@@ -615,20 +619,19 @@ public class SerializationUtils {
         if (obj == null) {
             return null;
         }
-        ClassLoader oldClassLoader = classLoader != null
-                ? Thread.currentThread().getContextClassLoader() : null;
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader != null) {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
         try {
-            return fstConf.get().asByteArray(obj);
+            FSTConfiguration conf = fstConf.get();
+            conf.setClassLoader(classLoader != null ? classLoader : oldClassLoader);
+            return conf.asByteArray(obj);
         } catch (Exception e) {
             throw e instanceof SerializationException ? (SerializationException) e
                     : new SerializationException(e);
         } finally {
-            if (oldClassLoader != null) {
-                Thread.currentThread().setContextClassLoader(oldClassLoader);
-            }
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     }
 
@@ -698,13 +701,14 @@ public class SerializationUtils {
         if (data == null) {
             return null;
         }
-        ClassLoader oldClassLoader = classLoader != null
-                ? Thread.currentThread().getContextClassLoader() : null;
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader != null) {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
         try {
-            Object result = fstConf.get().asObject(data);
+            FSTConfiguration conf = fstConf.get();
+            conf.setClassLoader(classLoader != null ? classLoader : oldClassLoader);
+            Object result = conf.asObject(data);
             if (result != null && clazz.isAssignableFrom(result.getClass())) {
                 return (T) result;
             } else {
@@ -714,9 +718,7 @@ public class SerializationUtils {
             throw e instanceof DeserializationException ? (DeserializationException) e
                     : new DeserializationException(e);
         } finally {
-            if (oldClassLoader != null) {
-                Thread.currentThread().setContextClassLoader(oldClassLoader);
-            }
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     }
 }

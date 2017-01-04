@@ -1,10 +1,11 @@
 ddth-commons release notes
 ==========================
 
-0.6.0.2 - yyyy-MM-dd
+0.6.0.2 - 2017-01-04
 --------------------
 
 - `DPathUtils`: [Bug Fix] handling class `Number`.
+- `SerializationUtils`: [Bug Fix] pass along the ClassLoader when serializing/deserializing.
 
 
 0.6.0.1 - 2016-11-14
