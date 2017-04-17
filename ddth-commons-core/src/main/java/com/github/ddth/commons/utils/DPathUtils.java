@@ -1,19 +1,14 @@
 package com.github.ddth.commons.utils;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Utility to access data from a hierarchy structure.
@@ -93,118 +88,84 @@ import java.util.regex.Pattern;
  */
 public class DPathUtils {
 
-    private final static Pattern PATTERN_INDEX = Pattern.compile("^\\[(\\-?\\d+)\\]$");
+    private final static Pattern PATTERN_INDEX = Pattern.compile("^\\[(.*?)\\]$");
+    public final static char PATH_SEPARATOR = '.';
 
-    @SuppressWarnings("unchecked")
-    private static <N> N _convertNumber(Object target, Class<N> clazz) {
-        if (clazz == Number.class) {
-            return target instanceof Number ? (N) target : null;
-        }
-        if (clazz == Byte.class || clazz == byte.class) {
-            byte value = target instanceof Number ? ((Number) target).byteValue()
-                    : Byte.parseByte(target.toString());
-            return (N) Byte.valueOf(value);
-        }
-        if (clazz == Short.class || clazz == short.class) {
-            short value = target instanceof Number ? ((Number) target).shortValue()
-                    : Short.parseShort(target.toString());
-            return (N) Short.valueOf(value);
-        }
-        if (clazz == Integer.class || clazz == int.class) {
-            int value = target instanceof Number ? ((Number) target).intValue()
-                    : Integer.parseInt(target.toString());
-            return (N) Integer.valueOf(value);
-        }
-        if (clazz == Long.class || clazz == long.class) {
-            long value = target instanceof Number ? ((Number) target).longValue()
-                    : Long.parseLong(target.toString());
-            return (N) Long.valueOf(value);
-        }
-        if (clazz == Float.class || clazz == float.class) {
-            float value = target instanceof Number ? ((Number) target).floatValue()
-                    : Float.parseFloat(target.toString());
-            return (N) Float.valueOf(value);
-        }
-        if (clazz == Double.class || clazz == double.class) {
-            double value = target instanceof Number ? ((Number) target).doubleValue()
-                    : Double.parseDouble(target.toString());
-            return (N) Double.valueOf(value);
-        }
-        if (clazz == BigInteger.class) {
-            if (target instanceof BigInteger) {
-                return (N) target;
-            }
-            if (target instanceof Number) {
-                return (N) BigInteger.valueOf(((Number) target).longValue());
-            }
-            return (N) BigInteger.valueOf(Long.parseLong(target.toString()));
-        }
-        if (clazz == BigDecimal.class) {
-            if (target instanceof BigDecimal) {
-                return (N) target;
-            }
-            if (target instanceof Number) {
-                return (N) BigDecimal.valueOf(((Number) target).doubleValue());
-            }
-            return (N) BigDecimal.valueOf(Double.parseDouble(target.toString()));
-        }
-        return null;
-    }
+    private final static Pattern PATTERN_END_INDEX = Pattern.compile("^(.*)(\\[.*?\\])$");
 
-    private static Boolean _convertBoolean(Object target) {
-        if (target instanceof Boolean) {
-            return (Boolean) target;
-        }
-        return Boolean.parseBoolean(target.toString());
-    }
-
-    /*
-     * @since 0.2.2.1
+    /**
+     * Splits {@code DPath} string to tokens.
+     * 
+     * <ul>
+     * <li>{@code "a.b.c.[i].d"} or {@code "a.b.c[i].d"} will be split into
+     * {@code ["a","b","c","[i]","d"]}</li>
+     * <li>{@code "a.b.c.[i].[j].d"} or {@code "a.b.c[i].[j].d"} or
+     * {@code "a.b.c[i][j].d"} or {@code "a.b.c.[i][j].d"} will be split into
+     * {@code ["a","b","c","[i]","[j]","d"]}</li>
+     * </ul>
+     * 
+     * @param dpath
+     * @return
+     * @since 0.6.1
      */
-    private static Character _convertChar(Object target) {
-        if (target instanceof Character) {
-            return (Character) target;
-        }
-        if (target instanceof String) {
-            String temp = (String) target;
-            return temp.length() > 0 ? temp.charAt(0) : null;
-        }
-        if (target instanceof Number) {
-            return (char) ((Number) target).shortValue();
-        }
-        return null;
+    @SuppressWarnings("serial")
+    public final static String[] splitDpath(String dpath) {
+        String[] tokens = StringUtils.split(dpath, PATH_SEPARATOR);
+        List<String> tokenList = new ArrayList<String>() {
+            {
+                for (String token : tokens) {
+                    List<String> temp = new ArrayList<String>() {
+                        {
+                            String _token = token;
+                            Matcher m = PATTERN_END_INDEX.matcher(_token);
+                            while (m.matches()) {
+                                _token = m.group(1);
+                                add(0, m.group(2));
+                                m = PATTERN_END_INDEX.matcher(_token);
+                            }
+                            if (!StringUtils.isBlank(_token)) {
+                                add(0, _token);
+                            }
+                        }
+                    };
+                    addAll(temp);
+                }
+            }
+        };
+        return tokenList.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
     }
 
-    /*
-     * @since 0.2.2.2
-     */
-    private static Date _convertDate(Object target) {
-        if (target instanceof Date) {
-            return (Date) target;
-        }
-        if (target instanceof Number) {
-            return new Date(((Number) target).longValue());
-        }
-        DateFormat df = new SimpleDateFormat();
-        try {
-            return df.parse(target.toString());
-        } catch (ParseException e) {
+    private static Object extractValue(Object target, String index) {
+        if (target == null) {
             return null;
         }
+        Matcher m = PATTERN_INDEX.matcher(index);
+        if (m.matches()) {
+            try {
+                int i = Integer.parseInt(m.group(1));
+                if (target instanceof Object[]) {
+                    return ((Object[]) target)[i];
+                }
+                if (target instanceof List<?>) {
+                    return ((List<?>) target).get(i);
+                }
+                throw new IllegalArgumentException("Expect an array or list for index [" + index
+                        + "] but received [" + target.getClass() + "] instead.");
+            } catch (IndexOutOfBoundsException e) {
+                // rethrow for now
+                throw e;
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid index value: " + index, e);
+            }
+        }
+        if (target instanceof Map<?, ?>) {
+            return ((Map<?, ?>) target).get(index);
+        }
+        throw new IllegalArgumentException(
+                "Unsupported type [" + target.getClass() + "] or invalid index [" + index + "]");
     }
 
-    /*
-     * @since 0.3.0.6
-     */
-    private static List<?> _convertArrayOrList(Object target) {
-        if (target instanceof Object[]) {
-            return Arrays.asList((Object[]) target);
-        }
-        if (target instanceof Collection) {
-            return new ArrayList<Object>((Collection<?>) target);
-        }
-        return null;
-    }
+    /*----------------------------------------------------------------------*/
 
     /**
      * Extracts a value from the target object using DPath expression (generic
@@ -215,39 +176,12 @@ public class DPathUtils {
      * @param clazz
      * @return
      */
-    @SuppressWarnings("unchecked")
-    public static <T> T getValue(final Object target, final String dPath, final Class<T> clazz) {
+    public static <T> T getValue(Object target, String dPath, Class<T> clazz) {
         if (clazz == null) {
             throw new NullPointerException("Class parameter is null!");
         }
         Object temp = getValue(target, dPath);
-        if (temp == null) {
-            return null;
-        }
-        if (Number.class.isAssignableFrom(clazz) || byte.class == clazz || short.class == clazz
-                || int.class == clazz || long.class == clazz || float.class == clazz
-                || double.class == clazz) {
-            return _convertNumber(temp, clazz);
-        }
-        if (clazz == Boolean.class || clazz == boolean.class) {
-            return (T) _convertBoolean(temp);
-        }
-        if (clazz == Character.class || clazz == char.class) {
-            return (T) _convertChar(temp);
-        }
-        if (Date.class.isAssignableFrom(clazz)) {
-            return (T) _convertDate(temp);
-        }
-        if (Object[].class.isAssignableFrom(clazz) || List.class.isAssignableFrom(clazz)) {
-            return (T) _convertArrayOrList(temp);
-        }
-        if (clazz.isAssignableFrom(temp.getClass())) {
-            return (T) temp;
-        }
-        if (clazz == String.class) {
-            return (T) temp.toString();
-        }
-        return null;
+        return ValueUtils.convertValue(temp, clazz);
     }
 
     /**
@@ -256,8 +190,8 @@ public class DPathUtils {
      * @param target
      * @param dPath
      */
-    public static Object getValue(final Object target, final String dPath) {
-        String[] paths = dPath.split("\\.");
+    public static Object getValue(Object target, String dPath) {
+        String[] paths = splitDpath(dPath);
         Object result = target;
         for (String path : paths) {
             result = extractValue(result, path);
@@ -265,78 +199,316 @@ public class DPathUtils {
         return result;
     }
 
-    /**
-     * Sets a value to the target object using DPath expression.
-     * 
-     * @param target
-     * @param dPath
-     * @param value
-     */
-    @SuppressWarnings("unchecked")
-    public static void setValue(final Object target, final String dPath, final Object value) {
-        String[] paths = dPath.split("\\.");
-        Object cursor = target;
-        // "seek"to the correct position
-        for (int i = 0; i < paths.length - 1; i++) {
-            cursor = extractValue(cursor, paths[i]);
-        }
-        String index = paths[paths.length - 1];
-        Matcher m = PATTERN_INDEX.matcher(index);
-        if (m.matches() || "[]".equals(index)) {
-            int i = "[]".equals(index) ? Integer.MAX_VALUE : Integer.parseInt(m.group(1));
-            if (cursor instanceof List<?>) {
-                List<Object> temp = (List<Object>) cursor;
-                if (i < 0) {
-                    throw new IllegalArgumentException("Invalid index [" + i + "]!");
-                }
-                if (i >= temp.size()) {
-                    temp.add(value);
-                } else {
-                    temp.remove(i);
-                    temp.add(i, value);
-                }
-            } else {
-                throw new IllegalArgumentException("Target object is not a list or readonly!");
-            }
-        } else if (cursor instanceof Map<?, ?>) {
-            ((Map<Object, Object>) cursor).put(index, value);
-        } else {
-            throw new IllegalArgumentException("Target object is not writable!");
-        }
+    /*----------------------------------------------------------------------*/
+
+    private static Object createIntermediate(Object target, StringBuffer pathSofar, String index,
+            String nextIndex) {
+        Object value = PATTERN_INDEX.matcher(nextIndex).matches() ? new ArrayList<Object>()
+                : new HashMap<String, Object>();
+        return createIntermediate(target, pathSofar, index, value);
     }
 
-    private static Object extractValue(Object target, String index) {
+    @SuppressWarnings("unchecked")
+    private static Object createIntermediate(Object target, StringBuffer pathSofar, String index,
+            Object value) {
         if (target == null) {
             return null;
         }
         Matcher m = PATTERN_INDEX.matcher(index);
         if (m.matches()) {
-            int i = Integer.parseInt(m.group(1));
             try {
-                if (target instanceof Object[]) {
-                    return ((Object[]) target)[i];
-                }
+                int i = Integer.parseInt(m.group(1));
                 if (target instanceof List<?>) {
-                    return ((List<?>) target).get(i);
+                    List<Object> temp = (List<Object>) target;
+                    if (i >= 0 && i < temp.size()) {
+                        // the middle item is null (in some cases)
+                        temp.set(i, value);
+                    } else if (i == temp.size()) {
+                        // special case: add the last item
+                        temp.add(value);
+                    } else {
+                        throw new IllegalArgumentException("Error: Index out of bound. Path ["
+                                + pathSofar + "], target [" + target.getClass() + "].");
+                    }
+                    return value;
+                } else if (target instanceof Object[]) {
+                    Object[] temp = (Object[]) target;
+                    if (i >= 0 && i < temp.length) {
+                        // the middle item is null (in some cases)
+                        temp[i] = value;
+                    } else {
+                        throw new IllegalArgumentException("Error: Index out of bound. Path ["
+                                + pathSofar + "], target [" + target.getClass() + "].");
+                    }
+                    return value;
+                } else {
+                    throw new IllegalArgumentException("Expect an array or list for path ["
+                            + pathSofar + "] but received [" + target.getClass() + "] instead.");
                 }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                return null;
             } catch (IndexOutOfBoundsException e) {
-                return null;
+                // rethrow for now
+                throw e;
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error: Invalid index. Path [" + pathSofar
+                        + "], target [" + target.getClass() + "].", e);
             }
-            throw new IllegalArgumentException("Expect an array or list!");
+        } else if (target instanceof Map<?, ?>) {
+            Map<Object, Object> temp = (Map<Object, Object>) target;
+            temp.put(index, value);
+            return value;
+        } else {
+            throw new IllegalArgumentException("Target object of type [" + target.getClass()
+                    + "] is not writable with path [" + pathSofar + "]!");
         }
-        if (target instanceof Map<?, ?>) {
-            return ((Map<?, ?>) target).get(index);
-        }
-        throw new IllegalArgumentException();
     }
 
-    public static void main(String[] args) {
-        Map<String, Object> obj = new HashMap<String, Object>();
-        obj.put("key", 'c');
+    /**
+     * Sets a value to the target object specified by DPath expression.
+     * 
+     * <p>
+     * Note: intermediated nodes will NOT be created.
+     * </p>
+     * 
+     * <p>
+     * Note: if {@code value} is {@code null}:
+     * <ul>
+     * <li>If the specified item's parent is a list or array, the item
+     * (specified by {@code dPath}) will be set to {@code null}.</li>
+     * <li>If the specified item's parent is a map, the item (specified by
+     * {@code dPath}) will be removed.</li>
+     * </ul>
+     * </p>
+     * 
+     * @param target
+     * @param dPath
+     * @param value
+     */
+    public static void setValue(Object target, String dPath, Object value) {
+        setValue(target, dPath, value, false);
+    }
 
-        char value = DPathUtils.getValue(obj, "key", char.class);
-        System.out.println(value);
+    /**
+     * Sets a value to the target object specified by DPath expression.
+     * 
+     * <p>
+     * Note: intermediated nodes will be created if
+     * {@code createIntermediatePath} is true.
+     * </p>
+     * 
+     * <p>
+     * Note: if {@code value} is {@code null}:
+     * <ul>
+     * <li>If the specified item's parent is a list or array, the item
+     * (specified by {@code dPath}) will be set to {@code null}.</li>
+     * <li>If the specified item's parent is a map, the item (specified by
+     * {@code dPath}) will be removed.</li>
+     * </ul>
+     * </p>
+     * 
+     * @param target
+     * @param dPath
+     * @param value
+     * @param createIntermediatePath
+     * @since 0.6.1
+     */
+    @SuppressWarnings("unchecked")
+    public static void setValue(Object target, String dPath, Object value,
+            boolean createIntermediatePath) {
+        String[] paths = splitDpath(dPath);
+        Object cursor = target, prevCursor = target;
+        StringBuffer pathSofar = new StringBuffer();
+        // "seek"to the correct position
+        for (int i = 0; i < paths.length - 1; i++) {
+            if (i > 0) {
+                pathSofar.append(PATH_SEPARATOR);
+            }
+            String index = paths[i], nextIndex = paths[i + 1];
+            pathSofar.append(index);
+            try {
+                cursor = extractValue(cursor, index);
+            } catch (IndexOutOfBoundsException e) {
+                cursor = null;
+            }
+            if (cursor == null && createIntermediatePath) {
+                // creating intermediate value
+                cursor = createIntermediate(prevCursor, pathSofar, index, nextIndex);
+            }
+            prevCursor = cursor;
+        }
+        if (cursor == null) {
+            throw new IllegalArgumentException("Path not found [" + dPath + "]!");
+        }
+
+        String index = paths[paths.length - 1];
+        Matcher m = PATTERN_INDEX.matcher(index);
+        if (m.matches() || "[]".equals(index)) {
+            try {
+                int i = "[]".equals(index) ? Integer.MAX_VALUE : Integer.parseInt(m.group(1));
+                if (cursor instanceof List<?>) {
+                    List<Object> temp = (List<Object>) cursor;
+                    if (i >= temp.size()) {
+                        temp.add(value);
+                    } else if (i >= 0) {
+                        temp.set(i, value);
+                    } else {
+                        throw new IllegalArgumentException("Error: Index out of bound. Path ["
+                                + dPath + "], target [" + cursor.getClass() + "].");
+                    }
+                } else if (cursor instanceof Object[]) {
+                    Object[] temp = (Object[]) cursor;
+                    if (i >= 0 && i < temp.length) {
+                        temp[i] = value;
+                    } else {
+                        throw new IllegalArgumentException("Error: Index out of bound. Path ["
+                                + dPath + "], target [" + cursor.getClass() + "].");
+                    }
+                } else {
+                    throw new IllegalArgumentException(
+                            "Target object [" + cursor.getClass() + "] is not a list or array!");
+                }
+            } catch (IndexOutOfBoundsException e) {
+                // rethrow for now
+                throw e;
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error: Invalid index. Path [" + dPath
+                        + "], target [" + cursor.getClass() + "].", e);
+            }
+        } else if (cursor instanceof Map<?, ?>) {
+            Map<Object, Object> temp = (Map<Object, Object>) cursor;
+            if (value == null) {
+                temp.remove(index);
+            } else {
+                temp.put(index, value);
+            }
+        } else {
+            throw new IllegalArgumentException("Target object of type [" + cursor.getClass()
+                    + "] is not writable with path [" + dPath + "]!");
+        }
+    }
+
+    /**
+     * Deletes a value from the target object specified by DPath expression.
+     * 
+     * <ul>
+     * <li>If the specified item's parent is a list or map, the item (specified
+     * by {@code dPath}) will be removed.</li>
+     * <li>If the specified item's parent is an array, the item (specified by
+     * {@code dPath}) will be set to {@code null}.</li>
+     * </ul>
+     * 
+     * @param target
+     * @param dPath
+     * @since 0.6.1
+     */
+    @SuppressWarnings("unchecked")
+    public static void deleteValue(Object target, String dPath) {
+        String[] paths = splitDpath(dPath);
+        Object cursor = target;
+        // "seek"to the correct position
+        for (int i = 0; i < paths.length - 1; i++) {
+            cursor = extractValue(cursor, paths[i]);
+        }
+        if (cursor == null) {
+            return;
+        }
+
+        String index = paths[paths.length - 1];
+        Matcher m = PATTERN_INDEX.matcher(index);
+        if (m.matches()) {
+            try {
+                int i = Integer.parseInt(m.group(1));
+                if (cursor instanceof List<?>) {
+                    List<Object> temp = (List<Object>) cursor;
+                    if (i >= 0 && i < temp.size()) {
+                        temp.remove(i);
+                    } else {
+                        throw new IllegalArgumentException("Error: Index out of bound. Path ["
+                                + dPath + "], target [" + cursor.getClass() + "].");
+                    }
+                } else {
+                    throw new IllegalArgumentException(
+                            "Target object [" + cursor.getClass() + "] is not a list!");
+                }
+            } catch (IndexOutOfBoundsException e) {
+                // rethrow for now
+                throw e;
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error: Invalid index. Path [" + dPath
+                        + "], target [" + cursor.getClass() + "].", e);
+            }
+        } else if (cursor instanceof Map<?, ?>) {
+            Map<Object, Object> temp = (Map<Object, Object>) cursor;
+            temp.remove(index);
+        } else {
+            throw new IllegalArgumentException("Target object of type [" + cursor.getClass()
+                    + "] is not writable with path [" + dPath + "]!");
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) {
+        Object sample1 = new int[0];
+        Object sample2 = new Integer[0];
+        Object sample3 = new Object[0];
+        System.out.println("int[] data     : " + sample1);
+        System.out.println("int[] class    : " + sample1.getClass());
+
+        System.out.println("Integer[] data : " + sample2);
+        System.out.println("Integer[] class: " + sample2.getClass());
+
+        System.out.println("Object[] data  : " + sample3);
+        System.out.println("Object[] class : " + sample3.getClass());
+
+        System.out.println();
+
+        System.out.println("int[] is Object[]    : " + (sample1 instanceof Object[]));
+        System.out.println("Integer[] is Object[]: " + (sample2 instanceof Object[]));
+        System.out.println("Object[] is Object[] : " + (sample3 instanceof Object[]));
+
+        System.out.println();
+
+        // init data
+        Map<String, Object> company = new HashMap<String, Object>();
+        {
+            company.put("name", "Monster Corp.");
+            company.put("year", 2003);
+
+            List<Map<String, Object>> employees = new ArrayList<Map<String, Object>>();
+            company.put("employees", employees);
+
+            Map<String, Object> employee1 = new HashMap<String, Object>();
+            employee1.put("first_name", "Mike");
+            employee1.put("last_name", "Wazowski");
+            employee1.put("email", "mike.wazowski@monster.com");
+            employee1.put("age", 29);
+            employees.add(employee1);
+
+            Map<String, Object> employee2 = new HashMap<String, Object>();
+            employee2.put("first_name", "Sulley");
+            employee2.put("last_name", "Sullivan");
+            employee2.put("email", "sulley.sullivan@monster.com");
+            employee2.put("age", 30);
+            employees.add(employee2);
+        }
+
+        // access company's attributes:
+        String companyName = DPathUtils.getValue(company, "name", String.class);
+        System.out.println(companyName);
+        Integer companyYear = DPathUtils.getValue(company, "year", Integer.class);
+        System.out.println(companyYear);
+
+        // access the two employee:
+        Object user1 = DPathUtils.getValue(company, "employees.[0]");
+        System.out.println(user1);
+        Map<String, Object> user2 = DPathUtils.getValue(company, "employees.[1]", Map.class);
+        System.out.println(user2);
+
+        // access employee's attributes:
+        String firstName1 = DPathUtils.getValue(company, "employees.[0].first_name", String.class);
+        System.out.println(firstName1);
+        Object email2 = DPathUtils.getValue(company, "employees.[1].email");
+        System.out.println(email2);
+        Long age2 = DPathUtils.getValue(company, "employees.[1].age", Long.class);
+        System.out.println(age2);
     }
 }

@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.junit.After;
 import org.junit.Before;
 
 import com.github.ddth.commons.utils.DPathUtils;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class DPathUtilsTest extends TestCase {
 
@@ -69,33 +69,182 @@ public class DPathUtilsTest extends TestCase {
     }
 
     @org.junit.Test
-    public void test1() {
+    public void testSplitDpath() {
+        {
+            String dpath = "a.b.c.d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(4, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("d", paths[3]);
+        }
+
+        {
+            String dpath = "a.b.c.[i].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(5, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("d", paths[4]);
+        }
+
+        {
+            String dpath = "a.b.c.d[i]";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(5, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("d", paths[3]);
+            assertEquals("[i]", paths[4]);
+        }
+
+        {
+            String dpath = "a.b.c[i].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(5, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("d", paths[4]);
+        }
+
+        {
+            String dpath = "a.b.c.[i]d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(4, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]d", paths[3]);
+        }
+
+        {
+            String dpath = "a.b.c.[i].[j].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(6, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("[j]", paths[4]);
+            assertEquals("d", paths[5]);
+        }
+
+        {
+            String dpath = "a.b.c.[i][j].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(6, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("[j]", paths[4]);
+            assertEquals("d", paths[5]);
+        }
+
+        {
+            String dpath = "a.b.c[i].[j].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(6, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("[j]", paths[4]);
+            assertEquals("d", paths[5]);
+        }
+
+        {
+            String dpath = "a.b.c[i][j].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(6, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("[j]", paths[4]);
+            assertEquals("d", paths[5]);
+        }
+    }
+
+    @org.junit.Test
+    public void testGetValue() {
         String companyName = DPathUtils.getValue(COMPANY, "name", String.class);
         assertEquals(COMPANY_NAME, companyName);
 
         Integer companyYear = DPathUtils.getValue(COMPANY, "year", Integer.class);
         assertEquals(COMPANY_YEAR, companyYear.intValue());
+
+        Number employee1Age = DPathUtils.getValue(COMPANY, "employees.[0].age", Number.class);
+        assertEquals(EMPLOYEE1_AGE, employee1Age.intValue());
+
+        Object employee2Email = DPathUtils.getValue(COMPANY, "employees[1].email");
+        assertEquals(EMPLOYEE2_EMAIL, employee2Email.toString());
+
+        Throwable t = null;
+        try {
+            Object user3 = DPathUtils.getValue(COMPANY, "employees[-1]", Map.class);
+        } catch (IllegalArgumentException e) {
+            t = e.getCause();
+        } catch (IndexOutOfBoundsException e) {
+            t = e;
+        }
+        assertNotNull(t);
     }
 
-    @SuppressWarnings("unchecked")
     @org.junit.Test
-    public void test2() {
-        Object user1 = DPathUtils.getValue(COMPANY, "employees.[0]");
-        assertNotNull(user1);
+    public void testSetValue() {
+        Object notExists = DPathUtils.getValue(COMPANY, "employees.[0].not_found");
+        assertNull(notExists);
 
-        Map<String, Object> user2 = DPathUtils.getValue(COMPANY, "employees.[1]", Map.class);
-        assertNotNull(user2);
+        DPathUtils.setValue(COMPANY, "employees[0].not_found", "not_found");
+        Object exists = DPathUtils.getValue(COMPANY, "employees[0].not_found");
+        assertEquals("not_found", exists.toString());
+    }
 
-        Object user3 = DPathUtils.getValue(COMPANY, "employees.[-1]", Map.class);
-        assertNull(user3);
+    @org.junit.Test
+    public void testSetValue2() {
+        DPathUtils.setValue(COMPANY, "employees[0]", null);
+        Object nullNow = DPathUtils.getValue(COMPANY, "employees[0]");
+        assertNull(nullNow);
+    }
 
-        String firstName1 = DPathUtils.getValue(COMPANY, "employees.[0].first_name", String.class);
-        assertEquals(EMPLOYEE1_FIRST_NAME, firstName1);
+    @org.junit.Test
+    public void testSetValue3() {
+        Throwable t = null;
+        try {
+            Object email = DPathUtils.getValue(COMPANY, "employees[2].email");
+        } catch (IllegalArgumentException e) {
+            t = e.getCause();
+        } catch (IndexOutOfBoundsException e) {
+            t = e;
+        }
+        assertNotNull(t);
 
-        Long age2 = DPathUtils.getValue(COMPANY, "employees.[1].age", Long.class);
-        assertEquals(EMPLOYEE2_AGE, age2.intValue());
+        DPathUtils.setValue(COMPANY, "employees[2].email", "email3@monster.com", true);
 
-        Object email3 = DPathUtils.getValue(COMPANY, "employees.[2].email");
-        assertNull(email3);
+        String employee3Email = DPathUtils.getValue(COMPANY, "employees[2].email", String.class);
+        assertEquals("email3@monster.com", employee3Email);
+    }
+
+    @org.junit.Test
+    public void testDeleteValue() {
+        DPathUtils.deleteValue(COMPANY, "employees[0]");
+        List<?> employees = DPathUtils.getValue(COMPANY, "employees", List.class);
+        assertEquals(1, employees.size());
+    }
+
+    @org.junit.Test
+    public void testDeleteValue2() {
+        String employee1Email = DPathUtils.getValue(COMPANY, "employees.[0].email", String.class);
+        assertNotNull(employee1Email);
+
+        DPathUtils.deleteValue(COMPANY, "employees[0].email");
+        assertNull(DPathUtils.getValue(COMPANY, "employees.[0].email"));
     }
 }

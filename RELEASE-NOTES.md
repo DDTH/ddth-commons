@@ -1,6 +1,16 @@
 ddth-commons release notes
 ==========================
 
+0.6.1 - 2017-04-17
+------------------
+
+- New classes `ValueUtils` and `MapUtils`.
+- `DPathUtils`: enhancements & new methods:
+  - `splitDpath(String)`
+  - `setValue(Object, String, Object, boolean)`
+  - `deleteValue(Object, String)`
+
+
 0.6.0.2 - 2017-01-04
 --------------------
 
