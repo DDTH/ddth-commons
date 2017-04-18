@@ -314,6 +314,9 @@ public class DPathUtils {
     @SuppressWarnings("unchecked")
     public static void setValue(Object target, String dPath, Object value,
             boolean createIntermediatePath) {
+        if (target == null) {
+            throw new IllegalArgumentException("Target is null!");
+        }
         String[] paths = splitDpath(dPath);
         Object cursor = target, prevCursor = target;
         StringBuffer pathSofar = new StringBuffer();

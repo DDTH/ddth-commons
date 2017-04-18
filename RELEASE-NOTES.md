@@ -1,6 +1,12 @@
 ddth-commons release notes
 ==========================
 
+0.6.1.1 - 2017-04-18
+--------------------
+
+- `DPathUtils.setValue(Object, String, Object, boolean)`: minor improvement.
+
+
 0.6.1 - 2017-04-17
 ------------------
 
