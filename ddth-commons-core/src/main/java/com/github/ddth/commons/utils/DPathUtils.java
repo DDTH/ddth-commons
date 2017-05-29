@@ -1,6 +1,8 @@
 package com.github.ddth.commons.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.node.MissingNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Utility to access data from a hierarchy structure.
@@ -94,7 +103,7 @@ public class DPathUtils {
     private final static Pattern PATTERN_END_INDEX = Pattern.compile("^(.*)(\\[.*?\\])$");
 
     /**
-     * Splits {@code DPath} string to tokens.
+     * Split {@code DPath} string to tokens.
      * 
      * <ul>
      * <li>{@code "a.b.c.[i].d"} or {@code "a.b.c[i].d"} will be split into
@@ -165,10 +174,57 @@ public class DPathUtils {
                 "Unsupported type [" + target.getClass() + "] or invalid index [" + index + "]");
     }
 
+    private static JsonNode extractValue(JsonNode node, String index) {
+        if (node == null || node instanceof NullNode || node instanceof MissingNode) {
+            return null;
+        }
+        Matcher m = PATTERN_INDEX.matcher(index);
+        if (m.matches()) {
+            try {
+                int i = Integer.parseInt(m.group(1));
+                if (node instanceof ArrayNode) {
+                    if (i >= 0 && i < node.size()) {
+                        return node.get(i);
+                    } else {
+                        throw new IndexOutOfBoundsException(String.valueOf(i));
+                    }
+                }
+                throw new IllegalArgumentException("Expect an ArrayNode for index [" + index
+                        + "] but received [" + node.getClass() + "] instead.");
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid index value: " + index, e);
+            }
+        }
+        if (node instanceof ObjectNode) {
+            return node.get(index);
+        }
+        throw new IllegalArgumentException(
+                "Unsupported type [" + node.getClass() + "] or invalid index [" + index + "]");
+    }
+
     /*----------------------------------------------------------------------*/
 
     /**
-     * Extracts a value from the target object using DPath expression (generic
+     * Extract a date value from the target object using DPath expression. If the extracted value is
+     * a string, parse it as a {@link Date} using the specified date-time format.
+     * 
+     * @param target
+     * @param dPath
+     * @param dateTimeFormat
+     *            see {@link SimpleDateFormat}
+     * @return
+     * @since 0.6.2
+     */
+    public static Date getDate(Object target, String dPath, String dateTimeFormat) {
+        Object obj = getValue(target, dPath);
+        return obj instanceof Number ? new Date(((Number) obj).longValue())
+                : (obj instanceof String
+                        ? DateFormatUtils.fromString(obj.toString(), dateTimeFormat)
+                        : (obj instanceof Date ? (Date) obj : null));
+    }
+
+    /**
+     * Extract a value from the target object using DPath expression (generic
      * version).
      * 
      * @param target
@@ -185,7 +241,7 @@ public class DPathUtils {
     }
 
     /**
-     * Extracts a value from the target object using DPath expression.
+     * Extract a value from the target {@link JsonNode} using DPath expression.
      * 
      * @param target
      * @param dPath
@@ -193,6 +249,61 @@ public class DPathUtils {
     public static Object getValue(Object target, String dPath) {
         String[] paths = splitDpath(dPath);
         Object result = target;
+        for (String path : paths) {
+            result = extractValue(result, path);
+        }
+        return result;
+    }
+
+    /*----------------------------------------------------------------------*/
+    /**
+     * Extract a date value from the target {@link JsonNode} using DPath expression. If the
+     * extracted value is
+     * a string, parse it as a {@link Date} using the specified date-time format.
+     * 
+     * @param node
+     * @param dPath
+     * @param dateTimeFormat
+     *            see {@link SimpleDateFormat}
+     * @return
+     * @since 0.6.2
+     */
+    public static Date getDate(JsonNode node, String dPath, String dateTimeFormat) {
+        Object obj = getValue(node, dPath);
+        return obj instanceof Number ? new Date(((Number) obj).longValue())
+                : (obj instanceof String
+                        ? DateFormatUtils.fromString(obj.toString(), dateTimeFormat)
+                        : (obj instanceof Date ? (Date) obj : null));
+    }
+
+    /**
+     * Extract a value from the target {@link JsonNode} using DPath expression (generic
+     * version).
+     * 
+     * @param node
+     * @param dPath
+     * @param clazz
+     * @return
+     * @since 0.6.2
+     */
+    public static <T> T getValue(JsonNode node, String dPath, Class<T> clazz) {
+        if (clazz == null) {
+            throw new NullPointerException("Class parameter is null!");
+        }
+        JsonNode temp = getValue(node, dPath);
+        return ValueUtils.convertValue(temp, clazz);
+    }
+
+    /**
+     * Extract a value from the target {@link JsonNode} using DPath expression.
+     * 
+     * @param node
+     * @param dPath
+     * @since 0.6.2
+     */
+    public static JsonNode getValue(JsonNode node, String dPath) {
+        String[] paths = splitDpath(dPath);
+        JsonNode result = node;
         for (String path : paths) {
             result = extractValue(result, path);
         }
@@ -263,7 +374,7 @@ public class DPathUtils {
     }
 
     /**
-     * Sets a value to the target object specified by DPath expression.
+     * Set a value to the target object specified by DPath expression.
      * 
      * <p>
      * Note: intermediated nodes will NOT be created.
@@ -288,7 +399,7 @@ public class DPathUtils {
     }
 
     /**
-     * Sets a value to the target object specified by DPath expression.
+     * Set a value to the target object specified by DPath expression.
      * 
      * <p>
      * Note: intermediated nodes will be created if
@@ -390,11 +501,12 @@ public class DPathUtils {
     }
 
     /**
-     * Deletes a value from the target object specified by DPath expression.
+     * Delete a value from the target object specified by DPath expression.
      * 
      * <ul>
      * <li>If the specified item's parent is a list or map, the item (specified
-     * by {@code dPath}) will be removed.</li>
+     * by {@code dPath}) will be removed (for list, next items will be shifted up one
+     * position).</li>
      * <li>If the specified item's parent is an array, the item (specified by
      * {@code dPath}) will be set to {@code null}.</li>
      * </ul>
@@ -441,6 +553,238 @@ public class DPathUtils {
             }
         } else if (cursor instanceof Map<?, ?>) {
             Map<Object, Object> temp = (Map<Object, Object>) cursor;
+            temp.remove(index);
+        } else {
+            throw new IllegalArgumentException("Target object of type [" + cursor.getClass()
+                    + "] is not writable with path [" + dPath + "]!");
+        }
+    }
+
+    /*----------------------------------------------------------------------*/
+
+    @SuppressWarnings("rawtypes")
+    private static JsonNode createIntermediate(JsonNode node, StringBuffer pathSofar, String index,
+            String nextIndex) {
+        if (node instanceof ContainerNode) {
+            ContainerNode temp = (ContainerNode) node;
+            JsonNode value = PATTERN_INDEX.matcher(nextIndex).matches() ? temp.arrayNode()
+                    : temp.objectNode();
+            return createIntermediate(temp, pathSofar, index, value);
+        }
+        return null;
+
+    }
+
+    private static JsonNode createIntermediate(JsonNode node, StringBuffer pathSofar, String index,
+            JsonNode value) {
+        if (node == null) {
+            return null;
+        }
+        Matcher m = PATTERN_INDEX.matcher(index);
+        if (m.matches()) {
+            try {
+                int i = Integer.parseInt(m.group(1));
+                if (node instanceof ArrayNode) {
+                    ArrayNode temp = (ArrayNode) node;
+                    if (i >= 0 && i < temp.size()) {
+                        // the middle item is null (in some cases)
+                        temp.set(i, value);
+                    } else if (i == temp.size()) {
+                        // special case: add the last item
+                        temp.add(value);
+                    } else {
+                        throw new IllegalArgumentException("Error: Index out of bound. Path ["
+                                + pathSofar + "], target [" + node.getClass() + "].");
+                    }
+                    return value;
+                } else {
+                    throw new IllegalArgumentException("Expect an ArrayNode for path [" + pathSofar
+                            + "] but received [" + node.getClass() + "] instead.");
+                }
+            } catch (IndexOutOfBoundsException e) {
+                // rethrow for now
+                throw e;
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error: Invalid index. Path [" + pathSofar
+                        + "], target [" + node.getClass() + "].", e);
+            }
+        } else if (node instanceof ObjectNode) {
+            ObjectNode temp = (ObjectNode) node;
+            temp.set(index, value);
+            return value;
+        } else {
+            throw new IllegalArgumentException("Target object of type [" + node.getClass()
+                    + "] is not writable with path [" + pathSofar + "]!");
+        }
+    }
+
+    /**
+     * Set a value to the target {@link JsonNode} specified by DPath expression.
+     * 
+     * <p>
+     * Note: intermediated nodes will NOT be created.
+     * </p>
+     * 
+     * <p>
+     * Note: if {@code value} is {@code null}:
+     * <ul>
+     * <li>If the specified item's parent is an {@link ArrayNode}, the item
+     * (specified by {@code dPath}) will be set to {@code null}.</li>
+     * <li>If the specified item's parent is an {@link ObjectNode}, the item (specified by
+     * {@code dPath}) will be removed.</li>
+     * </ul>
+     * </p>
+     * 
+     * @param node
+     * @param dPath
+     * @param value
+     * @since 0.6.2
+     */
+    public static void setValue(JsonNode node, String dPath, Object value) {
+        setValue(node, dPath, value, false);
+    }
+
+    /**
+     * Set a value to the target {@link JsonNode} specified by DPath expression.
+     * 
+     * <p>
+     * Note: intermediated nodes will be created if {@code createIntermediatePath} is true.
+     * </p>
+     * 
+     * <p>
+     * Note: if {@code value} is {@code null}:
+     * <ul>
+     * <li>If the specified item's parent is an {@link ArrayNode}, the item
+     * (specified by {@code dPath}) will be set to {@code null}.</li>
+     * <li>If the specified item's parent is an {@link ObjectNode}, the item (specified by
+     * {@code dPath}) will be removed.</li>
+     * </ul>
+     * </p>
+     * 
+     * @param node
+     * @param dPath
+     * @param value
+     * @param createIntermediatePath
+     * @since 0.6.2
+     */
+    public static void setValue(JsonNode node, String dPath, Object value,
+            boolean createIntermediatePath) {
+        if (node == null) {
+            throw new IllegalArgumentException("Target is null!");
+        }
+        String[] paths = splitDpath(dPath);
+        JsonNode cursor = node, prevCursor = node;
+        StringBuffer pathSofar = new StringBuffer();
+        // "seek"to the correct position
+        for (int i = 0; i < paths.length - 1; i++) {
+            if (i > 0) {
+                pathSofar.append(PATH_SEPARATOR);
+            }
+            String index = paths[i], nextIndex = paths[i + 1];
+            pathSofar.append(index);
+            try {
+                cursor = extractValue(cursor, index);
+            } catch (IndexOutOfBoundsException e) {
+                cursor = null;
+            }
+            if ((cursor == null || cursor instanceof NullNode || cursor instanceof MissingNode)
+                    && createIntermediatePath) {
+                // creating intermediate value
+                cursor = createIntermediate(prevCursor, pathSofar, index, nextIndex);
+            }
+            prevCursor = cursor;
+        }
+        if (cursor == null || cursor instanceof NullNode || cursor instanceof MissingNode) {
+            throw new IllegalArgumentException("Path not found [" + dPath + "]!");
+        }
+
+        JsonNode valueNode = value instanceof JsonNode ? (JsonNode) value
+                : JacksonUtils.toJson(value);
+        String index = paths[paths.length - 1];
+        Matcher m = PATTERN_INDEX.matcher(index);
+        if (m.matches() || "[]".equals(index)) {
+            try {
+                int i = "[]".equals(index) ? Integer.MAX_VALUE : Integer.parseInt(m.group(1));
+                if (cursor instanceof ArrayNode) {
+                    ArrayNode temp = (ArrayNode) cursor;
+                    if (i >= temp.size() && value != null) {
+                        // add to end
+                        temp.add(valueNode);
+                    } else if (i >= 0) {
+                        // set middle (can be null)
+                        temp.set(i, valueNode);
+                    } else {
+                        throw new IllegalArgumentException("Error: Index out of bound. Path ["
+                                + dPath + "], target [" + cursor.getClass() + "].");
+                    }
+                } else {
+                    throw new IllegalArgumentException(
+                            "Target object [" + cursor.getClass() + "] is not a ArrayNode!");
+                }
+            } catch (IndexOutOfBoundsException e) {
+                // rethrow for now
+                throw e;
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error: Invalid index. Path [" + dPath
+                        + "], target [" + cursor.getClass() + "].", e);
+            }
+        } else if (cursor instanceof ObjectNode) {
+            ObjectNode temp = (ObjectNode) cursor;
+            if (value == null) {
+                temp.remove(index);
+            } else {
+                temp.set(index, valueNode);
+            }
+        } else {
+            throw new IllegalArgumentException("Target object of type [" + cursor.getClass()
+                    + "] is not writable with path [" + dPath + "]!");
+        }
+    }
+
+    /**
+     * Delete a value from the target {@link JsonNode} specified by DPath expression.
+     * 
+     * @param node
+     * @param dPath
+     * @since 0.6.2
+     */
+    public static void deleteValue(JsonNode node, String dPath) {
+        String[] paths = splitDpath(dPath);
+        JsonNode cursor = node;
+        // "seek"to the correct position
+        for (int i = 0; i < paths.length - 1; i++) {
+            cursor = extractValue(cursor, paths[i]);
+        }
+        if (cursor == null || cursor instanceof NullNode || cursor instanceof MissingNode) {
+            return;
+        }
+
+        String index = paths[paths.length - 1];
+        Matcher m = PATTERN_INDEX.matcher(index);
+        if (m.matches()) {
+            try {
+                int i = Integer.parseInt(m.group(1));
+                if (cursor instanceof ArrayNode) {
+                    ArrayNode temp = (ArrayNode) cursor;
+                    if (i >= 0 && i < temp.size()) {
+                        temp.remove(i);
+                    } else {
+                        throw new IllegalArgumentException("Error: Index out of bound. Path ["
+                                + dPath + "], target [" + cursor.getClass() + "].");
+                    }
+                } else {
+                    throw new IllegalArgumentException(
+                            "Target object [" + cursor.getClass() + "] is not an ArrayNode!");
+                }
+            } catch (IndexOutOfBoundsException e) {
+                // rethrow for now
+                throw e;
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error: Invalid index. Path [" + dPath
+                        + "], target [" + cursor.getClass() + "].", e);
+            }
+        } else if (cursor instanceof ObjectNode) {
+            ObjectNode temp = (ObjectNode) cursor;
             temp.remove(index);
         } else {
             throw new IllegalArgumentException("Target object of type [" + cursor.getClass()

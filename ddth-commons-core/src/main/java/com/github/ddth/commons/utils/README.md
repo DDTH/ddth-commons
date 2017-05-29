@@ -1,22 +1,18 @@
-com.github.ddth.commons.utils
-=============================
+# com.github.ddth.commons.utils
 
-DateFormatUtils
----------------
+## DateFormatUtils
 
 Utility to format a `java.util.Date` to string, and parse a string to `java.util.Date`.
 
 - Use a pool of `java.text.DateFormat`s for multi-threading environment.
 
 
-DateTimeUtils
----------------
+## DateTimeUtils
 
 Helper class to work with `java.util.Date` and `java.util.Calendar`.
 
 
-DPathUtils
-----------
+## DPathUtils
 
 Utility to access data from a hierarchy structure.
 
@@ -85,11 +81,16 @@ Long age2 = DPathUtils.getValue(company, "employees.[1].age", Long.class);
 //got a Long value of 30
 ```
 
-Since v0.1.2, `DPathUtils.getValue(Object target, String dPath, Class clazz)` now tries its best to convert returned value to the specified type. For example, the value extracted by `dPath` is a string `"12345"` and the clazz is of type `Integer`, the method will parse the string `"12345"` to the integer `12345`.
+***New since v0.1.2***
+
+- `DPathUtils.getValue(Object target, String dPath, Class clazz)` now tries its best to convert returned value to the specified type. For example, the value extracted by `dPath` is a string `"12345"` and the clazz is of type `Integer`, the method will parse the string `"12345"` to the integer `12345`.
+
+***New since v0.6.2***
+
+- `DPathUtils` now supports reading/writing values from/to Jackson's JSON tree.
 
 
-HashUtils
----------
+## HashUtils
 
 Helper class to calculate hash values.
 
@@ -99,8 +100,7 @@ Helper class to calculate hash values.
 * CRC32, MD5, SHA1, SHA256, SHA512 hashing functions.
 
 
-IdGenerator
------------
+## IdGenerator
 
 A Java implementation of Twitter Snowflake algorithm to generate IDs.
 
@@ -115,24 +115,62 @@ String id128Hex = idGen.generateId128Hex();
 ...
 ```
 
+## Ipv4Utils
 
-SerializationUtils
--------------------
+IPV4 utility class.
+
+* Convert IP number to long (e.g. 10.0.0.1 -> 167772161) and vice versa.
+* Check if an IP (e.g. 10.0.0.5) matches a subnet (e.g. 10.0.0.0/24).
+
+
+## JacksonUtils
+
+***New since v0.6.2***
+
+Helper class to work with Jackson's `JsonNode`.
+
+- Serialize object to `JsonNode`.
+- Deserialize `JsonNode` to object.
+- Load JSON tree from source.
+- Access data from JSON tree using DPath expression.
+
+
+## MapUtils
+
+***New since v0.6.1***
+
+Helper class to work with `java.util.Map`.
+
+- Extract typed-value from map.
+- Construct a map from flat array of objects.
+- Calculate map's checksum.
+
+
+## ReflectionUtils
+
+***New sintce v0.5.0***
+
+Reflection utility class.
+
+
+## SerializationUtils
 
 ***New since v0.2.0***
 
 - Serialize/De-serialize object to/from JSON string (use FasterXML's Jackson library).
 - Serialize/De-serialize objecct to/from `byte[]` (use Jboss Serialization libary).
 
+***New since v0.6.2***
 
-SpringUtils
------------
+- Serialize/De-serialize object to/from Jackson's `JsonNode`.
+
+
+## SpringUtils
 
 Helper methods to obtain Spring's beans from an `ApplicationContext`.
 
 
-ThriftUtils
------------
+## ThriftUtils
 
 ***New since v0.4.0***
 
@@ -142,8 +180,7 @@ Helper methods to work with Apache Thrift.
 - Helper methods to create various thrift servers.
 
 
-UnsignedUtils
--------------
+## UnsignedUtils
 
 Utility to work with unsigned `long`s and `int`s, radix up to `62` (`0-9`, `A-Z` and `a-z`).
 
@@ -153,8 +190,14 @@ Utility to work with unsigned `long`s and `int`s, radix up to `62` (`0-9`, `A-Z`
 * `toString(longValue, radix)`: convert a unsigned long to string for the given radix, up to `62`.
 
 
-VersionUtils
-------------
+## ValueUtils
+
+***New since v0.6.1***
+
+Common utility class used by `MapUtils`, `DPathUtils` and `JacksonUtils`.
+
+
+## VersionUtils
 
 Utility to compare two version strings.
 

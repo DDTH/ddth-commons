@@ -8,23 +8,28 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.MissingNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.ddth.commons.utils.DPathUtils;
+import com.github.ddth.commons.utils.JacksonUtils;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class DPathUtilsTest extends TestCase {
+public class DPathUtilsJsonNodeTest extends TestCase {
 
-    public DPathUtilsTest(String testName) {
+    public DPathUtilsJsonNodeTest(String testName) {
         super(testName);
     }
 
     public static Test suite() {
-        return new TestSuite(DPathUtilsTest.class);
+        return new TestSuite(DPathUtilsJsonNodeTest.class);
     }
 
-    private Map<String, Object> COMPANY;
+    private JsonNode COMPANY;
     private final String COMPANY_NAME = "Monster Corp.";
     private final int COMPANY_YEAR = 2003;
 
@@ -61,7 +66,7 @@ public class DPathUtilsTest extends TestCase {
         employee2.put("age", EMPLOYEE2_AGE);
         employees.add(employee2);
 
-        COMPANY = company;
+        COMPANY = JacksonUtils.toJson(company);
     }
 
     @After
@@ -178,20 +183,21 @@ public class DPathUtilsTest extends TestCase {
         String companyName = DPathUtils.getValue(COMPANY, "name", String.class);
         assertEquals(COMPANY_NAME, companyName);
 
-        Integer companyYear = DPathUtils.getValue(COMPANY, "year", Integer.class);
+        Long companyYear = DPathUtils.getValue(COMPANY, "year", Long.class);
         assertEquals(COMPANY_YEAR, companyYear.intValue());
 
-        Number employee1Age = DPathUtils.getValue(COMPANY, "employees.[0].age", Number.class);
+        Integer employee1Age = DPathUtils.getValue(COMPANY, "employees.[0].age", Integer.class);
         assertEquals(EMPLOYEE1_AGE, employee1Age.intValue());
 
         Object employee2Email = DPathUtils.getValue(COMPANY, "employees[1].email");
-        assertEquals(EMPLOYEE2_EMAIL, employee2Email.toString());
+        assertTrue(employee2Email instanceof TextNode);
+        assertEquals(EMPLOYEE2_EMAIL, ((TextNode) employee2Email).asText());
 
         Throwable t = null;
         try {
             Object user3 = DPathUtils.getValue(COMPANY, "employees[-1]", Map.class);
         } catch (IllegalArgumentException e) {
-            t = e.getCause();
+            t = e;
         } catch (IndexOutOfBoundsException e) {
             t = e;
         }
@@ -205,14 +211,16 @@ public class DPathUtilsTest extends TestCase {
 
         DPathUtils.setValue(COMPANY, "employees[0].not_found", "not_found");
         Object exists = DPathUtils.getValue(COMPANY, "employees[0].not_found");
-        assertEquals("not_found", exists.toString());
+        assertTrue(exists instanceof TextNode);
+        assertEquals("not_found", ((TextNode) exists).asText());
     }
 
     @org.junit.Test
     public void testSetValue2() {
         DPathUtils.setValue(COMPANY, "employees[0]", null);
         Object nullNow = DPathUtils.getValue(COMPANY, "employees[0]");
-        assertNull(nullNow);
+        assertTrue(
+                nullNow == null || nullNow instanceof NullNode || nullNow instanceof MissingNode);
     }
 
     @SuppressWarnings("unused")
@@ -222,7 +230,7 @@ public class DPathUtilsTest extends TestCase {
         try {
             Object email = DPathUtils.getValue(COMPANY, "employees[2].email");
         } catch (IllegalArgumentException e) {
-            t = e.getCause();
+            t = e;
         } catch (IndexOutOfBoundsException e) {
             t = e;
         }

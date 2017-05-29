@@ -46,7 +46,6 @@
 						<!-- <Bundle-Activator></Bundle-Activator> -->
 						<Export-Package>com.github.ddth.commons.osgi,com.github.ddth.commons.utils,com.github.ddth.commons.serialization</Export-Package>
 						<Import-Package>com.google.common.*;version="${version.guava}",*</Import-Package>
-						<Embed-Dependency>groupId=jboss;artifactId=jboss-serialization,groupId=trove;artifactId=trove</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 						<Embed-Directory>lib</Embed-Directory>
 						<Include-Resource>../README.md,../RELEASE-NOTES.md,../LICENSE.txt</Include-Resource>

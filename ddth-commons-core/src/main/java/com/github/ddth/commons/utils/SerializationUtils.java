@@ -2,18 +2,19 @@ package com.github.ddth.commons.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.jboss.serial.io.JBossObjectInputStream;
-import org.jboss.serial.io.JBossObjectOutputStream;
 import org.nustaq.serialization.FSTConfiguration;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -22,7 +23,9 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.pool.KryoCallback;
 import com.esotericsoftware.kryo.pool.KryoFactory;
 import com.esotericsoftware.kryo.pool.KryoPool;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.ddth.commons.serialization.DeserializationException;
 import com.github.ddth.commons.serialization.ISerializationSupport;
 import com.github.ddth.commons.serialization.SerializationException;
@@ -47,7 +50,7 @@ import com.github.ddth.commons.serialization.SerializationException;
 public class SerializationUtils {
     /*----------------------------------------------------------------------*/
     /**
-     * Serializes an object to byte array.
+     * Serialize an object to byte array.
      * 
      * <p>
      * If the target object implements {@link ISerializationSupport}, this
@@ -63,7 +66,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Serializes an object to byte array, with a custom class loader.
+     * Serialize an object to byte array, with a custom class loader.
      * 
      * <p>
      * If the target object implements {@link ISerializationSupport}, this
@@ -92,7 +95,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array back to an object.
+     * Deserialize a byte array back to an object.
      * 
      * <p>
      * If the target class implements {@link ISerializationSupport}, this method
@@ -109,7 +112,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array back to an object, with custom class loader.
+     * Deserialize a byte array back to an object, with custom class loader.
      * 
      * <p>
      * If the target class implements {@link ISerializationSupport}, this method
@@ -161,7 +164,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Serializes an object to byte array.
+     * Serialize an object to byte array.
      * 
      * <p>
      * This method uses Kryo lib.
@@ -175,7 +178,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Serializes an object to byte array, with a custom class loader.
+     * Serialize an object to byte array, with a custom class loader.
      * 
      * <p>
      * This method uses Kryo lib.
@@ -217,7 +220,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array back to an object.
+     * Deserialize a byte array back to an object.
      * 
      * <p>
      * This method uses Kryo lib.
@@ -231,7 +234,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array back to an object, with custom class loader.
+     * Deserialize a byte array back to an object, with custom class loader.
      * 
      * <p>
      * This method uses Kryo lib.
@@ -246,7 +249,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array back to an object.
+     * Deserialize a byte array back to an object.
      * 
      * <p>
      * This method uses Kryo lib.
@@ -261,7 +264,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array back to an object, with custom class loader.
+     * Deserialize a byte array back to an object, with custom class loader.
      * 
      * <p>
      * This method uses Kryo lib.
@@ -272,7 +275,7 @@ public class SerializationUtils {
      * @param classLoader
      * @return
      */
-    public static <T> T fromByteArrayKryo(final byte[] data, final Class<T> clazz,
+    public static <T> T fromByteArrayKryo(byte[] data, final Class<T> clazz,
             final ClassLoader classLoader) {
         if (data == null) {
             return null;
@@ -307,150 +310,6 @@ public class SerializationUtils {
     }
 
     /*----------------------------------------------------------------------*/
-
-    /**
-     * Serializes an object to byte array.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param obj
-     * @return
-     * @since 0.5.0
-     * @deprecated deprecated since 0.6.0
-     */
-    public static byte[] toByteArrayJboss(Object obj) {
-        return toByteArrayJboss(obj, null);
-    }
-
-    /**
-     * Serializes an object to byte array, with a custom class loader.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param obj
-     * @param classLoader
-     * @return
-     * @since 0.5.0
-     * @deprecated deprecated since 0.6.0
-     */
-    public static byte[] toByteArrayJboss(Object obj, ClassLoader classLoader) {
-        if (obj == null) {
-            return null;
-        }
-        ClassLoader oldClassLoader = classLoader != null
-                ? Thread.currentThread().getContextClassLoader() : null;
-        if (classLoader != null) {
-            Thread.currentThread().setContextClassLoader(classLoader);
-        }
-        try {
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                try (JBossObjectOutputStream oos = new JBossObjectOutputStream(baos, false)) {
-                    oos.writeObject(obj);
-                    oos.flush();
-                    return baos.toByteArray();
-                }
-            } catch (Exception e) {
-                throw e instanceof SerializationException ? (SerializationException) e
-                        : new SerializationException(e);
-            }
-        } finally {
-            if (oldClassLoader != null) {
-                Thread.currentThread().setContextClassLoader(oldClassLoader);
-            }
-        }
-    }
-
-    /**
-     * Deserializes a byte array back to an object.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param data
-     * @return
-     * @since 0.5.0
-     * @deprecated deprecated since 0.6.0
-     */
-    public static Object fromByteArrayJboss(byte[] data) {
-        return fromByteArrayJboss(data, Object.class, null);
-    }
-
-    /**
-     * Deserializes a byte array back to an object, with custom class loader.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param data
-     * @param classLoader
-     * @return
-     * @since 0.5.0
-     * @deprecated deprecated since 0.6.0
-     */
-    public static Object fromByteArrayJboss(byte[] data, ClassLoader classLoader) {
-        return fromByteArrayJboss(data, Object.class, classLoader);
-    }
-
-    /**
-     * Deserializes a byte array back to an object.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param data
-     * @param clazz
-     * @return
-     * @since 0.5.0
-     * @deprecated deprecated since 0.6.0
-     */
-    public static <T> T fromByteArrayJboss(byte[] data, Class<T> clazz) {
-        return fromByteArrayJboss(data, clazz, null);
-    }
-
-    /**
-     * Deserializes a byte array back to an object, with custom class loader.
-     * 
-     * <p>
-     * This method uses jboss-serialization lib.
-     * </p>
-     * 
-     * @param data
-     * @param clazz
-     * @param classLoader
-     * @return
-     * @since 0.5.0
-     * @deprecated deprecated since 0.6.0
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T fromByteArrayJboss(byte[] data, Class<T> clazz, ClassLoader classLoader) {
-        if (data == null) {
-            return null;
-        }
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(data)) {
-            try (JBossObjectInputStream ois = classLoader != null
-                    ? new JBossObjectInputStream(bais, classLoader)
-                    : new JBossObjectInputStream(bais)) {
-                Object obj = ois.readObject();
-                if (obj != null && clazz.isAssignableFrom(obj.getClass())) {
-                    return (T) obj;
-                } else {
-                    return null;
-                }
-            }
-        } catch (Exception e) {
-            throw e instanceof DeserializationException ? (DeserializationException) e
-                    : new DeserializationException(e);
-        }
-    }
-
-    /*----------------------------------------------------------------------*/
     private final static ObjectPool<ObjectMapper> poolMapper = new GenericObjectPool<ObjectMapper>(
             new BasePooledObjectFactory<ObjectMapper>() {
                 @Override
@@ -472,7 +331,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Serializes an object to JSON string.
+     * Serialize an object to JSON string.
      * 
      * @param obj
      * @return
@@ -482,7 +341,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Serializes an object to JSON string, with a custom class loader.
+     * Serialize an object to JSON string, with a custom class loader.
      * 
      * @param obj
      * @param classLoader
@@ -515,7 +374,232 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a JSON string.
+     * Serialize an object to {@link JsonNode}.
+     * 
+     * @param obj
+     * @return
+     * @since 0.6.2
+     */
+    public static JsonNode toJson(Object obj) {
+        return toJson(obj, null);
+    }
+
+    /**
+     * Serialize an object to {@link JsonNode}, with a custom class loader.
+     * 
+     * @param obj
+     * @param classLoader
+     * @return
+     * @since 0.6.2
+     */
+    public static JsonNode toJson(Object obj, ClassLoader classLoader) {
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        try {
+            if (obj == null) {
+                return NullNode.instance;
+            }
+            ObjectMapper mapper = poolMapper.borrowObject();
+            if (mapper != null) {
+                try {
+                    return mapper.valueToTree(obj);
+                } finally {
+                    poolMapper.returnObject(mapper);
+                }
+            }
+            throw new SerializationException("No ObjectMapper instance avaialble!");
+        } catch (Exception e) {
+            throw e instanceof SerializationException ? (SerializationException) e
+                    : new SerializationException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+    }
+
+    /**
+     * Read a JSON string and parse to {@link JsonNode} instance.
+     * 
+     * @param source
+     * @return
+     * @since 0.6.2
+     */
+    public static JsonNode readJson(String source) {
+        return readJson(source, null);
+    }
+
+    /**
+     * Read a JSON string and parse to {@link JsonNode} instance, with a custom class loader.
+     * 
+     * @param source
+     * @param classLoader
+     * @return
+     * @since 0.6.2
+     */
+    public static JsonNode readJson(String source, ClassLoader classLoader) {
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        try {
+            if (StringUtils.isBlank(source)) {
+                return NullNode.instance;
+            }
+            ObjectMapper mapper = poolMapper.borrowObject();
+            if (mapper != null) {
+                try {
+                    return mapper.readTree(source);
+                } finally {
+                    poolMapper.returnObject(mapper);
+                }
+            }
+            throw new SerializationException("No ObjectMapper instance avaialble!");
+        } catch (Exception e) {
+            throw e instanceof SerializationException ? (SerializationException) e
+                    : new SerializationException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+    }
+
+    /**
+     * Read a JSON string and parse to {@link JsonNode} instance.
+     * 
+     * @param source
+     * @return
+     * @since 0.6.2
+     */
+    public static JsonNode readJson(byte[] source) {
+        return readJson(source, null);
+    }
+
+    /**
+     * Read a JSON string and parse to {@link JsonNode} instance, with a custom class loader.
+     * 
+     * @param source
+     * @param classLoader
+     * @return
+     * @since 0.6.2
+     */
+    public static JsonNode readJson(byte[] source, ClassLoader classLoader) {
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        try {
+            if (source == null || source.length == 0) {
+                return NullNode.instance;
+            }
+            ObjectMapper mapper = poolMapper.borrowObject();
+            if (mapper != null) {
+                try {
+                    return mapper.readTree(source);
+                } finally {
+                    poolMapper.returnObject(mapper);
+                }
+            }
+            throw new SerializationException("No ObjectMapper instance avaialble!");
+        } catch (Exception e) {
+            throw e instanceof SerializationException ? (SerializationException) e
+                    : new SerializationException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+    }
+
+    /**
+     * Read a JSON string and parse to {@link JsonNode} instance.
+     * 
+     * @param source
+     * @return
+     * @since 0.6.2
+     */
+    public static JsonNode readJson(InputStream source) {
+        return readJson(source, null);
+    }
+
+    /**
+     * Read a JSON string and parse to {@link JsonNode} instance, with a custom class loader.
+     * 
+     * @param source
+     * @param classLoader
+     * @return
+     * @since 0.6.2
+     */
+    public static JsonNode readJson(InputStream source, ClassLoader classLoader) {
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        try {
+            if (source == null) {
+                return NullNode.instance;
+            }
+            ObjectMapper mapper = poolMapper.borrowObject();
+            if (mapper != null) {
+                try {
+                    return mapper.readTree(source);
+                } finally {
+                    poolMapper.returnObject(mapper);
+                }
+            }
+            throw new SerializationException("No ObjectMapper instance avaialble!");
+        } catch (Exception e) {
+            throw e instanceof SerializationException ? (SerializationException) e
+                    : new SerializationException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+    }
+
+    /**
+     * Read a JSON string and parse to {@link JsonNode} instance.
+     * 
+     * @param source
+     * @return
+     * @since 0.6.2
+     */
+    public static JsonNode readJson(Reader source) {
+        return readJson(source, null);
+    }
+
+    /**
+     * Read a JSON string and parse to {@link JsonNode} instance, with a custom class loader.
+     * 
+     * @param source
+     * @param classLoader
+     * @return
+     * @since 0.6.2
+     */
+    public static JsonNode readJson(Reader source, ClassLoader classLoader) {
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        try {
+            if (source == null) {
+                return NullNode.instance;
+            }
+            ObjectMapper mapper = poolMapper.borrowObject();
+            if (mapper != null) {
+                try {
+                    return mapper.readTree(source);
+                } finally {
+                    poolMapper.returnObject(mapper);
+                }
+            }
+            throw new SerializationException("No ObjectMapper instance avaialble!");
+        } catch (Exception e) {
+            throw e instanceof SerializationException ? (SerializationException) e
+                    : new SerializationException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+    }
+
+    /**
+     * Deserialize a JSON string.
      * 
      * @param jsonString
      * @return
@@ -525,7 +609,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a JSON string, with custom class loader.
+     * Deserialize a JSON string, with custom class loader.
      * 
      * @param jsonString
      * @param classLoader
@@ -536,7 +620,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a JSON string.
+     * Deserialize a JSON string.
      * 
      * @param jsonString
      * @param clazz
@@ -547,7 +631,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a JSON string, with custom class loader.
+     * Deserialize a JSON string, with custom class loader.
      * 
      * @param jsonString
      * @param clazz
@@ -565,7 +649,76 @@ public class SerializationUtils {
             ObjectMapper mapper = poolMapper.borrowObject();
             if (mapper != null) {
                 try {
-                    return jsonString != null ? mapper.readValue(jsonString, clazz) : null;
+                    return mapper.readValue(jsonString, clazz);
+                } finally {
+                    poolMapper.returnObject(mapper);
+                }
+            }
+            throw new DeserializationException("No ObjectMapper instance avaialble!");
+        } catch (Exception e) {
+            throw e instanceof DeserializationException ? (DeserializationException) e
+                    : new DeserializationException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+    }
+
+    /**
+     * Deserialize a {@link JsonNode}.
+     * 
+     * @param json
+     * @return
+     * @since 0.6.2
+     */
+    public static Object fromJson(JsonNode json) {
+        return fromJson(json, Object.class, null);
+    }
+
+    /**
+     * Deserialize a {@link JsonNode}, with custom class loader.
+     * 
+     * @param json
+     * @param classLoader
+     * @return
+     * @since 0.6.2
+     */
+    public static Object fromJson(JsonNode json, ClassLoader classLoader) {
+        return fromJson(json, Object.class, classLoader);
+    }
+
+    /**
+     * Deserialize a {@link JsonNode}.
+     * 
+     * @param json
+     * @param clazz
+     * @return
+     * @since 0.6.2
+     */
+    public static <T> T fromJson(JsonNode json, Class<T> clazz) {
+        return fromJson(json, clazz, null);
+    }
+
+    /**
+     * Deserialize a {@link JsonNode}, with custom class loader.
+     * 
+     * @param json
+     * @param clazz
+     * @return
+     * @since 0.6.2
+     */
+    public static <T> T fromJson(JsonNode json, Class<T> clazz, ClassLoader classLoader) {
+        if (json == null) {
+            return null;
+        }
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        try {
+            ObjectMapper mapper = poolMapper.borrowObject();
+            if (mapper != null) {
+                try {
+                    return mapper.readValue(json.toString(), clazz);
                 } finally {
                     poolMapper.returnObject(mapper);
                 }
@@ -589,7 +742,7 @@ public class SerializationUtils {
     };
 
     /**
-     * Serializes an object to byte array.
+     * Serialize an object to byte array.
      * 
      * <p>
      * This method uses FST lib.
@@ -604,7 +757,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Serializes an object to byte array, with a custom class loader.
+     * Serialize an object to byte array, with a custom class loader.
      * 
      * <p>
      * This method uses FST lib.
@@ -636,7 +789,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array back to an object.
+     * Deserialize a byte array back to an object.
      * 
      * <p>
      * This method uses FST lib.
@@ -651,7 +804,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array back to an object, with custom class loader.
+     * Deserialize a byte array back to an object, with custom class loader.
      * 
      * <p>
      * This method uses FST lib.
@@ -667,7 +820,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array back to an object.
+     * Deserialize a byte array back to an object.
      * 
      * <p>
      * This method uses FST lib.
@@ -683,7 +836,7 @@ public class SerializationUtils {
     }
 
     /**
-     * Deserializes a byte array back to an object, with custom class loader.
+     * Deserialize a byte array back to an object, with custom class loader.
      * 
      * <p>
      * This method uses FST lib.

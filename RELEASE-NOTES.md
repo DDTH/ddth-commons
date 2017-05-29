@@ -1,6 +1,16 @@
 ddth-commons release notes
 ==========================
 
+0.6.2 - 2017-05-28
+------------------
+
+- `DPathUtils` now supports reading/writing values from/to Jackson's JSON tree.
+- New utility class `JacksonUtils`.
+- `SerializationUtils` now support serializing/deserializing to/from Jackson's `JsonNode`.
+- ***Remove Jboss serialization!***
+- Dependencies update/upgrade.
+
+
 0.6.1.1 - 2017-04-18
 --------------------
 

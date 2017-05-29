@@ -48,17 +48,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<skipTests>true</skipTests>
 
-		<version.spring>4.3.3.RELEASE</version.spring>
-		<version.spring.osgi>1.2.1</version.spring.osgi>
-		<version.spring_cglib>2.2.0</version.spring_cglib>
+		<version.spring>4.3.8.RELEASE</version.spring>
+		<version.spring_osgi>1.2.1</version.spring_osgi>
+        <version.guava>19.0</version.guava>
+		<version.libthrift>0.10.0</version.libthrift>
 
-		<version.libthrift>0.9.3</version.libthrift>
-
-		<version.jackson>2.8.5</version.jackson>
+		<version.jackson>2.8.8</version.jackson>
 		<version.kryo>4.0.0</version.kryo>
-		<version.jboss_serialization>4.2.2.GA</version.jboss_serialization>
-		<version.trove>1.0.2</version.trove>
-		<version.fst>2.48</version.fst>
+		<version.fst>2.50</version.fst>
 	</properties>
 
 	<repositories>
@@ -163,25 +160,11 @@
 		<dependency>
 			<groupId>org.springframework.osgi</groupId>
 			<artifactId>spring-osgi-core</artifactId>
-			<version>${version.spring.osgi}</version>
+			<version>${version.spring_osgi}</version>
 			<optional>true</optional>
 		</dependency>
-		<!-- <dependency> <groupId>net.sourceforge.cglib</groupId> <artifactId>com.springsource.net.sf.cglib</artifactId> 
-			<version>${version.spring_cglib}</version> <optional>true</optional> </dependency> -->
 
 		<!-- for SerializationUtils -->
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-serialization</artifactId>
-			<version>${version.jboss_serialization}</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>trove</groupId>
-			<artifactId>trove</artifactId>
-			<version>${version.trove}</version>
-			<optional>true</optional>
-		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>

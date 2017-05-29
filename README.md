@@ -18,7 +18,7 @@ Third party libraries are distributed under their own license(s).
 
 ## Installation ##
 
-Latest release version: `0.6.1.1`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
+Latest release version: `0.6.2`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 Maven dependency: if only a sub-set of `ddth-commons` functionality is used, choose the corresponding
 dependency artifact(s) to reduce the number of unused jar files.
@@ -29,7 +29,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons-core</artifactId>
-	<version>0.6.1.1</version>
+	<version>0.6.2</version>
 </dependency>
 ```
 
@@ -39,7 +39,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-spring</artifactId>
-    <version>0.6.1.1</version>
+    <version>0.6.2</version>
     <type>pom</type>
 </dependency>
 ```
@@ -50,7 +50,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-thrift</artifactId>
-    <version>0.6.1.1</version>
+    <version>0.6.2</version>
     <type>pom</type>
 </dependency>
 ```
@@ -61,7 +61,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-serialization</artifactId>
-    <version>0.6.1.1</version>
+    <version>0.6.2</version>
     <type>pom</type>
 </dependency>
 ```
