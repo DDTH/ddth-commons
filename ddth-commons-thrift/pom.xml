@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>com.github.ddth</groupId>
 		<artifactId>ddth-commons</artifactId>
-		<version>0.6.3</version>
+		<version>0.6.4-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons-thrift</artifactId>
-	<version>0.6.3</version>
+	<version>0.6.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>ddth-commons-thrift</name>
@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>com.github.ddth</groupId>
 			<artifactId>ddth-commons-core</artifactId>
-			<version>0.6.3</version>
+			<version>0.6.4-SNAPSHOT</version>
 		</dependency>
 
 		<!-- for ThriftUtils -->
