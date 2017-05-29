@@ -64,7 +64,7 @@ public class MapUtils {
      * 
      * <p>
      * Checksum is independent of order of map's keys. I.e. two maps with same keys/values will
-     * yield the same checksum regardless order map's keys.
+     * yield the same checksum regardless order of map's keys.
      * </p>
      * 
      * @param map

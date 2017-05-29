@@ -2,14 +2,27 @@ package com.github.ddth.commons.utils;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.MissingNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 
 /**
  * Utility class to work with Jackson's {@link JsonNode}.
@@ -272,6 +285,50 @@ public class JacksonUtils {
         DPathUtils.deleteValue(node, dPath);
     }
 
+    private final static Charset UTF8 = Charset.forName("UTF-8");
+
+    /**
+     * Calculate checksum of a {@link JsonNode}.
+     * 
+     * <ul>
+     * <li>Checksum is calculated recursively (e.g. child-nodes are included).</li>
+     * <li>If the target node is null, {@link NullNode} or {@link MissingNode}, value {@code 0} is
+     * returned.</li>
+     * <li>If the target node is {@link ObjectNode}, checksum is independent of order of
+     * child-keys.</li>
+     * </ul>
+     * </p>
+     * 
+     * @param map
+     * @return
+     * @since 0.6.2
+     */
+    public static long checksum(JsonNode node) {
+        final HashFunction hashFunc = Hashing.murmur3_128(0);
+        if (node instanceof ValueNode) {
+            return hashFunc.hashString(node.toString(), UTF8).asLong();
+        }
+        if (node instanceof ArrayNode) {
+            final List<HashCode> hashCodes = new ArrayList<>();
+            for (JsonNode child : node) {
+                hashCodes.add(hashFunc.newHasher().putLong(checksum(child)).hash());
+            }
+            return Hashing.combineUnordered(hashCodes).padToLong();
+        }
+        if (node instanceof ObjectNode) {
+            final List<HashCode> hashCodes = new ArrayList<>();
+            node.fields().forEachRemaining(new Consumer<Entry<String, JsonNode>>() {
+                @Override
+                public void accept(Entry<String, JsonNode> entry) {
+                    hashCodes.add(hashFunc.newHasher().putString(entry.getKey(), UTF8)
+                            .putLong(checksum(entry.getValue())).hash());
+                }
+            });
+            return Hashing.combineUnordered(hashCodes).padToLong();
+        }
+        return 0;
+    }
+
     /*----------------------------------------------------------------------*/
 
     private static class MyClass {
@@ -294,9 +351,15 @@ public class JacksonUtils {
         mapBase.put("key4", true);
         mapBase.put("key5", new MyClass());
 
-        JsonNode json = toJson(mapBase);
-        System.out.println(json);
-        Object obj = fromJson(json);
-        System.out.println(obj.getClass());
+        JsonNode json1 = toJson(mapBase);
+        System.out.println(json1);
+        System.out.println(checksum(json1));
+
+        JsonNode json2 = toJson(fromJson(json1));
+        deleteValue(json2, "key3");
+        System.out.println(json2);
+        setValue(json2, "key3", 3.0);
+        System.out.println(json2);
+        System.out.println(checksum(json2));
     }
 }

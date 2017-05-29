@@ -134,6 +134,10 @@ Helper class to work with Jackson's `JsonNode`.
 - Load JSON tree from source.
 - Access data from JSON tree using DPath expression.
 
+***New since v0.6.2.1***
+
+- New method `long checksum(JsonNode)`: calculate checksum of a `JsonNode`
+
 
 ## MapUtils
 

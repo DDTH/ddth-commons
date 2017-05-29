@@ -1,6 +1,12 @@
 ddth-commons release notes
 ==========================
 
+0.6.2.1 - 2017-05-29
+--------------------
+
+- New method `long JacksonUtils.checksum(JsonNode)`: calculate checksum of a `JsonNode`.
+
+
 0.6.2 - 2017-05-28
 ------------------
 
