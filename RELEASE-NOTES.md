@@ -1,6 +1,18 @@
 ddth-commons release notes
 ==========================
 
+0.6.3 - 2017-05-30
+------------------
+
+- `MapUtils`: remove method `long checksum(Map<?,?>)`, use `HashUtils.checksumXXX(...)` instead.
+- `HashUtils`
+  - New methods `long checksumXXX(...)`: calculate checksum of an object.
+  - New methods `String murmur3(String)` and `String murmur3(byte[])`.
+  - Change `murmur3`, `crc32`, `md5`, `sha1`, `sha256`, `sha512` and `UTF8` to `public final static`.
+  - New attribute `fashHashFunc`: alias of `murmur3`.
+- `JacksonUtils`: improve `JsonNode`'s checksum calculation.
+
+
 0.6.2.2 - 2017-05-29
 --------------------
 

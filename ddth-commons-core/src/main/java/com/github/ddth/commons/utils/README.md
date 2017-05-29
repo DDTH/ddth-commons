@@ -18,9 +18,9 @@ Utility to access data from a hierarchy structure.
 
 DPath notation:
 
-* `.` (dot character): path separator.
-* `name`: access a map's attribute specified by `name`.
-* `[i]`: access i'th element of a list/map (0-based).
+- `.` (dot character): path separator.
+- `name`: access a map's attribute specified by `name`.
+- `[i]`: access i'th element of a list/map (0-based).
 
 (example: `employees.[1].first_name`).
 
@@ -94,10 +94,17 @@ Long age2 = DPathUtils.getValue(company, "employees.[1].age", Long.class);
 
 Helper class to calculate hash values.
 
-* fash hashing function.
-* linear hashing maps an object to a bucket (object -> [0, numBuckets)).
-* consistent hashing map an object to a bucket (object -> [0, numBuckets)).
-* CRC32, MD5, SHA1, SHA256, SHA512 hashing functions.
+- fash hashing function.
+- linear hashing maps an object to a bucket (object -> [0, numBuckets)).
+- consistent hashing map an object to a bucket (object -> [0, numBuckets)).
+- CRC32, MD5, SHA1, SHA256, SHA512 hashing functions.
+
+***New since v0.6.3***
+
+- New methods `long checksumXXX(...)`: calculate checksum of an object.
+- New methods `String murmur3(String)` and `String murmur3(byte[])`.
+- Change `murmur3`, `crc32`, `md5`, `sha1`, `sha256`, `sha512` and `UTF8` to `public final static`.
+- New attribute `fashHashFunc`: alias of `murmur3`.
 
 
 ## IdGenerator
@@ -119,8 +126,8 @@ String id128Hex = idGen.generateId128Hex();
 
 IPV4 utility class.
 
-* Convert IP number to long (e.g. 10.0.0.1 -> 167772161) and vice versa.
-* Check if an IP (e.g. 10.0.0.5) matches a subnet (e.g. 10.0.0.0/24).
+- Convert IP number to long (e.g. 10.0.0.1 -> 167772161) and vice versa.
+- Check if an IP (e.g. 10.0.0.5) matches a subnet (e.g. 10.0.0.0/24).
 
 
 ## JacksonUtils
@@ -138,6 +145,10 @@ Helper class to work with Jackson's `JsonNode`.
 
 - New method `long checksum(JsonNode)`: calculate checksum of a `JsonNode`
 
+***New since v0.6.3***
+
+- Improve `JsonNode`'s checksum calculation.
+
 
 ## MapUtils
 
@@ -148,6 +159,10 @@ Helper class to work with `java.util.Map`.
 - Extract typed-value from map.
 - Construct a map from flat array of objects.
 - Calculate map's checksum.
+
+***New since v0.6.3***
+
+- Remove method `long checksum(Map<?,?>)`, use `HashUtils.checksumXXX(...)` instead.
 
 
 ## ReflectionUtils
@@ -188,10 +203,10 @@ Helper methods to work with Apache Thrift.
 
 Utility to work with unsigned `long`s and `int`s, radix up to `62` (`0-9`, `A-Z` and `a-z`).
 
-* `parseInt(s, radix)`: parse a unsigned int with the given radix, up to `62`.
-* `parseLong(s, radix)`: parse a unsigned long with the given radix, up to `62`.
-* `toString(intValue, radix)`: convert a unsigned int to string for the given radix, up to `62`.
-* `toString(longValue, radix)`: convert a unsigned long to string for the given radix, up to `62`.
+- `parseInt(s, radix)`: parse a unsigned int with the given radix, up to `62`.
+- `parseLong(s, radix)`: parse a unsigned long with the given radix, up to `62`.
+- `toString(intValue, radix)`: convert a unsigned int to string for the given radix, up to `62`.
+- `toString(longValue, radix)`: convert a unsigned long to string for the given radix, up to `62`.
 
 
 ## ValueUtils

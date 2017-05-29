@@ -2,7 +2,6 @@ package com.github.ddth.commons.utils;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -285,48 +284,137 @@ public class JacksonUtils {
         DPathUtils.deleteValue(node, dPath);
     }
 
-    private final static Charset UTF8 = Charset.forName("UTF-8");
-
     /**
-     * Calculate checksum of a {@link JsonNode}.
+     * Calculate checksum of a {@link JsonNode}, using a supplied hash function.
      * 
      * <ul>
      * <li>Checksum is calculated recursively (e.g. child-nodes are included).</li>
-     * <li>If the target node is null, {@link NullNode} or {@link MissingNode}, value {@code 0} is
-     * returned.</li>
-     * <li>If the target node is {@link ObjectNode}, checksum is independent of order of
-     * child-keys.</li>
+     * <li>If target node is {@code null}, {@link NullNode} or {@link MissingNode}, value {@code 0}
+     * is returned.</li>
+     * <li>If target node is {@link ValueNode}, hash it using the supplied {@code hashFunc} and
+     * return the hash value as long.</li>
+     * <li>If target node is {@link ArrayNode}: combine each child-node's checksum in-order and
+     * return the final hash value as long.</li>
+     * <li>If target node is {@link ObjectNode}: combine each child-node's checksum (node's named
+     * included) un-order and return the final hash value as long.</li>
+     * <li>Otherwise, return {@code obj.hashCode()}</li>
      * </ul>
-     * </p>
      * 
-     * @param map
+     * @param node
+     * @param hashFunc
      * @return
-     * @since 0.6.2
+     * @since 0.6.3
      */
-    public static long checksum(JsonNode node) {
-        final HashFunction hashFunc = Hashing.murmur3_128(0);
+    public static long checksum(JsonNode node, HashFunction hashFunc) {
+        if (node == null || node instanceof NullNode || node instanceof MissingNode) {
+            return 0;
+        }
         if (node instanceof ValueNode) {
-            return hashFunc.hashString(node.toString(), UTF8).asLong();
+            return hashFunc.hashString(node.toString(), HashUtils.UTF8).asLong();
         }
         if (node instanceof ArrayNode) {
             final List<HashCode> hashCodes = new ArrayList<>();
             for (JsonNode child : node) {
-                hashCodes.add(hashFunc.newHasher().putLong(checksum(child)).hash());
+                hashCodes.add(hashFunc.newHasher().putLong(checksum(child, hashFunc)).hash());
             }
-            return hashCodes.size() > 0 ? Hashing.combineUnordered(hashCodes).padToLong() : 0;
+            return hashCodes.size() > 0 ? Hashing.combineOrdered(hashCodes).padToLong() : 0;
         }
         if (node instanceof ObjectNode) {
             final List<HashCode> hashCodes = new ArrayList<>();
             node.fields().forEachRemaining(new Consumer<Entry<String, JsonNode>>() {
                 @Override
                 public void accept(Entry<String, JsonNode> entry) {
-                    hashCodes.add(hashFunc.newHasher().putString(entry.getKey(), UTF8)
-                            .putLong(checksum(entry.getValue())).hash());
+                    hashCodes.add(hashFunc.newHasher().putString(entry.getKey(), HashUtils.UTF8)
+                            .putLong(checksum(entry.getValue(), hashFunc)).hash());
                 }
             });
             return hashCodes.size() > 0 ? Hashing.combineUnordered(hashCodes).padToLong() : 0;
         }
-        return 0;
+        return node.hashCode();
+    }
+
+    /**
+     * Calculate checksum of a {@link JsonNode} using default hash function.
+     * 
+     * @param node
+     * @return
+     * @see #checksum(JsonNode, HashFunction)
+     * @since 0.6.2
+     */
+    public static long checksum(JsonNode node) {
+        return checksum(node, HashUtils.fastHashFunc);
+    }
+
+    /**
+     * Calculate checksum of a {@link JsonNode} using Murmur3 hash.
+     * 
+     * @param node
+     * @return
+     * @see #checksum(JsonNode, HashFunction)
+     * @since 0.6.3
+     */
+    public static long checksumMurmur3(JsonNode node) {
+        return checksum(node, HashUtils.murmur3);
+    }
+
+    /**
+     * Calculate checksum of a {@link JsonNode} using CRC32 hash.
+     * 
+     * @param node
+     * @return
+     * @see #checksum(JsonNode, HashFunction)
+     * @since 0.6.3
+     */
+    public static long checksumCrc32(JsonNode node) {
+        return checksum(node, HashUtils.crc32);
+    }
+
+    /**
+     * Calculate checksum of a {@link JsonNode} using MD5 hash.
+     * 
+     * @param node
+     * @return
+     * @see #checksum(JsonNode, HashFunction)
+     * @since 0.6.3
+     */
+    public static long checksumMd5(JsonNode node) {
+        return checksum(node, HashUtils.md5);
+    }
+
+    /**
+     * Calculate checksum of a {@link JsonNode} using SHA1 hash.
+     * 
+     * @param node
+     * @return
+     * @see #checksum(JsonNode, HashFunction)
+     * @since 0.6.3
+     */
+    public static long checksumSha1(JsonNode node) {
+        return checksum(node, HashUtils.sha1);
+    }
+
+    /**
+     * Calculate checksum of a {@link JsonNode} using SHA256 hash.
+     * 
+     * @param node
+     * @return
+     * @see #checksum(JsonNode, HashFunction)
+     * @since 0.6.3
+     */
+    public static long checksumSha256(JsonNode node) {
+        return checksum(node, HashUtils.sha256);
+    }
+
+    /**
+     * Calculate checksum of a {@link JsonNode} using SHA512 hash.
+     * 
+     * @param node
+     * @return
+     * @see #checksum(JsonNode, HashFunction)
+     * @since 0.6.3
+     */
+    public static long checksumSha512(JsonNode node) {
+        return checksum(node, HashUtils.sha512);
     }
 
     /*----------------------------------------------------------------------*/
