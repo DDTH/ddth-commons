@@ -1,10 +1,11 @@
 ddth-commons release notes
 ==========================
 
-0.6.2.1 - 2017-05-29
+0.6.2.2 - 2017-05-29
 --------------------
 
 - New method `long JacksonUtils.checksum(JsonNode)`: calculate checksum of a `JsonNode`.
+- Bug fix: `long JacksonUtils.checksum(JsonNode)` handle exception `"Must be at least 1 hash code to combine"` when node if empty.
 
 
 0.6.2 - 2017-05-28

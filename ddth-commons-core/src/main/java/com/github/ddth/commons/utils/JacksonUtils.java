@@ -313,7 +313,7 @@ public class JacksonUtils {
             for (JsonNode child : node) {
                 hashCodes.add(hashFunc.newHasher().putLong(checksum(child)).hash());
             }
-            return Hashing.combineUnordered(hashCodes).padToLong();
+            return hashCodes.size() > 0 ? Hashing.combineUnordered(hashCodes).padToLong() : 0;
         }
         if (node instanceof ObjectNode) {
             final List<HashCode> hashCodes = new ArrayList<>();
@@ -324,7 +324,7 @@ public class JacksonUtils {
                             .putLong(checksum(entry.getValue())).hash());
                 }
             });
-            return Hashing.combineUnordered(hashCodes).padToLong();
+            return hashCodes.size() > 0 ? Hashing.combineUnordered(hashCodes).padToLong() : 0;
         }
         return 0;
     }
