@@ -217,10 +217,7 @@ public class DPathUtils {
      */
     public static Date getDate(Object target, String dPath, String dateTimeFormat) {
         Object obj = getValue(target, dPath);
-        return obj instanceof Number ? new Date(((Number) obj).longValue())
-                : (obj instanceof String
-                        ? DateFormatUtils.fromString(obj.toString(), dateTimeFormat)
-                        : (obj instanceof Date ? (Date) obj : null));
+        return ValueUtils.convertDate(obj, dateTimeFormat);
     }
 
     /**
@@ -269,11 +266,8 @@ public class DPathUtils {
      * @since 0.6.2
      */
     public static Date getDate(JsonNode node, String dPath, String dateTimeFormat) {
-        Object obj = getValue(node, dPath);
-        return obj instanceof Number ? new Date(((Number) obj).longValue())
-                : (obj instanceof String
-                        ? DateFormatUtils.fromString(obj.toString(), dateTimeFormat)
-                        : (obj instanceof Date ? (Date) obj : null));
+        JsonNode obj = getValue(node, dPath);
+        return ValueUtils.convertDate(obj, dateTimeFormat);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.github.ddth.commons.test.utils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.github.ddth.commons.utils.DPathUtils;
+import com.github.ddth.commons.utils.DateFormatUtils;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -24,19 +26,23 @@ public class DPathUtilsTest extends TestCase {
         return new TestSuite(DPathUtilsTest.class);
     }
 
-    private Map<String, Object> COMPANY;
-    private final String COMPANY_NAME = "Monster Corp.";
-    private final int COMPANY_YEAR = 2003;
+    private static Map<String, Object> COMPANY;
+    private static final String COMPANY_NAME = "Monster Corp.";
+    private static final int COMPANY_YEAR = 2003;
 
-    private final String EMPLOYEE1_FIRST_NAME = "Mike";
-    private final String EMPLOYEE1_LAST_NAME = "Wazowski";
-    private final String EMPLOYEE1_EMAIL = "mike.wazowski@monster.com";
-    private final int EMPLOYEE1_AGE = 29;
+    private final static String EMPLOYEE1_FIRST_NAME = "Mike";
+    private final static String EMPLOYEE1_LAST_NAME = "Wazowski";
+    private final static String EMPLOYEE1_EMAIL = "mike.wazowski@monster.com";
+    private final static int EMPLOYEE1_AGE = 29;
+    private final static String EMPLOYEE1_JOIN_DATE = "Apr 29, 2011";
+    private final static String EMPLOYEE1_JOIN_DATE_DF = "MMM d, yyyy";
 
-    private final String EMPLOYEE2_FIRST_NAME = "Sulley";
-    private final String EMPLOYEE2_LAST_NAME = "Sullivan";
-    private final String EMPLOYEE2_EMAIL = "sulley.sullivan@monster.com";
-    private final int EMPLOYEE2_AGE = 30;
+    private final static String EMPLOYEE2_FIRST_NAME = "Sulley";
+    private final static String EMPLOYEE2_LAST_NAME = "Sullivan";
+    private final static String EMPLOYEE2_EMAIL = "sulley.sullivan@monster.com";
+    private final static int EMPLOYEE2_AGE = 30;
+    private final static String EMPLOYEE2_JOIN_DATE = "2012-03-01 01:30:00 PM";
+    private final static String EMPLOYEE2_JOIN_DATE_DF = "yyyy-MM-dd hh:mm:ss a";
 
     @Before
     public void setUp() {
@@ -52,6 +58,7 @@ public class DPathUtilsTest extends TestCase {
         employee1.put("last_name", EMPLOYEE1_LAST_NAME);
         employee1.put("email", EMPLOYEE1_EMAIL);
         employee1.put("age", EMPLOYEE1_AGE);
+        employee1.put("join_date", EMPLOYEE1_JOIN_DATE);
         employees.add(employee1);
 
         Map<String, Object> employee2 = new HashMap<String, Object>();
@@ -59,6 +66,7 @@ public class DPathUtilsTest extends TestCase {
         employee2.put("last_name", EMPLOYEE2_LAST_NAME);
         employee2.put("email", EMPLOYEE2_EMAIL);
         employee2.put("age", EMPLOYEE2_AGE);
+        employee2.put("join_date", EMPLOYEE2_JOIN_DATE);
         employees.add(employee2);
 
         COMPANY = company;
@@ -186,6 +194,18 @@ public class DPathUtilsTest extends TestCase {
 
         Object employee2Email = DPathUtils.getValue(COMPANY, "employees[1].email");
         assertEquals(EMPLOYEE2_EMAIL, employee2Email.toString());
+
+        Date employee1JoinDate = DPathUtils.getDate(COMPANY, "employees[0].join_date",
+                EMPLOYEE1_JOIN_DATE_DF);
+        assertNotNull(employee1JoinDate);
+        assertEquals(DateFormatUtils.toString(employee1JoinDate, EMPLOYEE1_JOIN_DATE_DF),
+                EMPLOYEE1_JOIN_DATE);
+
+        Date employee2JoinDate = DPathUtils.getDate(COMPANY, "employees[1].join_date",
+                EMPLOYEE2_JOIN_DATE_DF);
+        assertNotNull(employee2JoinDate);
+        assertEquals(DateFormatUtils.toString(employee2JoinDate, EMPLOYEE2_JOIN_DATE_DF),
+                EMPLOYEE2_JOIN_DATE);
 
         Throwable t = null;
         try {

@@ -156,6 +156,22 @@ public class ValueUtils {
     }
 
     /**
+     * Convert a target object to {@link Date}. If the target object is a string, parse it as a
+     * {@link Date} using the specified date-time format.
+     * 
+     * @param target
+     * @param dateTimeFormat
+     * @return
+     * @since 0.6.3.1
+     */
+    public static Date convertDate(Object target, String dateTimeFormat) {
+        return target instanceof Number ? new Date(((Number) target).longValue())
+                : (target instanceof String
+                        ? DateFormatUtils.fromString(target.toString(), dateTimeFormat)
+                        : (target instanceof Date ? (Date) target : null));
+    }
+
+    /**
      * Convert a target object to {@link List}.
      * 
      * @param target
@@ -324,6 +340,20 @@ public class ValueUtils {
         } catch (ParseException e) {
             return null;
         }
+    }
+
+    /**
+     * Convert a {@link JsonNode} to {@link Date}. If the target node is a string, parse it as a
+     * {@link Date} using the specified date-time format.
+     * 
+     * @param node
+     * @return
+     * @since 0.6.3.1
+     */
+    public static Date convertDate(JsonNode node, String dateTimeFormat) {
+        return node.isNumber() ? new Date(node.asLong())
+                : node.isTextual() ? DateFormatUtils.fromString(node.asText(), dateTimeFormat)
+                        : null;
     }
 
     /**

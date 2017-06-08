@@ -1,6 +1,20 @@
 ddth-commons release notes
 ==========================
 
+0.6.3.1 - 2017-06-08
+--------------------
+
+- `MapUtils`:
+  - New method `Date getDate(Map<String, Object>, String, String)`
+  - Change signature of method `createMap` to `public static <K extends Object, V extends Object> Map<K, V> createMap(Object... keysAndValues)`
+- `DPathUtils`:
+  - Bug fix: method `Date getDate(JsonNode, String, String)` now correctly extract date value from `JsonNode`
+  - Enhancement: methods `Date getDate(Object, String, String)` and `Date getDate(JsonNode, String, String)` delegates work to `ValueUtils.getDate(...)`
+- `ValueUtils`:
+  - New methods `Date convertDate(Object, String)` and `Date convertDate(JsonNode, String)`
+- More unit tests.
+
+
 0.6.3 - 2017-05-30
 ------------------
 

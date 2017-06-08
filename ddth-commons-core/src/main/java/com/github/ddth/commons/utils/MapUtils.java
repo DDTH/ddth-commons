@@ -1,5 +1,6 @@
 package com.github.ddth.commons.utils;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -10,6 +11,24 @@ import java.util.Map;
  * @since 0.6.1
  */
 public class MapUtils {
+
+    /**
+     * Extract a date value from the map. If the extracted value is
+     * a string, parse it as a {@link Date} using the specified date-time format.
+     * 
+     * @param map
+     * @param key
+     * @param dateTimeFormat
+     * @return
+     * @since 0.6.3.1
+     */
+    public static Date getDate(Map<String, Object> map, String key, String dateTimeFormat) {
+        Object obj = map.get(key);
+        return obj instanceof Number ? new Date(((Number) obj).longValue())
+                : (obj instanceof String
+                        ? DateFormatUtils.fromString(obj.toString(), dateTimeFormat)
+                        : (obj instanceof Date ? (Date) obj : null));
+    }
 
     /**
      * Extract a value from a map.
@@ -24,26 +43,25 @@ public class MapUtils {
     }
 
     /**
-     * Create a {@link Map&lt;String, Object&gt;} from flat array of objects.
+     * Create a {@link Map} from flat array of objects.
      * 
      * @param keysAndValues
      * @return
      */
-    public static Map<String, Object> createMap(Object... keysAndValues) {
+    @SuppressWarnings("unchecked")
+    public static <K extends Object, V extends Object> Map<K, V> createMap(
+            Object... keysAndValues) {
         if (keysAndValues == null) {
             return null;
         }
         if (keysAndValues.length % 2 != 0) {
             throw new IllegalArgumentException("Number of arguments must be even!");
         }
-        return new LinkedHashMap<String, Object>() {
-            private static final long serialVersionUID = 1L;
-            {
-                for (int i = 0, n = keysAndValues.length / 2; i < n; i++) {
-                    put(keysAndValues[i * 2].toString(), keysAndValues[i * 2 + 1]);
-                }
-            }
-        };
+        Map<K, V> result = new LinkedHashMap<>();
+        for (int i = 0, n = keysAndValues.length / 2; i < n; i++) {
+            result.put((K) keysAndValues[i * 2], (V) keysAndValues[i * 2 + 1]);
+        }
+        return result;
     }
 
 }

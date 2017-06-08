@@ -1,6 +1,7 @@
 package com.github.ddth.commons.test.utils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.ddth.commons.utils.DPathUtils;
+import com.github.ddth.commons.utils.DateFormatUtils;
 import com.github.ddth.commons.utils.JacksonUtils;
 
 import junit.framework.Test;
@@ -37,11 +39,15 @@ public class DPathUtilsJsonNodeTest extends TestCase {
     private final String EMPLOYEE1_LAST_NAME = "Wazowski";
     private final String EMPLOYEE1_EMAIL = "mike.wazowski@monster.com";
     private final int EMPLOYEE1_AGE = 29;
+    private final static String EMPLOYEE1_JOIN_DATE = "Apr 29, 2011";
+    private final static String EMPLOYEE1_JOIN_DATE_DF = "MMM d, yyyy";
 
     private final String EMPLOYEE2_FIRST_NAME = "Sulley";
     private final String EMPLOYEE2_LAST_NAME = "Sullivan";
     private final String EMPLOYEE2_EMAIL = "sulley.sullivan@monster.com";
     private final int EMPLOYEE2_AGE = 30;
+    private final static String EMPLOYEE2_JOIN_DATE = "2012-03-01 01:30:00 PM";
+    private final static String EMPLOYEE2_JOIN_DATE_DF = "yyyy-MM-dd hh:mm:ss a";
 
     @Before
     public void setUp() {
@@ -57,6 +63,7 @@ public class DPathUtilsJsonNodeTest extends TestCase {
         employee1.put("last_name", EMPLOYEE1_LAST_NAME);
         employee1.put("email", EMPLOYEE1_EMAIL);
         employee1.put("age", EMPLOYEE1_AGE);
+        employee1.put("join_date", EMPLOYEE1_JOIN_DATE);
         employees.add(employee1);
 
         Map<String, Object> employee2 = new HashMap<String, Object>();
@@ -64,6 +71,7 @@ public class DPathUtilsJsonNodeTest extends TestCase {
         employee2.put("last_name", EMPLOYEE2_LAST_NAME);
         employee2.put("email", EMPLOYEE2_EMAIL);
         employee2.put("age", EMPLOYEE2_AGE);
+        employee2.put("join_date", EMPLOYEE2_JOIN_DATE);
         employees.add(employee2);
 
         COMPANY = JacksonUtils.toJson(company);
@@ -71,110 +79,6 @@ public class DPathUtilsJsonNodeTest extends TestCase {
 
     @After
     public void tearDown() {
-    }
-
-    @org.junit.Test
-    public void testSplitDpath() {
-        {
-            String dpath = "a.b.c.d";
-            String[] paths = DPathUtils.splitDpath(dpath);
-            assertEquals(4, paths.length);
-            assertEquals("a", paths[0]);
-            assertEquals("b", paths[1]);
-            assertEquals("c", paths[2]);
-            assertEquals("d", paths[3]);
-        }
-
-        {
-            String dpath = "a.b.c.[i].d";
-            String[] paths = DPathUtils.splitDpath(dpath);
-            assertEquals(5, paths.length);
-            assertEquals("a", paths[0]);
-            assertEquals("b", paths[1]);
-            assertEquals("c", paths[2]);
-            assertEquals("[i]", paths[3]);
-            assertEquals("d", paths[4]);
-        }
-
-        {
-            String dpath = "a.b.c.d[i]";
-            String[] paths = DPathUtils.splitDpath(dpath);
-            assertEquals(5, paths.length);
-            assertEquals("a", paths[0]);
-            assertEquals("b", paths[1]);
-            assertEquals("c", paths[2]);
-            assertEquals("d", paths[3]);
-            assertEquals("[i]", paths[4]);
-        }
-
-        {
-            String dpath = "a.b.c[i].d";
-            String[] paths = DPathUtils.splitDpath(dpath);
-            assertEquals(5, paths.length);
-            assertEquals("a", paths[0]);
-            assertEquals("b", paths[1]);
-            assertEquals("c", paths[2]);
-            assertEquals("[i]", paths[3]);
-            assertEquals("d", paths[4]);
-        }
-
-        {
-            String dpath = "a.b.c.[i]d";
-            String[] paths = DPathUtils.splitDpath(dpath);
-            assertEquals(4, paths.length);
-            assertEquals("a", paths[0]);
-            assertEquals("b", paths[1]);
-            assertEquals("c", paths[2]);
-            assertEquals("[i]d", paths[3]);
-        }
-
-        {
-            String dpath = "a.b.c.[i].[j].d";
-            String[] paths = DPathUtils.splitDpath(dpath);
-            assertEquals(6, paths.length);
-            assertEquals("a", paths[0]);
-            assertEquals("b", paths[1]);
-            assertEquals("c", paths[2]);
-            assertEquals("[i]", paths[3]);
-            assertEquals("[j]", paths[4]);
-            assertEquals("d", paths[5]);
-        }
-
-        {
-            String dpath = "a.b.c.[i][j].d";
-            String[] paths = DPathUtils.splitDpath(dpath);
-            assertEquals(6, paths.length);
-            assertEquals("a", paths[0]);
-            assertEquals("b", paths[1]);
-            assertEquals("c", paths[2]);
-            assertEquals("[i]", paths[3]);
-            assertEquals("[j]", paths[4]);
-            assertEquals("d", paths[5]);
-        }
-
-        {
-            String dpath = "a.b.c[i].[j].d";
-            String[] paths = DPathUtils.splitDpath(dpath);
-            assertEquals(6, paths.length);
-            assertEquals("a", paths[0]);
-            assertEquals("b", paths[1]);
-            assertEquals("c", paths[2]);
-            assertEquals("[i]", paths[3]);
-            assertEquals("[j]", paths[4]);
-            assertEquals("d", paths[5]);
-        }
-
-        {
-            String dpath = "a.b.c[i][j].d";
-            String[] paths = DPathUtils.splitDpath(dpath);
-            assertEquals(6, paths.length);
-            assertEquals("a", paths[0]);
-            assertEquals("b", paths[1]);
-            assertEquals("c", paths[2]);
-            assertEquals("[i]", paths[3]);
-            assertEquals("[j]", paths[4]);
-            assertEquals("d", paths[5]);
-        }
     }
 
     @SuppressWarnings("unused")
@@ -192,6 +96,18 @@ public class DPathUtilsJsonNodeTest extends TestCase {
         Object employee2Email = DPathUtils.getValue(COMPANY, "employees[1].email");
         assertTrue(employee2Email instanceof TextNode);
         assertEquals(EMPLOYEE2_EMAIL, ((TextNode) employee2Email).asText());
+
+        Date employee1JoinDate = DPathUtils.getDate(COMPANY, "employees[0].join_date",
+                EMPLOYEE1_JOIN_DATE_DF);
+        assertNotNull(employee1JoinDate);
+        assertEquals(DateFormatUtils.toString(employee1JoinDate, EMPLOYEE1_JOIN_DATE_DF),
+                EMPLOYEE1_JOIN_DATE);
+
+        Date employee2JoinDate = DPathUtils.getDate(COMPANY, "employees[1].join_date",
+                EMPLOYEE2_JOIN_DATE_DF);
+        assertNotNull(employee2JoinDate);
+        assertEquals(DateFormatUtils.toString(employee2JoinDate, EMPLOYEE2_JOIN_DATE_DF),
+                EMPLOYEE2_JOIN_DATE);
 
         Throwable t = null;
         try {
