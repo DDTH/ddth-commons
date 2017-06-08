@@ -333,6 +333,9 @@ public class ValueUtils {
      * @return
      */
     public static Date convertDate(JsonNode node) {
+        if (node == null) {
+            return null;
+        }
         DateFormat df = new SimpleDateFormat();
         try {
             return node.isNumber() ? new Date(node.asLong())
@@ -351,6 +354,9 @@ public class ValueUtils {
      * @since 0.6.3.1
      */
     public static Date convertDate(JsonNode node, String dateTimeFormat) {
+        if (node == null) {
+            return null;
+        }
         return node.isNumber() ? new Date(node.asLong())
                 : node.isTextual() ? DateFormatUtils.fromString(node.asText(), dateTimeFormat)
                         : null;
