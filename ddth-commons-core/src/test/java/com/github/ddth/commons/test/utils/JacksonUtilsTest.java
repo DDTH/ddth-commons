@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.github.ddth.commons.utils.DPathUtils;
 import com.github.ddth.commons.utils.DateFormatUtils;
 import com.github.ddth.commons.utils.JacksonUtils;
 
@@ -21,14 +20,14 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class DPathUtilsJsonNodeTest extends TestCase {
+public class JacksonUtilsTest extends TestCase {
 
-    public DPathUtilsJsonNodeTest(String testName) {
+    public JacksonUtilsTest(String testName) {
         super(testName);
     }
 
     public static Test suite() {
-        return new TestSuite(DPathUtilsJsonNodeTest.class);
+        return new TestSuite(JacksonUtilsTest.class);
     }
 
     private JsonNode COMPANY;
@@ -83,26 +82,26 @@ public class DPathUtilsJsonNodeTest extends TestCase {
 
     @org.junit.Test
     public void testGetValue() {
-        String companyName = DPathUtils.getValue(COMPANY, "name", String.class);
+        String companyName = JacksonUtils.getValue(COMPANY, "name", String.class);
         assertEquals(COMPANY_NAME, companyName);
 
-        Long companyYear = DPathUtils.getValue(COMPANY, "year", Long.class);
+        Long companyYear = JacksonUtils.getValue(COMPANY, "year", Long.class);
         assertEquals(COMPANY_YEAR, companyYear.intValue());
 
-        Integer employee1Age = DPathUtils.getValue(COMPANY, "employees.[0].age", Integer.class);
+        Integer employee1Age = JacksonUtils.getValue(COMPANY, "employees.[0].age", Integer.class);
         assertEquals(EMPLOYEE1_AGE, employee1Age.intValue());
 
-        Object employee2Email = DPathUtils.getValue(COMPANY, "employees[1].email");
+        Object employee2Email = JacksonUtils.getValue(COMPANY, "employees[1].email");
         assertTrue(employee2Email instanceof TextNode);
         assertEquals(EMPLOYEE2_EMAIL, ((TextNode) employee2Email).asText());
 
-        Date employee1JoinDate = DPathUtils.getDate(COMPANY, "employees[0].join_date",
+        Date employee1JoinDate = JacksonUtils.getDate(COMPANY, "employees[0].join_date",
                 EMPLOYEE1_JOIN_DATE_DF);
         assertNotNull(employee1JoinDate);
         assertEquals(DateFormatUtils.toString(employee1JoinDate, EMPLOYEE1_JOIN_DATE_DF),
                 EMPLOYEE1_JOIN_DATE);
 
-        Date employee2JoinDate = DPathUtils.getDate(COMPANY, "employees[1].join_date",
+        Date employee2JoinDate = JacksonUtils.getDate(COMPANY, "employees[1].join_date",
                 EMPLOYEE2_JOIN_DATE_DF);
         assertNotNull(employee2JoinDate);
         assertEquals(DateFormatUtils.toString(employee2JoinDate, EMPLOYEE2_JOIN_DATE_DF),
@@ -110,7 +109,7 @@ public class DPathUtilsJsonNodeTest extends TestCase {
 
         Throwable t = null;
         try {
-            DPathUtils.getValue(COMPANY, "employees[-1]", Map.class);
+            JacksonUtils.getValue(COMPANY, "employees[-1]", Map.class);
         } catch (IllegalArgumentException e) {
             t = e.getCause();
         } catch (IndexOutOfBoundsException e) {
@@ -121,19 +120,19 @@ public class DPathUtilsJsonNodeTest extends TestCase {
 
     @org.junit.Test
     public void testSetValue() {
-        JsonNode notExists = DPathUtils.getValue(COMPANY, "employees.[0].not_found");
+        JsonNode notExists = JacksonUtils.getValue(COMPANY, "employees.[0].not_found");
         assertNull(notExists);
 
-        DPathUtils.setValue(COMPANY, "employees[0].not_found", "not_found");
-        JsonNode exists = DPathUtils.getValue(COMPANY, "employees[0].not_found");
+        JacksonUtils.setValue(COMPANY, "employees[0].not_found", "not_found");
+        JsonNode exists = JacksonUtils.getValue(COMPANY, "employees[0].not_found");
         assertTrue(exists instanceof TextNode);
         assertEquals("not_found", ((TextNode) exists).asText());
     }
 
     @org.junit.Test
     public void testSetValue2() {
-        DPathUtils.setValue(COMPANY, "employees[0]", null);
-        JsonNode nullNow = DPathUtils.getValue(COMPANY, "employees[0]");
+        JacksonUtils.setValue(COMPANY, "employees[0]", null);
+        JsonNode nullNow = JacksonUtils.getValue(COMPANY, "employees[0]");
         assertTrue(
                 nullNow == null || nullNow instanceof NullNode || nullNow instanceof MissingNode);
     }
@@ -142,7 +141,7 @@ public class DPathUtilsJsonNodeTest extends TestCase {
     public void testSetValue3() {
         Throwable t = null;
         try {
-            DPathUtils.getValue(COMPANY, "employees[2].email");
+            JacksonUtils.getValue(COMPANY, "employees[2].email");
         } catch (IllegalArgumentException e) {
             t = e.getCause();
         } catch (IndexOutOfBoundsException e) {
@@ -150,25 +149,25 @@ public class DPathUtilsJsonNodeTest extends TestCase {
         }
         assertNotNull(t);
 
-        DPathUtils.setValue(COMPANY, "employees[2].email", "email3@monster.com", true);
+        JacksonUtils.setValue(COMPANY, "employees[2].email", "email3@monster.com", true);
 
-        String employee3Email = DPathUtils.getValue(COMPANY, "employees[2].email", String.class);
+        String employee3Email = JacksonUtils.getValue(COMPANY, "employees[2].email", String.class);
         assertEquals("email3@monster.com", employee3Email);
     }
 
     @org.junit.Test
     public void testDeleteValue() {
-        DPathUtils.deleteValue(COMPANY, "employees[0]");
-        List<?> employees = DPathUtils.getValue(COMPANY, "employees", List.class);
+        JacksonUtils.deleteValue(COMPANY, "employees[0]");
+        List<?> employees = JacksonUtils.getValue(COMPANY, "employees", List.class);
         assertEquals(1, employees.size());
     }
 
     @org.junit.Test
     public void testDeleteValue2() {
-        String employee1Email = DPathUtils.getValue(COMPANY, "employees.[0].email", String.class);
+        String employee1Email = JacksonUtils.getValue(COMPANY, "employees.[0].email", String.class);
         assertNotNull(employee1Email);
 
-        DPathUtils.deleteValue(COMPANY, "employees[0].email");
-        assertNull(DPathUtils.getValue(COMPANY, "employees.[0].email"));
+        JacksonUtils.deleteValue(COMPANY, "employees[0].email");
+        assertNull(JacksonUtils.getValue(COMPANY, "employees.[0].email"));
     }
 }

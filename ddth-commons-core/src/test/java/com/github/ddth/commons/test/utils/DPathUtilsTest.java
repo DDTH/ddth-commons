@@ -180,7 +180,6 @@ public class DPathUtilsTest extends TestCase {
         }
     }
 
-    @SuppressWarnings("unused")
     @org.junit.Test
     public void testGetValue() {
         String companyName = DPathUtils.getValue(COMPANY, "name", String.class);
@@ -209,7 +208,7 @@ public class DPathUtilsTest extends TestCase {
 
         Throwable t = null;
         try {
-            Object user3 = DPathUtils.getValue(COMPANY, "employees[-1]", Map.class);
+            DPathUtils.getValue(COMPANY, "employees[-1]", Map.class);
         } catch (IllegalArgumentException e) {
             t = e.getCause();
         } catch (IndexOutOfBoundsException e) {
@@ -235,12 +234,11 @@ public class DPathUtilsTest extends TestCase {
         assertNull(nullNow);
     }
 
-    @SuppressWarnings("unused")
     @org.junit.Test
     public void testSetValue3() {
         Throwable t = null;
         try {
-            Object email = DPathUtils.getValue(COMPANY, "employees[2].email");
+            DPathUtils.getValue(COMPANY, "employees[2].email");
         } catch (IllegalArgumentException e) {
             t = e.getCause();
         } catch (IndexOutOfBoundsException e) {

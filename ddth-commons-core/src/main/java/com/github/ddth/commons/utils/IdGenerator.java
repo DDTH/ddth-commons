@@ -33,7 +33,7 @@ public class IdGenerator {
                     macAddr = (macAddr << 8) | ((int) temp & 0xFF);
                 }
             } catch (Exception e) {
-                macAddr = System.currentTimeMillis();
+                macAddr = 0;
             }
         }
         return macAddr;
@@ -74,30 +74,30 @@ public class IdGenerator {
     private final static long MASK_NODE_ID_MINI = 0x0L; // 0 bits
     private final static long MASK_SEQUENCE_MINI = 0x7FL; // 7 bits
     private final static long MAX_SEQUENCE_MINI = 0x7FL; // 7 bits
-    private final static long SHIFT_TIMESTAMP_MINI = 7L;
-    private final static long SHIFT_NODE_ID_MINI = 7L;
+    private final static int SHIFT_TIMESTAMP_MINI = 7;
+    private final static int SHIFT_NODE_ID_MINI = 7;
 
     private final static long MASK_TIMESTAMP_48 = 0xFFFFFFFFL; // 32 bits
     private final static long MASK_NODE_ID_48 = 0x7L; // 3 bits
     private final static long MASK_SEQUENCE_48 = 0x1FFFL; // 13 bits
     private final static long MAX_SEQUENCE_48 = 0x1FFFL; // 13 bits
-    private final static long SHIFT_TIMESTAMP_48 = 16L;
-    private final static long SHIFT_NODE_ID_48 = 13L;
+    private final static int SHIFT_TIMESTAMP_48 = 16;
+    private final static int SHIFT_NODE_ID_48 = 13;
 
     private final static long MASK_TIMESTAMP_64 = 0x1FFFFFFFFFFL; // 41 bits
     private final static long MASK_NODE_ID_64 = 0x3FFL; // 10 bits
     private final static long MASK_SEQUENCE_64 = 0x1FFFL; // 13 bits
     private final static long MAX_SEQUENCE_64 = 0x1FFFL; // 13 bits
-    private final static long SHIFT_TIMESTAMP_64 = 23L;
-    private final static long SHIFT_NODE_ID_64 = 13L;
+    private final static int SHIFT_TIMESTAMP_64 = 23;
+    private final static int SHIFT_NODE_ID_64 = 13;
     // private final static long TIMESTAMP_EPOCH = 1330534800000L; // 1-Mar-2012
     public final static long TIMESTAMP_EPOCH = 1362070800000L; // 1-Mar-2013
 
     private final static long MASK_NODE_ID_128 = 0xFFFFFFFFFFFFL; // 48 bits
     private final static long MASK_SEQUENCE_128 = 0xFFFF; // 16 bits
     private final static long MAX_SEQUENCE_128 = 0xFFFF; // 16 bits
-    private final static long SHIFT_TIMESTAMP_128 = 64L;
-    private final static long SHIFT_NODE_ID_128 = 16L;
+    private final static int SHIFT_TIMESTAMP_128 = 64;
+    private final static int SHIFT_NODE_ID_128 = 16;
 
     private long nodeId;
     private long template48, template64, templateMini;
@@ -117,11 +117,10 @@ public class IdGenerator {
     }
 
     protected void init() {
-        this.templateMini = (this.nodeId & MASK_NODE_ID_MINI) << SHIFT_NODE_ID_MINI;
-        this.template64 = (this.nodeId & MASK_NODE_ID_64) << SHIFT_NODE_ID_64;
-        this.template48 = (this.nodeId & MASK_NODE_ID_48) << SHIFT_NODE_ID_48;
-        this.template128 = BigInteger
-                .valueOf((this.nodeId & MASK_NODE_ID_128) << SHIFT_NODE_ID_128);
+        templateMini = (nodeId & MASK_NODE_ID_MINI) << SHIFT_NODE_ID_MINI;
+        template64 = (nodeId & MASK_NODE_ID_64) << SHIFT_NODE_ID_64;
+        template48 = (nodeId & MASK_NODE_ID_48) << SHIFT_NODE_ID_48;
+        template128 = BigInteger.valueOf(nodeId & MASK_NODE_ID_128).shiftLeft(SHIFT_NODE_ID_128);
     }
 
     protected void destroy() {
@@ -634,5 +633,11 @@ public class IdGenerator {
     public static long extractTimestamp128Ascii(String id128ascii) {
         BigInteger id128 = new BigInteger(id128ascii, Character.MAX_RADIX);
         return extractTimestamp128(id128);
+    }
+
+    public static void main(String[] args) {
+        long mac = 203308018088012L;
+        IdGenerator idGen = IdGenerator.getInstance(mac);
+        System.out.println(idGen.generateId128Hex());
     }
 }

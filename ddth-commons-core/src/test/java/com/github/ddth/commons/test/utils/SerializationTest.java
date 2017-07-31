@@ -135,59 +135,10 @@ public class SerializationTest extends TestCase {
         Map<String, Object> company = SerializationUtils.fromJsonString(json, Map.class);
         assertNotNull(company);
 
+        // two objects must be content-equaled, but not instances.
         assertEquals(company, COMPANY);
         assertFalse(company == COMPANY);
     }
-
-    // @org.junit.Test
-    // public void testJboss1() {
-    // byte[] bytearr;
-    // Object obj;
-    //
-    // Object objNull = null;
-    // bytearr = SerializationUtils.toByteArrayJboss(objNull);
-    // obj = SerializationUtils.fromByteArrayJboss(bytearr);
-    // assertNull(obj);
-    //
-    // Map<String, Object> emptyMap = new HashMap<String, Object>();
-    // bytearr = SerializationUtils.toByteArrayJboss(emptyMap);
-    // obj = SerializationUtils.fromByteArrayJboss(bytearr);
-    // assertTrue(obj instanceof Map);
-    // obj = SerializationUtils.fromByteArrayJboss(bytearr, Map.class);
-    // assertTrue(obj instanceof Map);
-    //
-    // List<Object> emptyList = new ArrayList<Object>();
-    // bytearr = SerializationUtils.toByteArrayJboss(emptyList);
-    // obj = SerializationUtils.fromByteArrayJboss(bytearr);
-    // assertTrue(obj instanceof List);
-    // obj = SerializationUtils.fromByteArrayJboss(bytearr, List.class);
-    // assertTrue(obj instanceof List);
-    //
-    // int[] emptyArray = new int[0];
-    // bytearr = SerializationUtils.toByteArrayJboss(emptyArray);
-    // obj = SerializationUtils.fromByteArrayJboss(bytearr);
-    // assertTrue(obj instanceof int[]);
-    // obj = SerializationUtils.fromByteArrayJboss(bytearr, int[].class);
-    // assertTrue(obj instanceof int[]);
-    //
-    // Set<String> emptySet = new HashSet<String>();
-    // bytearr = SerializationUtils.toByteArrayJboss(emptySet);
-    // obj = SerializationUtils.fromByteArrayJboss(bytearr);
-    // assertTrue(obj instanceof Set);
-    // obj = SerializationUtils.fromByteArrayJboss(bytearr, Set.class);
-    // assertTrue(obj instanceof Set);
-    // }
-
-    // @SuppressWarnings("unchecked")
-    // @org.junit.Test
-    // public void testJboss2() {
-    // byte[] bytearr = SerializationUtils.toByteArrayJboss(COMPANY);
-    // Map<String, Object> company = SerializationUtils.fromByteArrayJboss(bytearr, Map.class);
-    // assertNotNull(company);
-    //
-    // assertEquals(company, COMPANY);
-    // assertFalse(company == COMPANY);
-    // }
 
     @org.junit.Test
     public void testKryo1() {
@@ -235,6 +186,7 @@ public class SerializationTest extends TestCase {
         Map<String, Object> company = SerializationUtils.fromByteArrayKryo(bytearr, Map.class);
         assertNotNull(company);
 
+        // two objects must be content-equaled, but not instances.
         assertEquals(company, COMPANY);
         assertFalse(company == COMPANY);
     }
@@ -285,13 +237,9 @@ public class SerializationTest extends TestCase {
         Map<String, Object> company = SerializationUtils.fromByteArrayFst(bytearr, Map.class);
         assertNotNull(company);
 
+        // two objects must be content-equaled, but not instances.
         assertEquals(company, COMPANY);
         assertFalse(company == COMPANY);
     }
 
-    public static void main(String[] args) {
-        // System.out.println(SerializationUtils.fromJsonString(""));
-        // System.out.println(SerializationUtils.fromJsonString("{}"));
-        // System.out.println(SerializationUtils.fromJsonString("{a}"));
-    }
 }

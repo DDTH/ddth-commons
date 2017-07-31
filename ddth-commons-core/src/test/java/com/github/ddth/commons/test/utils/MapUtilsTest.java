@@ -51,9 +51,9 @@ public class MapUtilsTest extends TestCase {
 
     @org.junit.Test
     public void testCreateMap() {
-        Map<String, Object> map = MapUtils.createMap("first_name", EMPLOYEE_FIRST_NAME, "last_name",
-                EMPLOYEE_LAST_NAME, "email", EMPLOYEE_EMAIL, "age", EMPLOYEE_AGE, "join_date",
-                EMPLOYEE_JOIN_DATE);
+        Map<String, Object> map = MapUtils.createMap("join_date", EMPLOYEE_JOIN_DATE, "age",
+                EMPLOYEE_AGE, "email", EMPLOYEE_EMAIL, "last_name", EMPLOYEE_LAST_NAME,
+                "first_name", EMPLOYEE_FIRST_NAME);
         assertNotNull(map);
 
         assertEquals(map, EMPLOYEE);
@@ -61,10 +61,11 @@ public class MapUtilsTest extends TestCase {
 
     @org.junit.Test
     public void testChecksum() {
-        Map<String, Object> map = MapUtils.createMap("first_name", EMPLOYEE_FIRST_NAME, "last_name",
-                EMPLOYEE_LAST_NAME, "email", EMPLOYEE_EMAIL, "age", EMPLOYEE_AGE, "join_date",
-                EMPLOYEE_JOIN_DATE);
+        Map<String, Object> map = MapUtils.createMap("join_date", EMPLOYEE_JOIN_DATE, "age",
+                EMPLOYEE_AGE, "email", EMPLOYEE_EMAIL, "last_name", EMPLOYEE_LAST_NAME,
+                "first_name", EMPLOYEE_FIRST_NAME);
         assertNotNull(map);
+
         assertEquals(HashUtils.checksum(map), HashUtils.checksum(EMPLOYEE));
         assertEquals(HashUtils.checksumCrc32(map), HashUtils.checksumCrc32(EMPLOYEE));
         assertEquals(HashUtils.checksumMd5(map), HashUtils.checksumMd5(EMPLOYEE));

@@ -191,6 +191,19 @@ public class JacksonUtils {
     }
 
     /**
+     * Extract value from a {@link JsonNode} as a date. If the extracted value is string, parse it
+     * as {@link Date} using the specified date-time format.
+     * 
+     * @param node
+     * @param dateTimeFormat
+     * @return
+     * @since 0.6.3.3
+     */
+    public static Date asDate(JsonNode node, String dateTimeFormat) {
+        return node != null ? ValueUtils.convertDate(node, dateTimeFormat) : null;
+    }
+
+    /**
      * Extract a date value from the target {@link JsonNode} using DPath expression. If the
      * extracted value is
      * a string, parse it as a {@link Date} using the specified date-time format.

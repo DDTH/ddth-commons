@@ -155,6 +155,7 @@ public class SerializationJsonNodeTest extends TestCase {
         Map<String, Object> company = SerializationUtils.fromJson(json, Map.class);
         assertNotNull(company);
 
+        // two objects must be content-equaled, but not instances.
         assertEquals(company, COMPANY);
         assertFalse(company == COMPANY);
     }

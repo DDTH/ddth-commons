@@ -1,0 +1,15 @@
+sudo: false
+
+language: java
+jdk:
+  - oraclejdk8
+
+cache:
+  directories:
+  - $HOME/.m2
+
+before_install:
+
+after_script:
+
+services:
