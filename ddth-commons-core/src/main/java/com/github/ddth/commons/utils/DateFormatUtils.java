@@ -28,6 +28,11 @@ import com.google.common.cache.RemovalNotification;
 public class DateFormatUtils {
 
     /**
+     * @since 0.7.0
+     */
+    public final static String DF_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
+    /**
      * @since 0.2.2.3
      */
     private final static class MyDateFormat extends SimpleDateFormat {
@@ -153,5 +158,10 @@ public class DateFormatUtils {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void main(String[] args) {
+        String DF_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+        System.out.println(DateFormatUtils.toString(new Date(), DF_ISO8601));
     }
 }

@@ -1,5 +1,12 @@
 # ddth-commons release notes
 
+## 0.7.0 - 2017-07-31
+
+- `DateFormatUtils`: new constant `DF_ISO8601` defining ISO8601 datetime format 
+- New class `AESUtils`
+- New class `RSAUtils`
+
+
 ## 0.6.3.3 - 2017-07-31
 
 - `IdUtils`: fixed a bug that caused generated 128-bit IDs are negative.

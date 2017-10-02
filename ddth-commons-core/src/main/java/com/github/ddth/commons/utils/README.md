@@ -1,10 +1,23 @@
 # com.github.ddth.commons.utils
 
+## AESUtils
+
+AES encryption utility class.
+
+- Default: 128-bit encryption key
+- Default: `AES/ECB/PKCS5PADDING` transformation
+- Support custom transformation and IV
+
+
 ## DateFormatUtils
 
 Utility to format a `java.util.Date` to string, and parse a string to `java.util.Date`.
 
 - Use a pool of `java.text.DateFormat`s for multi-threading environment.
+
+***New since v0.6.1***
+
+- New constant `DF_ISO8601`: ISO8601 datetime format
 
 
 ## DateTimeUtils
@@ -170,6 +183,15 @@ Helper class to work with `java.util.Map`.
 ***New sintce v0.5.0***
 
 Reflection utility class.
+
+
+## RSAUtils
+
+RSA encryption utility class.
+
+- Default: 512, 1024, 2048 bit encryption key
+- Default: `RSA/ECB/PKCS1Padding` transformation (11-byte padding size)
+- Support custom transformation and padding size
 
 
 ## SerializationUtils
