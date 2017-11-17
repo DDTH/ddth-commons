@@ -1,6 +1,6 @@
 # ddth-commons release notes
 
-## 0.7.1 - 2017-11-17
+## 0.7.1.1 - 2017-11-17
 
 - `DPathUtils`: new methods `Optional<...> getValueOptional(...)`
 - `JacksonUtils`: new methods `Optional<...> getValueOptional(...)`
