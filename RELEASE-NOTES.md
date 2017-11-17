@@ -1,5 +1,11 @@
 # ddth-commons release notes
 
+## 0.7.1 - 2017-11-17
+
+- `DPathUtils`: new methods `Optional<...> getValueOptional(...)`
+- `JacksonUtils`: new methods `Optional<...> getValueOptional(...)`
+
+
 ## 0.7.0.1 - 2017-10-07
 
 - `DateFormatUtils`: new constant `DF_ISO8601` defining ISO8601 datetime format 

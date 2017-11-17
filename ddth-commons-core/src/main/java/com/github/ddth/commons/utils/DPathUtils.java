@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -238,7 +239,21 @@ public class DPathUtils {
     }
 
     /**
-     * Extract a value from the target {@link JsonNode} using DPath expression.
+     * Extract a value from the target object using DPath expression (generic
+     * version).
+     * 
+     * @param target
+     * @param dPath
+     * @param clazz
+     * @return
+     * @since 0.7.1
+     */
+    public static <T> Optional<T> getValueOptional(Object target, String dPath, Class<T> clazz) {
+        return Optional.ofNullable(getValue(target, dPath, clazz));
+    }
+
+    /**
+     * Extract a value from the target object using DPath expression.
      * 
      * @param target
      * @param dPath
@@ -252,11 +267,22 @@ public class DPathUtils {
         return result;
     }
 
+    /**
+     * Extract a value from the target object using DPath expression.
+     * 
+     * @param target
+     * @param dPath
+     * @return
+     * @since 0.7.1
+     */
+    public static Optional<Object> getValueOptional(Object target, String dPath) {
+        return Optional.ofNullable(getValue(target, dPath));
+    }
+
     /*----------------------------------------------------------------------*/
     /**
      * Extract a date value from the target {@link JsonNode} using DPath expression. If the
-     * extracted value is
-     * a string, parse it as a {@link Date} using the specified date-time format.
+     * extracted value is a string, parse it as a {@link Date} using the specified date-time format.
      * 
      * @param node
      * @param dPath
@@ -289,6 +315,20 @@ public class DPathUtils {
     }
 
     /**
+     * Extract a value from the target {@link JsonNode} using DPath expression (generic
+     * version).
+     * 
+     * @param node
+     * @param dPath
+     * @param clazz
+     * @return
+     * @since 0.7.1
+     */
+    public static <T> Optional<T> getValueOptional(JsonNode node, String dPath, Class<T> clazz) {
+        return Optional.ofNullable(getValue(node, dPath, clazz));
+    }
+
+    /**
      * Extract a value from the target {@link JsonNode} using DPath expression.
      * 
      * @param node
@@ -302,6 +342,18 @@ public class DPathUtils {
             result = extractValue(result, path);
         }
         return result;
+    }
+
+    /**
+     * Extract a value from the target {@link JsonNode} using DPath expression.
+     * 
+     * @param node
+     * @param dPath
+     * @return
+     * @since 0.7.1
+     */
+    public static Optional<JsonNode> getValueOptional(JsonNode node, String dPath) {
+        return Optional.ofNullable(getValue(node, dPath));
     }
 
     /*----------------------------------------------------------------------*/

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -234,6 +235,21 @@ public class JacksonUtils {
     }
 
     /**
+     * Extract a value from the target {@link JsonNode} using DPath expression (generic
+     * version).
+     * 
+     * @param node
+     * @param dPath
+     * @param clazz
+     * @return
+     * @since 0.7.1
+     * @see DPathUtils
+     */
+    public static <T> Optional<T> getValueOptional(JsonNode node, String dPath, Class<T> clazz) {
+        return Optional.ofNullable(getValue(node, dPath, clazz));
+    }
+
+    /**
      * Extract a value from the target {@link JsonNode} using DPath expression.
      * 
      * @param node
@@ -242,6 +258,19 @@ public class JacksonUtils {
      */
     public static JsonNode getValue(JsonNode node, String dPath) {
         return DPathUtils.getValue(node, dPath);
+    }
+
+    /**
+     * Extract a value from the target {@link JsonNode} using DPath expression.
+     * 
+     * @param node
+     * @param dPath
+     * @return
+     * @since 0.7.1
+     * @see DPathUtils
+     */
+    public static Optional<JsonNode> getValueOptional(JsonNode node, String dPath) {
+        return Optional.ofNullable(getValue(node, dPath));
     }
 
     /**
