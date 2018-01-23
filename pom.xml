@@ -18,6 +18,8 @@
 
 	<modules>
 		<module>ddth-commons-core</module>
+        <module>ddth-commons-jedis</module>
+        <module>ddth-commons-rocksdb</module>
 		<module>ddth-commons-serialization</module>
 		<module>ddth-commons-spring</module>
 		<module>ddth-commons-thrift</module>
@@ -47,14 +49,15 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<version.spring>4.3.11.RELEASE</version.spring>
+		<version.spring>5.0.2.RELEASE</version.spring>
 		<version.spring_osgi>1.2.1</version.spring_osgi>
 		<version.guava>19.0</version.guava>
-		<version.libthrift>0.10.0</version.libthrift>
-
-		<version.jackson>2.9.1</version.jackson>
+		<version.libthrift>0.11.0</version.libthrift>
+		<version.jackson>2.9.3</version.jackson>
 		<version.kryo>4.0.1</version.kryo>
-		<version.fst>2.53</version.fst>
+		<version.fst>2.57</version.fst>
+		<version.jedis>2.9.0</version.jedis>
+        <version.rocksdb>5.9.2</version.rocksdb>
 	</properties>
 
 	<repositories>
@@ -88,18 +91,16 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.25</version>
 		</dependency>
-		<!-- <dependency> <groupId>log4j</groupId> <artifactId>log4j</artifactId> 
-			<version>1.2.17</version> </dependency> -->
 
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>19.0</version>
+			<version>${version.guava}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-pool2</artifactId>
-			<version>2.4.2</version>
+			<version>2.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -109,12 +110,12 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
-			<version>1.1</version>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.5</version>
+			<version>2.6</version>
 		</dependency>
 
 		<!-- for SpringUtils -->
@@ -200,6 +201,22 @@
 			<version>${version.libthrift}</version>
 			<optional>true</optional>
 		</dependency>
+
+		<!-- for JedisConnector & JedisUtils -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${version.jedis}</version>
+			<optional>true</optional>
+		</dependency>
+		
+		<!-- for RocksDbWrapper & RocksDbUtils -->
+        <dependency>
+            <groupId>org.rocksdb</groupId>
+            <artifactId>rocksdbjni</artifactId>
+            <version>${version.rocksdb}</version>
+            <optional>true</optional>
+        </dependency>
 	</dependencies>
 
 	<build>

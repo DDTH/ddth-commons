@@ -5,3 +5,7 @@
 /release.properties
 /.README.md.html
 /.RELEASE-NOTES.md.html
+*.iml
+.DS_Store
+/.idea
+

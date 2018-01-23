@@ -1,5 +1,13 @@
 # ddth-commons release notes
 
+## 0.8.0 - 2018-01-22
+
+- New module `ddth-commons-jedis`:
+  - New classes `JedisConnector` and `JedisUtils`: Helper class(es) to work with [Redis](https://redis.io) servers using [Jedis](https://github.com/xetorthio/jedis).
+- New module `ddth-commons-rocksdb`:
+  - New classes `RocksDbWrapper` and `RocksDbUtils`: Helper class(es) to work with [RocksDb](http://rocksdb.org).
+
+
 ## 0.7.1.1 - 2017-11-17
 
 - `DPathUtils`: new methods `Optional<...> getValueOptional(...)`
