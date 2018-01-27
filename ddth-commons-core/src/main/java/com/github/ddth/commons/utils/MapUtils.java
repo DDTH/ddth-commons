@@ -64,4 +64,21 @@ public class MapUtils {
         return result;
     }
 
+    /**
+     * Remove null values from map.
+     * 
+     * @param map
+     * @return
+     * @since 0.9.0
+     */
+    public static <K, V> Map<K, V> removeNulls(Map<K, V> map) {
+        Map<K, V> result = new LinkedHashMap<>();
+        map.forEach((k, v) -> {
+            if (v != null) {
+                result.put(k, v);
+            }
+        });
+        return result;
+    }
+
 }

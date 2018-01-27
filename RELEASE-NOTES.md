@@ -1,5 +1,10 @@
 # ddth-commons release notes
 
+## 0.9.0 - 2018-01-27
+
+- New module `ddth-commons-jsonrpc`
+
+
 ## 0.8.0 - 2018-01-22
 
 - New module `ddth-commons-jedis`:

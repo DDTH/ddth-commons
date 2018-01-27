@@ -19,7 +19,7 @@ Third party libraries are distributed under their own license(s).
 
 ## Installation
 
-Latest release version: `0.8.0`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
+Latest release version: `0.9.0`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 Maven dependency: if only a sub-set of `ddth-commons` functionality is used, choose the corresponding
 dependency artifact(s) to reduce the number of unused jar files.
@@ -30,7 +30,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons-core</artifactId>
-	<version>0.8.0</version>
+	<version>0.9.0</version>
 </dependency>
 ```
 
@@ -40,10 +40,22 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-jedis</artifactId>
-    <version>0.8.0</version>
+    <version>0.9.0</version>
     <type>pom</type>
 </dependency>
 ```
+
+*ddth-commons-jsonrpc*: include all *ddth-commons-core* annd *ddth-commons-serialization* dependencies.
+
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-jsonrpc</artifactId>
+    <version>0.9.0</version>
+    <type>pom</type>
+</dependency>
+```
+
 
 *ddth-commons-rocksdb*: include all *ddth-commons-core* and RocksDB JNI dependencies.
 
@@ -51,7 +63,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-rocksdb</artifactId>
-    <version>0.8.0</version>
+    <version>0.9.0</version>
     <type>pom</type>
 </dependency>
 ```
@@ -62,7 +74,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-spring</artifactId>
-    <version>0.8.0</version>
+    <version>0.9.0</version>
     <type>pom</type>
 </dependency>
 ```
@@ -73,18 +85,18 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-thrift</artifactId>
-    <version>0.8.0</version>
+    <version>0.9.0</version>
     <type>pom</type>
 </dependency>
 ```
 
-*ddth-commons-serialization*: include all *ddth-commons-core* and Jboss-serialization, FasterXML Jackson, Kryo and FST dependencies.
+*ddth-commons-serialization*: include all *ddth-commons-core* and FasterXML Jackson, Kryo and FST dependencies.
 
 ```xml
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-serialization</artifactId>
-    <version>0.8.0</version>
+    <version>0.9.0</version>
     <type>pom</type>
 </dependency>
 ```
@@ -92,5 +104,8 @@ dependency artifact(s) to reduce the number of unused jar files.
 
 ## Utility/Helper Classes
 
-* See: [com.github.ddth.commons.utils](src/main/java/com/github/ddth/commons/utils/README.md).
+* See: [com.github.ddth.commons.jsonrpc](src/main/java/com/github/ddth/commons/jsonrpc/README.md).
 * See: [com.github.ddth.commons.osgi](src/main/java/com/github/ddth/commons/osgi/README.md).
+* See: [com.github.ddth.commons.redis](src/main/java/com/github/ddth/commons/redis/README.md).
+* See: [com.github.ddth.commons.rocksdb](src/main/java/com/github/ddth/commons/rocksdb/README.md).
+* See: [com.github.ddth.commons.utils](src/main/java/com/github/ddth/commons/utils/README.md).
