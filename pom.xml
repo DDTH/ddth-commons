@@ -19,10 +19,11 @@
 
 	<modules>
 		<module>ddth-commons-core</module>
+        <module>ddth-commons-serialization</module>
+        
 		<module>ddth-commons-jedis</module>
         <module>ddth-commons-jsonrpc</module>
 		<module>ddth-commons-rocksdb</module>
-		<module>ddth-commons-serialization</module>
 		<module>ddth-commons-spring</module>
 		<module>ddth-commons-thrift</module>
 	</modules>
