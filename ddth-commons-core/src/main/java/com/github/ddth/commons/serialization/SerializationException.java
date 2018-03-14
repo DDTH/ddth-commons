@@ -6,7 +6,7 @@ package com.github.ddth.commons.serialization;
  * @author Thanh Nguyen <btnguyen2k@gmail.com>
  * @since 0.5.0
  */
-public class SerializationException extends RuntimeException {
+public class SerializationException extends SerDeserException {
 
     private static final long serialVersionUID = 1L;
 

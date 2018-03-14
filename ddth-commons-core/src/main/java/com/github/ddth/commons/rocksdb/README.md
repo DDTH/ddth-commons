@@ -2,15 +2,20 @@
 
 ***New since v0.8.0***
 
-## RocksDbUtils
+Helper class(es) to work with [RocksDB](http://rocksdb.org):
 
-[RocksDB](https://github.com/facebook/rocksdb/wiki/RocksJava-Basics) helper utility class.
+***Maven***
 
-## RocksDbWrapper and JedisUtils
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-rocksdb</artifactId>
+    <version>${ddth_commons_version}</version>
+    <type>pom</type>
+</dependency>
+```
 
-***New since v0.8.0***
-
-Helper class(es) to work with [RocksDB](http://rocksdb.org).
+## Class `RocksDbUtils` & `RocksDbWrapper`
 
 - Helper methods to open RocksDB database.
 - Wrapper class to GET/PUT/DELETE RocksDB data.

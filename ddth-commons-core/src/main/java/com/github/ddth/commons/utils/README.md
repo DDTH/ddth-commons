@@ -1,6 +1,18 @@
 # com.github.ddth.commons.utils
 
-## AESUtils
+## Included in `ddth-commons-core`
+
+***Maven***
+
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-core</artifactId>
+    <version>${ddth_commons_version}</version>
+</dependency>
+```
+
+### AESUtils
 
 AES encryption utility class.
 
@@ -9,7 +21,7 @@ AES encryption utility class.
 - Support custom transformation and IV
 
 
-## DateFormatUtils
+### DateFormatUtils
 
 Utility to format a `java.util.Date` to string, and parse a string to `java.util.Date`.
 
@@ -20,12 +32,12 @@ Utility to format a `java.util.Date` to string, and parse a string to `java.util
 - New constant `DF_ISO8601`: ISO8601 datetime format
 
 
-## DateTimeUtils
+### DateTimeUtils
 
 Helper class to work with `java.util.Date` and `java.util.Calendar`.
 
 
-## DPathUtils
+### DPathUtils
 
 Utility to access data from a hierarchy structure.
 
@@ -100,16 +112,16 @@ Long age2 = DPathUtils.getValue(company, "employees.[1].age", Long.class);
 
 ***New since v0.6.2***
 
-- `DPathUtils` now supports reading/writing values from/to Jackson's JSON tree.
+- `DPathUtils` now supports reading/writing values from/to Jackson's JSON tree (need `ddth-commons-serialization`).
 
 
-## HashUtils
+### HashUtils
 
 Helper class to calculate hash values.
 
-- fash hashing function.
-- linear hashing maps an object to a bucket (object -> [0, numBuckets)).
-- consistent hashing map an object to a bucket (object -> [0, numBuckets)).
+- Fash hashing function.
+- Linear hashing maps an object to a bucket (object -> [0, numBuckets)).
+- Consistent hashing map an object to a bucket (object -> [0, numBuckets)).
 - CRC32, MD5, SHA1, SHA256, SHA512 hashing functions.
 
 ***New since v0.6.3***
@@ -120,7 +132,7 @@ Helper class to calculate hash values.
 - New attribute `fashHashFunc`: alias of `murmur3`.
 
 
-## IdGenerator
+### IdGenerator
 
 A Java implementation of Twitter Snowflake algorithm to generate IDs.
 
@@ -135,12 +147,97 @@ String id128Hex = idGen.generateId128Hex();
 ...
 ```
 
-## Ipv4Utils
+### Ipv4Utils
 
 IPV4 utility class.
 
 - Convert IP number to long (e.g. 10.0.0.1 -> 167772161) and vice versa.
 - Check if an IP (e.g. 10.0.0.5) matches a subnet (e.g. 10.0.0.0/24).
+
+
+### MapUtils
+
+***New since v0.6.1***
+
+Helper class to work with `java.util.Map`.
+
+- Extract typed-value from map.
+- Construct a map from flat array of objects.
+- Calculate map's checksum.
+
+***New since v0.6.3***
+
+- Remove method `long checksum(Map<?,?>)`, use `HashUtils.checksumXXX(...)` instead.
+
+
+### ReflectionUtils
+
+***New sintce v0.5.0***
+
+Reflection utility class.
+
+
+### RSAUtils
+
+RSA encryption utility class.
+
+- Default: 512, 1024, 2048 bit encryption key
+- Default: `RSA/ECB/PKCS1Padding` transformation (11-byte padding size)
+- Support custom transformation and padding size
+
+
+### UnsignedUtils
+
+Utility to work with unsigned `long`s and `int`s, radix up to `62` (`0-9`, `A-Z` and `a-z`).
+
+- `parseInt(s, radix)`: parse a unsigned int with the given radix, up to `62`.
+- `parseLong(s, radix)`: parse a unsigned long with the given radix, up to `62`.
+- `toString(intValue, radix)`: convert a unsigned int to string for the given radix, up to `62`.
+- `toString(longValue, radix)`: convert a unsigned long to string for the given radix, up to `62`.
+
+
+### ValueUtils
+
+***New since v0.6.1***
+
+Common utility class used by `MapUtils`, `DPathUtils` and `JacksonUtils` (need `ddth-commons-serialization`).
+
+
+### VersionUtils
+
+Utility to compare two version strings.
+
+```java
+/* "0.1.2" < "0.1.10", returns a negative number */
+VersionUtils.compareVersions("0.1.2", "0.1.10");
+
+/* "0.2.0" > "0.1.19", returns a positive number */
+VersionUtils.compareVersions("0.2.0", "0.1.19");
+```
+
+
+## Included in `ddth-commons-serialization`
+
+***Maven***
+
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-serialization</artifactId>
+    <version>${ddth_commons_version}</version>
+</dependency>
+```
+
+### SerializationUtils
+
+***New since v0.2.0***
+
+- Serialize/De-serialize object to/from JSON string (use FasterXML's Jackson library).
+- Serialize/De-serialize objecct to/from `byte[]` (use Jboss Serialization libary).
+
+***New since v0.6.2***
+
+- Serialize/De-serialize object to/from Jackson's `JsonNode`.
 
 
 ## JacksonUtils
@@ -163,89 +260,66 @@ Helper class to work with Jackson's `JsonNode`.
 - Improve `JsonNode`'s checksum calculation.
 
 
-## MapUtils
+## Included in `ddth-commons-spring`
 
-***New since v0.6.1***
+***Maven***
 
-Helper class to work with `java.util.Map`.
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-spring</artifactId>
+    <version>${ddth_commons_version}</version>
+</dependency>
+```
 
-- Extract typed-value from map.
-- Construct a map from flat array of objects.
-- Calculate map's checksum.
+### SpringUtils
 
-***New since v0.6.3***
+Helper class to obtain Spring's beans from an `ApplicationContext`.
 
-- Remove method `long checksum(Map<?,?>)`, use `HashUtils.checksumXXX(...)` instead.
-
-
-## ReflectionUtils
-
-***New sintce v0.5.0***
-
-Reflection utility class.
+- Get a bean/beans, return `null` or empty collection on `NoSuchBeanDefinitionException`
 
 
-## RSAUtils
+## Included in `ddth-commons-thrift`
 
-RSA encryption utility class.
+***Maven***
 
-- Default: 512, 1024, 2048 bit encryption key
-- Default: `RSA/ECB/PKCS1Padding` transformation (11-byte padding size)
-- Support custom transformation and padding size
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-thrift</artifactId>
+    <version>${ddth_commons_version}</version>
+</dependency>
+```
 
-
-## SerializationUtils
-
-***New since v0.2.0***
-
-- Serialize/De-serialize object to/from JSON string (use FasterXML's Jackson library).
-- Serialize/De-serialize objecct to/from `byte[]` (use Jboss Serialization libary).
-
-***New since v0.6.2***
-
-- Serialize/De-serialize object to/from Jackson's `JsonNode`.
-
-
-## SpringUtils
-
-Helper methods to obtain Spring's beans from an `ApplicationContext`.
-
-
-## ThriftUtils
+### ThriftUtils
 
 ***New since v0.4.0***
 
-Helper methods to work with Apache Thrift.
+Helper class to work with Apache Thrift.
 
 - Serialize/De-serialize a thrift `TBase` object to/from `byte[]`.
 - Helper methods to create various thrift servers.
 
 
-## UnsignedUtils
+## Included in `ddth-commons-typesafeconfig`
 
-Utility to work with unsigned `long`s and `int`s, radix up to `62` (`0-9`, `A-Z` and `a-z`).
+***Maven***
 
-- `parseInt(s, radix)`: parse a unsigned int with the given radix, up to `62`.
-- `parseLong(s, radix)`: parse a unsigned long with the given radix, up to `62`.
-- `toString(intValue, radix)`: convert a unsigned int to string for the given radix, up to `62`.
-- `toString(longValue, radix)`: convert a unsigned long to string for the given radix, up to `62`.
-
-
-## ValueUtils
-
-***New since v0.6.1***
-
-Common utility class used by `MapUtils`, `DPathUtils` and `JacksonUtils`.
-
-
-## VersionUtils
-
-Utility to compare two version strings.
-
-```java
-/* "0.1.2" < "0.1.10", returns a negative number */
-VersionUtils.compareVersions("0.1.2", "0.1.10");
-
-/* "0.2.0" > "0.1.19", returns a positive number */
-VersionUtils.compareVersions("0.2.0", "0.1.19");
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-typesafeconfig</artifactId>
+    <version>${ddth_commons_version}</version>
+</dependency>
 ```
+
+### TypesafeConfigUtils
+
+***New since v0.9.1***
+
+Helper class to work with application's config file:
+
+- Support various formats: HOCON, JSON, Properties, etc (see https://github.com/lightbend/config)
+- Load, Parse & Resolve config files
+- Helper methods to retrieve config value(s) as Java object(s)
+- Return `null` in case of `ConfigException.Missing`, `ConfigException.WrongType` or `ConfigException.BadValue`

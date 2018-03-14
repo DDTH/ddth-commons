@@ -1,8 +1,18 @@
-com.github.ddth.commons.osgi
-============================
+# com.github.ddth.commons.osgi
 
-AbstractActivator
------------------
+OSGi utility and helper classes.
+
+***Maven***
+
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-core</artifactId>
+    <version>${ddth_commons_version}</version>
+</dependency>
+```
+
+## Class `AbstractActivator`
 
 An abstract implementation of `BundleActivator`. OSGi bundle can extend this class as a starting point to implement its bundle activator. `AbstractActivator` provides following utilities:
 
@@ -12,7 +22,6 @@ An abstract implementation of `BundleActivator`. OSGi bundle can extend this cla
 - Helper method for bundle to register services.
 
 
-AbstractSpringActivator
------------------------
+## Class `AbstractSpringActivator`
 
 This abstract implementation of `BundleActivator` help you implement Spring-aware bundles within OSGi environment.

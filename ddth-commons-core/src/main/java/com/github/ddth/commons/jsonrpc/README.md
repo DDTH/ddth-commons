@@ -12,6 +12,17 @@ This package assumes the following conventions:
   - `message`: (`string`) RPC call's error/additional message (if any)
   - `data`   : (`object`) RPC call's output result
 
+***Maven***
+
+```xml
+<dependency>
+    <groupId>com.github.ddth</groupId>
+    <artifactId>ddth-commons-jsonrpc</artifactId>
+    <version>${ddth_commons_version}</version>
+    <type>pom</type>
+</dependency>
+```
+
 ## Class `RequestResponse`
 
 Capture RPC's request and response:
