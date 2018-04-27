@@ -1,5 +1,12 @@
 # ddth-commons release notes
 
+## 0.9.1.1 - 2018-04-27
+
+- Bug fixes & enhancements.
+- Update dependencies.
+- More unit tests.
+
+
 ## 0.9.0 - 2018-01-27
 
 - New module `ddth-commons-jsonrpc`

@@ -33,6 +33,7 @@ public class JedisUtils {
         poolConfig.setMaxWaitMillis(5000);
         poolConfig.setTestOnBorrow(false);
         poolConfig.setTestWhileIdle(true);
+        defaultJedisPoolConfig = poolConfig;
     }
 
     /**

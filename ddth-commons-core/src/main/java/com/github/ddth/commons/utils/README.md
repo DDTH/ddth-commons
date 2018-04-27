@@ -36,6 +36,8 @@ Utility to format a `java.util.Date` to string, and parse a string to `java.util
 
 Helper class to work with `java.util.Date` and `java.util.Calendar`.
 
+- Calculate the start-of-second/minute/hour/day/week/month/year point of a supplied `Calendar`.
+
 
 ### DPathUtils
 

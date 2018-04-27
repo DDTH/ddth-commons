@@ -39,8 +39,8 @@ public class AESUtils {
 
     public final static String CIPHER_AES_CBC_NoPadding = "AES/CBC/NoPadding";
     public final static String CIPHER_AES_CBC_PKCS5Padding = "AES/CBC/PKCS5Padding";
-    public final static String CIPHER_AES_ECB_NoPadding = "AES/CBC/NoPadding";
-    public final static String CIPHER_AES_ECB_PKCS5Padding = "AES/CBC/PKCS5Padding";
+    public final static String CIPHER_AES_ECB_NoPadding = "AES/ECB/NoPadding";
+    public final static String CIPHER_AES_ECB_PKCS5Padding = "AES/ECB/PKCS5Padding";
 
     public final static String DEFAULT_CIPHER_TRANSFORMATION = CIPHER_AES_ECB_PKCS5Padding;
     public final static String DEFAULT_IV = "0000000000000000";
@@ -337,6 +337,26 @@ public class AESUtils {
      * @return
      */
     public static byte[] randomKeyAsBytes() {
+        return RSG.generate(16).getBytes(UTF8);
+    }
+
+    /**
+     * Generate a random AES IV.
+     * 
+     * @return
+     * @since 0.9.1
+     */
+    public static String randomIV() {
+        return RSG.generate(16);
+    }
+
+    /**
+     * Generate a random AES IV.
+     * 
+     * @return
+     * @since 0.9.1
+     */
+    public static byte[] randomIVAsBytes() {
         return RSG.generate(16).getBytes(UTF8);
     }
 

@@ -5,16 +5,9 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
@@ -28,6 +21,7 @@ import com.google.common.hash.Hashing;
  * @since 0.1.0
  */
 public class HashUtils {
+    public final static HashFunction murmur332bit = Hashing.murmur3_32(0);
     public final static HashFunction murmur3 = Hashing.murmur3_128(0);
     public final static HashFunction crc32 = Hashing.crc32();
     public final static HashFunction md5 = Hashing.md5();
@@ -151,14 +145,19 @@ public class HashUtils {
      * <p>
      * Note:
      * <ul>
-     * <li>Checksum of {@code int[1,2,3,4]} will be equal to {@code Integer[1,2,3,4]} and
-     * {@code List[1,2,3,4]}.</li>
-     * <li>Checksum of {@code Map{key1=>value1,key2=>value2}} will be equal to
-     * {@code Map{key2=>value2,key1=>value1}}.</li>
-     * <li>Checksum of {@code non-list-Collection{value1,value2}} will be equal to
-     * {@code non-list-Collection{value2,value1}}.</li>
-     * <li>Checksum of {@code Integer[1,2,3,4]} will NOT be equal to
-     * {@code non-list-Collection{1,2,3,4}}.</li>
+     * <li>{@code Checksum(BigInteger(x))} should NOT be equal to
+     * {@code Checksum(BigDecimal(x))}</li>
+     * <li>{@code Checksum(Double(x))} should be equal to {@code Checksum(Float(x))}</li>
+     * <li>{@code Checksum(Byte(x))}, {@code Checksum(Short(x))}, {@code Checksum(Integer(x))} and
+     * {@code Checksum(Long(x))} should be equal</li>
+     * <li>{@code Checksum(int[1,2,3,4])}, {@code Checksum(Long[1,2,3,4])} and
+     * {@code Checksum(List<integer-type>[1,2,3,4])} should be equal</li>
+     * <li>{@code Checksum(Map[key1=>value1,key2=>value2])} should be equal to
+     * {@code Checksum(Map[key2=>value2,key1=>value1])}</li>
+     * <li>{@code Checksum(non-list-Collection[value1,value2)} should be equal to
+     * {@code Checksum(non-list-Collection[value2,value1)}</li>
+     * <li>{@code Checksum(array[1,2,3,4])} and {@code Checksum(List[1,2,3,4])} should NOT be equal
+     * to {@code Checksum(non-list-Collection[1,2,3,4)}</li>
      * </ul>
      * </p>
      * 
@@ -171,24 +170,23 @@ public class HashUtils {
         if (obj == null) {
             return 0;
         }
-        if (obj instanceof Byte) {
-            return hashFunc.newHasher().putByte(((Byte) obj).byteValue()).hash().padToLong();
+        if (obj instanceof Number) {
+            /*
+             * BigDecimal & BigInteger should have same checksum value.
+             * Double & Float should have same checksum value.
+             * Integers (Byte, Short, Integer, Double) should have same checksum value.
+             */
+
+            Number num = (Number) obj;
+            if (num instanceof BigDecimal || num instanceof BigInteger) {
+                return hashFunc.newHasher().putInt(obj.hashCode()).hash().padToLong();
+            }
+            if (num instanceof Double || num instanceof Float) {
+                return hashFunc.newHasher().putDouble(num.doubleValue()).hash().padToLong();
+            }
+            return hashFunc.newHasher().putLong(num.longValue()).hash().padToLong();
         }
-        if (obj instanceof Short) {
-            return hashFunc.newHasher().putShort(((Short) obj).shortValue()).hash().padToLong();
-        }
-        if (obj instanceof Integer) {
-            return hashFunc.newHasher().putInt(((Integer) obj).intValue()).hash().padToLong();
-        }
-        if (obj instanceof Long) {
-            return hashFunc.newHasher().putLong(((Long) obj).longValue()).hash().padToLong();
-        }
-        if (obj instanceof Float) {
-            return hashFunc.newHasher().putFloat(((Float) obj).floatValue()).hash().padToLong();
-        }
-        if (obj instanceof Double) {
-            return hashFunc.newHasher().putDouble(((Double) obj).doubleValue()).hash().padToLong();
-        }
+
         if (obj instanceof Boolean) {
             return hashFunc.newHasher().putBoolean(((Boolean) obj).booleanValue()).hash()
                     .padToLong();
@@ -198,9 +196,6 @@ public class HashUtils {
         }
         if (obj instanceof String) {
             return hashFunc.newHasher().putString(obj.toString(), UTF8).hash().padToLong();
-        }
-        if (obj instanceof BigInteger || obj instanceof BigDecimal) {
-            return hashFunc.newHasher().putInt(obj.hashCode()).hash().padToLong();
         }
         if (obj instanceof byte[] || obj instanceof short[] || obj instanceof int[]
                 || obj instanceof long[] || obj instanceof float[] || obj instanceof double[]
@@ -256,7 +251,7 @@ public class HashUtils {
                 }
                 break;
             default:
-                throw new IllegalStateException("This shouldnot happen!");
+                throw new IllegalStateException("This should not happen!");
             }
             return hasher.hash().padToLong();
         }
@@ -295,7 +290,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates hash value of an object using a fast
+     * Calculate hash value of an object using a fast
      * non-cryptographic-strength hash function.
      * 
      * @param object
@@ -356,7 +351,35 @@ public class HashUtils {
     }
 
     /**
-     * Calculates Murmur3-hash value of a string.
+     * Calculate Murmur3-hash value (32-bit) of a string.
+     * 
+     * @param value
+     * @return
+     * @since 0.9.1.1
+     */
+    public static String murmur332bit(String value) {
+        if (value == null) {
+            return null;
+        }
+        return murmur332bit.hashString(value, UTF8).toString().toLowerCase();
+    }
+
+    /**
+     * Calculate Murmur3-hash value (32-bit) of a byte array.
+     * 
+     * @param value
+     * @return
+     * @since 0.9.1.1
+     */
+    public static String murmur332bit(byte[] value) {
+        if (value == null) {
+            return null;
+        }
+        return murmur332bit.hashBytes(value).toString().toLowerCase();
+    }
+
+    /**
+     * Calculate Murmur3-hash value (128-bit) of a string.
      * 
      * @param value
      * @return
@@ -370,7 +393,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates Murmur3-hash value of a byte array.
+     * Calculate Murmur3-hash value (128-bit) of a byte array.
      * 
      * @param value
      * @return
@@ -384,7 +407,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates CRC32-hash value of a string.
+     * Calculate CRC32-hash value of a string.
      * 
      * @param value
      * @return
@@ -397,7 +420,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates CRC32-hash value of a byte array.
+     * Calculate CRC32-hash value of a byte array.
      * 
      * @param value
      * @return
@@ -410,7 +433,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates MD5-hash value of a string.
+     * Calculate MD5-hash value of a string.
      * 
      * @param value
      * @return
@@ -423,7 +446,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates MD5-hash value of a byte array.
+     * Calculate MD5-hash value of a byte array.
      * 
      * @param value
      * @return
@@ -436,7 +459,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates SHA1-hash value of a string.
+     * Calculate SHA1-hash value of a string.
      * 
      * @param value
      * @return
@@ -449,7 +472,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates SHA1-hash value of a byte array.
+     * Calculate SHA1-hash value of a byte array.
      * 
      * @param value
      * @return
@@ -462,7 +485,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates SHA256-hash value of a string.
+     * Calculate SHA256-hash value of a string.
      * 
      * @param value
      * @return
@@ -475,7 +498,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates SHA256-hash value of a byte array.
+     * Calculate SHA256-hash value of a byte array.
      * 
      * @param value
      * @return
@@ -488,7 +511,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates SHA512-hash value of a string.
+     * Calculate SHA512-hash value of a string.
      * 
      * @param value
      * @return
@@ -501,7 +524,7 @@ public class HashUtils {
     }
 
     /**
-     * Calculates SHA512-hash value of a byte array.
+     * Calculate SHA512-hash value of a byte array.
      * 
      * @param value
      * @return
@@ -513,46 +536,4 @@ public class HashUtils {
         return sha512.hashBytes(value).toString().toLowerCase();
     }
 
-    /*----------------------------------------------------------------------*/
-    private static class MyClass {
-        public int age = 0;
-        public String name = "";
-        public boolean gender = false;
-
-        public int hashCode() {
-            HashCodeBuilder hcb = new HashCodeBuilder();
-            hcb.append(age).append(name).append(gender);
-            return hcb.hashCode();
-        }
-    }
-
-    public static void main(String[] args) {
-        Object data = new int[0];
-        System.out.println(data instanceof Object[]);
-
-        System.out.println(murmur3("demo"));
-
-        Map<String, Object> mapBase = new HashMap<String, Object>();
-        mapBase.put("key1", "value1");
-        mapBase.put("key2", 2);
-        mapBase.put("key3", 3.0);
-        mapBase.put("key4", true);
-        mapBase.put("key5", new MyClass());
-        System.out.println(HashUtils.checksumMurmur3(mapBase));
-
-        Map<String, Object> map1 = new HashMap<>(mapBase);
-        System.out.println(HashUtils.checksumMurmur3(map1));
-
-        Map<String, Object> map2 = new TreeMap<>(mapBase);
-        System.out.println(HashUtils.checksumMurmur3(map2));
-
-        Map<String, Object> map3 = new ConcurrentHashMap<>(mapBase);
-        System.out.println(HashUtils.checksumMurmur3(map3));
-
-        Map<String, Object> map4 = new LinkedHashMap<>(mapBase);
-        System.out.println(HashUtils.checksumMurmur3(map4));
-
-        Map<String, Object> map5 = new ConcurrentSkipListMap<>(mapBase);
-        System.out.println(HashUtils.checksumMurmur3(map5));
-    }
 }

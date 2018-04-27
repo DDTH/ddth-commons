@@ -40,6 +40,16 @@ public class IdGenerator {
     }
 
     /**
+     * Gets the default {@link IdGenerator} instance.
+     * 
+     * @return
+     * @since 0.9.1.1
+     */
+    public static IdGenerator getInstance() {
+        return getInstance(getMacAddr());
+    }
+
+    /**
      * Gets an {@link IdGenerator} instance for a node.
      * 
      * @param nodeId
@@ -149,11 +159,11 @@ public class IdGenerator {
      */
     public static long waitTillNextSecond(long currentSecond) {
         long nextSecond = System.currentTimeMillis() / 1000L;
-        for (; nextSecond <= currentSecond; nextSecond = System.currentTimeMillis() / 1000) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-            }
+        for (; nextSecond <= currentSecond; nextSecond = System.currentTimeMillis() / 1000L) {
+            // try {
+            Thread.yield();
+            // } catch (InterruptedException e) {
+            // }
         }
         return nextSecond;
     }
@@ -169,10 +179,10 @@ public class IdGenerator {
     public static long waitTillNextTick(long currentTick, long tickSize) {
         long nextBlock = System.currentTimeMillis() / tickSize;
         for (; nextBlock <= currentTick; nextBlock = System.currentTimeMillis() / tickSize) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
+            // try {
+            Thread.yield();
+            // } catch (InterruptedException e) {
+            // }
         }
         return nextBlock;
     }
@@ -635,9 +645,4 @@ public class IdGenerator {
         return extractTimestamp128(id128);
     }
 
-    public static void main(String[] args) {
-        long mac = 203308018088012L;
-        IdGenerator idGen = IdGenerator.getInstance(mac);
-        System.out.println(idGen.generateId128Hex());
-    }
 }

@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class DateTimeUtils {
     /**
-     * Creates a new {@link Calendar} instance from a {@link Date} object.
+     * Create a new {@link Calendar} instance from a {@link Date} object.
      * 
      * @param date
      * @return
@@ -22,8 +22,84 @@ public class DateTimeUtils {
         return cal;
     }
 
+    /*----------------------------------------------------------------------*/
+
     /**
-     * Calculates the start-of-minute point of a supplied {@link Calendar}.
+     * Calculate the start-of-second point of a supplied {@link Calendar}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar startOfSecond(Calendar origin) {
+        Calendar cal = (Calendar) origin.clone();
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
+    }
+
+    /**
+     * Calculate the next-second point of a supplied {@link Calendar}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar nextSecond(Calendar origin) {
+        Calendar cal = (Calendar) origin.clone();
+        cal.add(Calendar.SECOND, 1);
+        return cal;
+    }
+
+    /**
+     * Calculate the previous-second point of a supplied {@link Calendar}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar prevSecond(Calendar origin) {
+        Calendar cal = (Calendar) origin.clone();
+        cal.add(Calendar.SECOND, -1);
+        return cal;
+    }
+
+    /**
+     * Calculate the start-of-second point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar startOfSecond(Date origin) {
+        return startOfSecond(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the next-second point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar nextSecond(Date origin) {
+        return nextSecond(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the previous-second point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar prevSecond(Date origin) {
+        return prevSecond(createCalendar(origin));
+    }
+
+    /*----------------------------------------------------------------------*/
+
+    /**
+     * Calculate the start-of-minute point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -36,7 +112,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the next-minute point of a supplied {@link Calendar}.
+     * Calculate the next-minute point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -48,7 +124,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the previous-minute point of a supplied {@link Calendar}.
+     * Calculate the previous-minute point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -60,7 +136,42 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the start-of-hour point of a supplied {@link Calendar}.
+     * Calculate the start-of-minute point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar startOfMinute(Date origin) {
+        return startOfMinute(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the next-minute point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar nextMinute(Date origin) {
+        return nextMinute(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the previous-minute point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar prevMinute(Date origin) {
+        return prevMinute(createCalendar(origin));
+    }
+
+    /*----------------------------------------------------------------------*/
+
+    /**
+     * Calculate the start-of-hour point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -74,7 +185,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the next-hour point of a supplied {@link Calendar}.
+     * Calculate the next-hour point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -86,7 +197,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the previous-hour point of a supplied {@link Calendar}.
+     * Calculate the previous-hour point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -98,7 +209,42 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the start-of-day point of a supplied {@link Calendar}.
+     * Calculate the start-of-hour point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar startOfHour(Date origin) {
+        return startOfHour(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the next-hour point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar nextHour(Date origin) {
+        return nextHour(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the previous-hour point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar prevHour(Date origin) {
+        return prevHour(createCalendar(origin));
+    }
+
+    /*----------------------------------------------------------------------*/
+
+    /**
+     * Calculate the start-of-day point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -113,7 +259,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the next-date point of a supplied {@link Calendar}.
+     * Calculate the next-date point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -125,7 +271,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the previous-day point of a supplied {@link Calendar}.
+     * Calculate the previous-day point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -137,7 +283,42 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the start-of-week point of a supplied {@link Calendar}.
+     * Calculate the start-of-day point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar startOfDay(Date origin) {
+        return startOfDay(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the next-date point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar nextDay(Date origin) {
+        return nextDay(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the previous-day point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar prevDay(Date origin) {
+        return prevDay(createCalendar(origin));
+    }
+
+    /*----------------------------------------------------------------------*/
+
+    /**
+     * Calculate the start-of-week point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -153,7 +334,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the next-week point of a supplied {@link Calendar}.
+     * Calculate the next-week point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -165,7 +346,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the previous-week point of a supplied {@link Calendar}.
+     * Calculate the previous-week point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -177,7 +358,41 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the start-of-month point of a supplied {@link Calendar}.
+     * Calculate the start-of-week point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar startOfWeek(Date origin) {
+        return startOfWeek(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the next-week point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar nextWeek(Date origin) {
+        return nextWeek(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the previous-week point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar prevWeek(Date origin) {
+        return prevWeek(createCalendar(origin));
+    }
+    /*----------------------------------------------------------------------*/
+
+    /**
+     * Calculate the start-of-month point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -193,7 +408,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the next-month point of a supplied {@link Calendar}.
+     * Calculate the next-month point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -205,7 +420,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the previous-month point of a supplied {@link Calendar}.
+     * Calculate the previous-month point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -217,7 +432,42 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the start-of-year point of a supplied {@link Calendar}.
+     * Calculate the start-of-month point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar startOfMonth(Date origin) {
+        return startOfMonth(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the next-month point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar nextMonth(Date origin) {
+        return nextMonth(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the previous-month point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar prevMonth(Date origin) {
+        return prevMonth(createCalendar(origin));
+    }
+
+    /*----------------------------------------------------------------------*/
+
+    /**
+     * Calculate the start-of-year point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -233,7 +483,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the next-year point of a supplied {@link Calendar}.
+     * Calculate the next-year point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -245,7 +495,7 @@ public class DateTimeUtils {
     }
 
     /**
-     * Calculates the previous-year point of a supplied {@link Calendar}.
+     * Calculate the previous-year point of a supplied {@link Calendar}.
      * 
      * @param origin
      * @return
@@ -254,6 +504,39 @@ public class DateTimeUtils {
         Calendar cal = (Calendar) origin.clone();
         cal.add(Calendar.YEAR, -1);
         return cal;
+    }
+
+    /**
+     * Calculate the start-of-year point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar startOfYear(Date origin) {
+        return startOfYear(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the next-year point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar nextYear(Date origin) {
+        return nextYear(createCalendar(origin));
+    }
+
+    /**
+     * Calculate the previous-year point of a supplied {@link Date}.
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.1.1
+     */
+    public static Calendar prevYear(Date origin) {
+        return prevYear(createCalendar(origin));
     }
 
     public static void main(String[] args) {

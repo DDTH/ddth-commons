@@ -17,13 +17,34 @@ public class Ipv4Utils {
             .compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
 
     /**
+     * Check is an IP is valid.
+     * 
+     * @param ip
+     * @return
+     * @since 0.9.1.1
+     */
+    public static boolean isValidIp(String ip) {
+        if (!IP_PATTERN_FULL.matcher(ip).matches()) {
+            return false;
+        }
+        String[] ipArr = ip.split("\\.");
+        for (String part : ipArr) {
+            int v = Integer.parseInt(part);
+            if (v < 0 || v > 255) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * IP address to long (e.g. 10.0.0.1 -> 167772161).
      * 
      * @param ip
      * @return
      */
     public static long ipToLong(String ip) {
-        if (!IP_PATTERN_FULL.matcher(ip).matches()) {
+        if (!isValidIp(ip)) {
             throw new IllegalArgumentException("Invalid IP address: " + ip);
         }
 

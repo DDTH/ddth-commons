@@ -2,6 +2,7 @@ package com.github.ddth.commons.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -108,14 +109,14 @@ public class DateFormatUtils {
             });
 
     /**
-     * Converts a {@link Date} to string, based on the specified {@code format}.
+     * Convert a {@link Date} to string, based on the specified {@code format}.
      * 
      * @param date
      * @param format
      * @return
      * @see {@link SimpleDateFormat}
      */
-    public static String toString(final Date date, final String format) {
+    public static String toString(Date date, String format) {
         try {
             ObjectPool<DateFormat> pool = cachedDateFormat.get(format);
             try {
@@ -135,13 +136,26 @@ public class DateFormatUtils {
     }
 
     /**
-     * Parses a string to {@link Date}, based on the specified {@code format}.
+     * Convert a {@link Calendar} to string, based on the specified {@code format}.
+     * 
+     * @param calendar
+     * @param format
+     * @return
+     * @see {@link SimpleDateFormat}
+     * @since 0.9.1.1
+     */
+    public static String toString(Calendar calendar, String format) {
+        return toString(calendar.getTime(), format);
+    }
+
+    /**
+     * Parse a string to {@link Date}, based on the specified {@code format}.
      * 
      * @param source
      * @param format
      * @return
      */
-    public static Date fromString(final String source, final String format) {
+    public static Date fromString(String source, String format) {
         try {
             ObjectPool<DateFormat> pool = cachedDateFormat.get(format);
             try {
@@ -160,8 +174,4 @@ public class DateFormatUtils {
         }
     }
 
-    public static void main(String[] args) {
-        String DF_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-        System.out.println(DateFormatUtils.toString(new Date(), DF_ISO8601));
-    }
 }
