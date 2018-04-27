@@ -1,6 +1,6 @@
 # ddth-commons release notes
 
-## 0.9.1.1 - 2018-04-27
+## 0.9.1.2 - 2018-04-27
 
 - Bug fixes & enhancements.
 - Update dependencies.
