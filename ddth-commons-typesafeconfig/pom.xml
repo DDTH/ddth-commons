@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>com.github.ddth</groupId>
 		<artifactId>ddth-commons</artifactId>
-		<version>0.9.1.3-SNAPSHOT</version>
+		<version>0.9.1.3</version>
 	</parent>
 
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons-typesafeconfig</artifactId>
-	<version>0.9.1.3-SNAPSHOT</version>
+	<version>0.9.1.3</version>
 	<packaging>pom</packaging>
 
 	<name>ddth-commons-typesafeconfig</name>
