@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
@@ -180,7 +182,7 @@ public class JedisUtils {
         int port = tokens.length > 1 ? Integer.parseInt(tokens[1]) : Protocol.DEFAULT_PORT;
         JedisPool jedisPool = new JedisPool(
                 poolConfig != null ? poolConfig : defaultJedisPoolConfig(), host, port, timeoutMs,
-                password, db);
+                StringUtils.isBlank(password) ? null : password, db);
         return jedisPool;
     }
 
@@ -320,7 +322,8 @@ public class JedisUtils {
             clusterNodes.add(new HostAndPort(host, port));
         }
         JedisCluster jedisCluster = new JedisCluster(clusterNodes, timeoutMs, timeoutMs,
-                maxAttempts, password, poolConfig);
+                maxAttempts, StringUtils.isBlank(password) ? null : password,
+                poolConfig != null ? poolConfig : defaultJedisPoolConfig());
         return jedisCluster;
     }
 
@@ -441,10 +444,11 @@ public class JedisUtils {
             String host = tokens.length > 0 ? tokens[0] : Protocol.DEFAULT_HOST;
             int port = tokens.length > 1 ? Integer.parseInt(tokens[1]) : Protocol.DEFAULT_PORT;
             JedisShardInfo shardInfo = new JedisShardInfo(host, port, timeoutMs);
-            shardInfo.setPassword(password);
+            shardInfo.setPassword(StringUtils.isBlank(password) ? null : password);
             shards.add(shardInfo);
         }
-        ShardedJedisPool jedisPool = new ShardedJedisPool(poolConfig, shards);
+        ShardedJedisPool jedisPool = new ShardedJedisPool(
+                poolConfig != null ? poolConfig : defaultJedisPoolConfig(), shards);
         return jedisPool;
     }
 

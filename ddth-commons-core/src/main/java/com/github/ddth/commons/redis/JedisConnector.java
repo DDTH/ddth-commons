@@ -69,7 +69,8 @@ public class JedisConnector implements AutoCloseable {
     synchronized private void connectJedisPool() {
         if (jedisPool == null) {
             String[] tokens = redisHostsAndPorts.split("[,;\\s]+");
-            jedisPool = JedisUtils.newJedisPool(poolConfig, tokens[0], getRedisPassword());
+            jedisPool = JedisUtils.newJedisPool(getJedisPoolConfig(), tokens[0],
+                    getRedisPassword());
         }
     }
 
@@ -82,7 +83,7 @@ public class JedisConnector implements AutoCloseable {
 
     synchronized private void connectJedisCluster() {
         if (jedisCluster == null) {
-            jedisCluster = JedisUtils.newJedisCluster(poolConfig, redisHostsAndPorts,
+            jedisCluster = JedisUtils.newJedisCluster(getJedisPoolConfig(), getRedisHostsAndPorts(),
                     getRedisPassword());
         }
     }
@@ -96,8 +97,8 @@ public class JedisConnector implements AutoCloseable {
 
     synchronized private void connectShardedJedisPool() {
         if (shardedJedisPool == null) {
-            shardedJedisPool = JedisUtils.newShardedJedisPool(poolConfig, redisHostsAndPorts,
-                    getRedisPassword());
+            shardedJedisPool = JedisUtils.newShardedJedisPool(getJedisPoolConfig(),
+                    getRedisHostsAndPorts(), getRedisPassword());
         }
     }
 

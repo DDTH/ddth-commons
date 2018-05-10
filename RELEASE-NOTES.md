@@ -1,5 +1,10 @@
 # ddth-commons release notes
 
+## 0.9.1.3 - 2018-05-10
+
+- Bug fix: `JedisConnector` should treat empty password as null password.
+
+
 ## 0.9.1.2 - 2018-04-27
 
 - Bug fixes & enhancements.
