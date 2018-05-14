@@ -50,6 +50,7 @@
 	</developers>
 
 	<properties>
+        <skipTests>true</skipTests>   
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<version.spring>5.0.5.RELEASE</version.spring>
@@ -253,6 +254,7 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
+				    <skipTests>${skipTests}</skipTests>
 					<forkCount>4</forkCount>
 					<reuseForks>true</reuseForks>
 					<parallel>suites</parallel>
