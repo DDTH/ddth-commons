@@ -27,7 +27,7 @@ public class IdGeneratorTest extends TestCase {
         IdGenerator.waitTillNextMillisec(timestamp);
         long t = System.currentTimeMillis();
         assertTrue(t - timestamp >= 1);
-        System.out.println("testWaitTillNextMillisec:\t" + now + "\t" + t + "\t" + (t - now));
+        // System.out.println("testWaitTillNextMillisec:\t" + now + "\t" + t + "\t" + (t - now));
     }
 
     @org.junit.Test
@@ -37,7 +37,7 @@ public class IdGeneratorTest extends TestCase {
         IdGenerator.waitTillNextSecond(timestamp);
         long t = System.currentTimeMillis();
         assertTrue(t - timestamp * 1000 >= 1000);
-        System.out.println("testWaitTillNextSecond:\t\t" + now + "\t" + t + "\t" + (t - now));
+        // System.out.println("testWaitTillNextSecond:\t\t" + now + "\t" + t + "\t" + (t - now));
     }
 
     @org.junit.Test
@@ -48,7 +48,7 @@ public class IdGeneratorTest extends TestCase {
         IdGenerator.waitTillNextTick(timestamp, tickSize);
         long t = System.currentTimeMillis();
         assertTrue(t - timestamp * tickSize >= tickSize);
-        System.out.println("testWaitTillNextTick:\t\t" + now + "\t" + t + "\t" + (t - now));
+        // System.out.println("testWaitTillNextTick:\t\t" + now + "\t" + t + "\t" + (t - now));
     }
 
     /*----------------------------------------------------------------------*/
@@ -73,6 +73,38 @@ public class IdGeneratorTest extends TestCase {
             t.join();
         }
         assertEquals(ids.size(), numThreads * numItemsPerThread);
+    }
+
+    /*----------------------------------------------------------------------*/
+    @org.junit.Test
+    public void testGetInstance1() throws Exception {
+        IdGenerator idGen1 = IdGenerator.getInstance();
+        IdGenerator idGen2 = IdGenerator.getInstance();
+        assertEquals(idGen1, idGen2);
+    }
+
+    @org.junit.Test
+    public void testGetInstance2() throws Exception {
+        int numThreads = 2;
+        IdGenerator[] idGenList = new IdGenerator[4];
+        Thread[] threadList = new Thread[numThreads];
+        for (int i = 0; i < numThreads; i++) {
+            final int j = i;
+            threadList[i] = new Thread() {
+                public void run() {
+                    idGenList[j] = IdGenerator.getInstance();
+                }
+            };
+        }
+        for (Thread t : threadList) {
+            t.start();
+        }
+        for (Thread t : threadList) {
+            t.join();
+        }
+        for (int i = 0; i < numThreads - 1; i++) {
+            assertEquals(idGenList[i], idGenList[i + 1]);
+        }
     }
 
     /*----------------------------------------------------------------------*/

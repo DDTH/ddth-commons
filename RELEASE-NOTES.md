@@ -1,5 +1,11 @@
 # ddth-commons release notes
 
+## 0.9.1.4 - 2018-05-31
+
+- `IdGenerator`: fixed a bug when `getInstance(long)` return different objects with name `nodeId`.
+- `ReflectionUtils`: new method `getConstructor(...)` and `getMethod(...)`
+
+
 ## 0.9.1.3 - 2018-05-10
 
 - Bug fix: `JedisConnector` should treat empty password as null password.

@@ -1,5 +1,8 @@
 package com.github.ddth.commons.utils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
 /**
  * Reflection-related utility class
  * 
@@ -7,6 +10,39 @@ package com.github.ddth.commons.utils;
  * @since 0.5.0
  */
 public class ReflectionUtils {
+
+    /**
+     * Get a class' constructor. Return {@code null} if no such constructor found.
+     * 
+     * @param clazz
+     * @param parameterTypes
+     * @return
+     * @since 0.9.1.4
+     */
+    public static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... parameterTypes) {
+        try {
+            return clazz.getDeclaredConstructor(parameterTypes);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get a class' method by name. Return {@code null} if no such method found.
+     * 
+     * @param methodName
+     * @param clazz
+     * @param parameterTypes
+     * @return
+     * @since 0.9.1.4
+     */
+    public static Method getMethod(String methodName, Class<?> clazz, Class<?>... parameterTypes) {
+        try {
+            return clazz.getDeclaredMethod(methodName, parameterTypes);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
 
     /**
      * Tells if a class is a sub-class of a super-class.
@@ -69,10 +105,4 @@ public class ReflectionUtils {
         return iface.isInterface() && iface.isAssignableFrom(clazz);
     }
 
-    public static void main(String[] args) {
-        System.out.println(hasSuperClass(String.class, Object.class));
-        System.out.println(hasSuperClass(String.class, String.class));
-        System.out.println(hasSuperClass(String.class, Integer.class));
-        System.out.println(hasSuperClass(Integer.class, Number.class));
-    }
 }

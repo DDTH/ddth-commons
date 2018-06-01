@@ -60,7 +60,8 @@ public class IdGenerator {
         if (idGen == null) {
             idGen = new IdGenerator(nodeId);
             idGen.init();
-            cache.putIfAbsent(nodeId, idGen);
+            IdGenerator existing = cache.putIfAbsent(nodeId, idGen);
+            idGen = existing != null ? existing : idGen;
         }
         return idGen;
     }
