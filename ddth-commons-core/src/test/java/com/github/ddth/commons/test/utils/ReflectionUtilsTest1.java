@@ -9,14 +9,18 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class ReflectionUtilsTest extends TestCase {
+/**
+ * Test {@link ReflectionUtils#hasInterface(Class, Class)} and
+ * {@link ReflectionUtils#hasSuperClass(Class, Class)}.
+ */
+public class ReflectionUtilsTest1 extends TestCase {
 
-    public ReflectionUtilsTest(String testName) {
+    public ReflectionUtilsTest1(String testName) {
         super(testName);
     }
 
     public static Test suite() {
-        return new TestSuite(ReflectionUtilsTest.class);
+        return new TestSuite(ReflectionUtilsTest1.class);
     }
 
     @Before

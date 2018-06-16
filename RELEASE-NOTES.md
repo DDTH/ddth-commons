@@ -1,5 +1,10 @@
 # ddth-commons release notes
 
+## 0.9.1.5 - 2018-06-16
+
+-  `ReflectionUtils`: bug fixes & enhancements, more unit tests.
+
+
 ## 0.9.1.4 - 2018-05-31
 
 - `IdGenerator`: fixed a bug when `getInstance(long)` return different objects with name `nodeId`.
