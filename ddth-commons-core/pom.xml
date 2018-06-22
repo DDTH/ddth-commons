@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>com.github.ddth</groupId>
 		<artifactId>ddth-commons</artifactId>
-		<version>0.9.1.6-SNAPSHOT</version>
+		<version>0.9.1.6</version>
 	</parent>
 
 	<artifactId>ddth-commons-core</artifactId>
-	<version>0.9.1.6-SNAPSHOT</version>
+	<version>0.9.1.6</version>
 	<packaging>bundle</packaging>
 
 	<name>ddth-commons-core</name>
