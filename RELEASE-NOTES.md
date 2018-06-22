@@ -1,5 +1,11 @@
 # ddth-commons release notes
 
+## 0.9.1.6 - 2018-06-22
+
+- `HttpJsonRpcClient`: refactor so that `OkHttpClient client` can be customized.
+- `JsonRpcUtils`: some new overriding methods.
+
+
 ## 0.9.1.5 - 2018-06-16
 
 -  `ReflectionUtils`: bug fixes & enhancements, more unit tests.

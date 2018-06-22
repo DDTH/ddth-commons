@@ -2,6 +2,7 @@ package com.github.ddth.commons.jsonrpc;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import com.github.ddth.commons.jsonrpc.RequestResponse.RpcStatus;
 import com.github.ddth.commons.utils.SerializationUtils;
@@ -23,9 +24,93 @@ public class HttpJsonRpcClient implements AutoCloseable {
     public final static String CONTENT_TYPE_JSON = "application/json; charset=utf-8";
     public final static MediaType MEDIA_TYPE_JSON = MediaType.parse(CONTENT_TYPE_JSON);
 
-    private OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client;
+    private long readTimeoutMs = 60000;
+    private long writeTimeoutMs = 60000;
+
+    /**
+     * Create a new instance of {@link OkHttpClient}. Sub-class my override this method to customize
+     * the {@link OkHttpClient} instance.
+     * 
+     * @return
+     * @since 0.9.1.6
+     */
+    protected OkHttpClient buildHttpClient() {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .readTimeout(readTimeoutMs, TimeUnit.MILLISECONDS)
+                .writeTimeout(writeTimeoutMs, TimeUnit.MILLISECONDS);
+        OkHttpClient client = builder.build();
+        return client;
+    }
+
+    /**
+     * Setter for {@link #client}.
+     * 
+     * @param client
+     * @return
+     * @since 0.9.1.6
+     */
+    protected HttpJsonRpcClient setHttpClient(OkHttpClient client) {
+        this.client = client;
+        return this;
+    }
+
+    /**
+     * Getter for {@link #client}.
+     * 
+     * @return
+     * @since 0.9.1.6
+     */
+    protected OkHttpClient getHttpClient() {
+        return client;
+    }
+
+    /**
+     * Getter for {@link #readTimeoutMs}.
+     * 
+     * @return
+     * @since 0.9.1.6
+     */
+    public long getReadTimeoutMs() {
+        return readTimeoutMs;
+    }
+
+    /**
+     * Setter for {@link #readTimeoutMs}.
+     * 
+     * @param timeout
+     * @return
+     * @since 0.9.1.6
+     */
+    public HttpJsonRpcClient setReadTimeoutMs(long timeout) {
+        this.readTimeoutMs = timeout;
+        return this;
+    }
+
+    /**
+     * Getter for {@link #writeTimeoutMs}.
+     * 
+     * @return
+     * @since 0.9.1.6
+     */
+    public long getWriteTimeoutMs() {
+        return writeTimeoutMs;
+    }
+
+    /**
+     * Setter for {@link #writeTimeoutMs}.
+     * 
+     * @param timeout
+     * @return
+     * @since 0.9.1.6
+     */
+    public HttpJsonRpcClient setWriteTimeoutMs(long timeout) {
+        this.writeTimeoutMs = timeout;
+        return this;
+    }
 
     public HttpJsonRpcClient init() {
+        setHttpClient(buildHttpClient());
         return this;
     }
 

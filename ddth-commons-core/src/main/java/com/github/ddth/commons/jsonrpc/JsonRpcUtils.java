@@ -89,7 +89,22 @@ public class JsonRpcUtils {
      */
     public static RequestResponse callHttpGet(String url, Map<String, Object> headers,
             Map<String, Object> urlParams) {
-        return httpJsonRpcClient.doGet(url, headers, urlParams);
+        return callHttpGet(httpJsonRpcClient, url, headers, urlParams);
+    }
+
+    /**
+     * Perform a HTTP GET request.
+     * 
+     * @param client
+     * @param url
+     * @param headers
+     * @param urlParams
+     * @return
+     * @since 0.9.1.6
+     */
+    public static RequestResponse callHttpGet(HttpJsonRpcClient client, String url,
+            Map<String, Object> headers, Map<String, Object> urlParams) {
+        return client.doGet(url, headers, urlParams);
     }
 
     /**
@@ -103,7 +118,23 @@ public class JsonRpcUtils {
      */
     public static RequestResponse callHttpPost(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
-        return httpJsonRpcClient.doPost(url, headers, urlParams, requestData);
+        return callHttpPost(httpJsonRpcClient, url, headers, urlParams, requestData);
+    }
+
+    /**
+     * Perform a HTTP POST request.
+     * 
+     * @param client
+     * @param url
+     * @param headers
+     * @param urlParams
+     * @param requestData
+     * @return
+     * @since 0.9.1.6
+     */
+    public static RequestResponse callHttpPost(HttpJsonRpcClient client, String url,
+            Map<String, Object> headers, Map<String, Object> urlParams, Object requestData) {
+        return client.doPost(url, headers, urlParams, requestData);
     }
 
     /**
@@ -117,7 +148,23 @@ public class JsonRpcUtils {
      */
     public static RequestResponse callHttpPut(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
-        return httpJsonRpcClient.doPut(url, headers, urlParams, requestData);
+        return callHttpPut(httpJsonRpcClient, url, headers, urlParams, requestData);
+    }
+
+    /**
+     * Perform a HTTP PUT request.
+     * 
+     * @param client
+     * @param url
+     * @param headers
+     * @param urlParams
+     * @param requestData
+     * @return
+     * @since 0.9.1.6
+     */
+    public static RequestResponse callHttpPut(HttpJsonRpcClient client, String url,
+            Map<String, Object> headers, Map<String, Object> urlParams, Object requestData) {
+        return client.doPut(url, headers, urlParams, requestData);
     }
 
     /**
@@ -131,7 +178,23 @@ public class JsonRpcUtils {
      */
     public static RequestResponse callHttpPatch(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
-        return httpJsonRpcClient.doPatch(url, headers, urlParams, requestData);
+        return callHttpPatch(httpJsonRpcClient, url, headers, urlParams, requestData);
+    }
+
+    /**
+     * Perform a HTTP PATCH request.
+     * 
+     * @param client
+     * @param url
+     * @param headers
+     * @param urlParams
+     * @param requestData
+     * @return
+     * @since 0.9.1.6
+     */
+    public static RequestResponse callHttpPatch(HttpJsonRpcClient client, String url,
+            Map<String, Object> headers, Map<String, Object> urlParams, Object requestData) {
+        return client.doPatch(url, headers, urlParams, requestData);
     }
 
     /**
@@ -144,7 +207,22 @@ public class JsonRpcUtils {
      */
     public static RequestResponse callHttpDelete(String url, Map<String, Object> headers,
             Map<String, Object> urlParams) {
-        return httpJsonRpcClient.doDelete(url, headers, urlParams);
+        return callHttpDelete(httpJsonRpcClient, url, headers, urlParams);
+    }
+
+    /**
+     * Perform a HTTP DELETE request.
+     * 
+     * @param client
+     * @param url
+     * @param headers
+     * @param urlParams
+     * @return
+     * @since 0.9.1.6
+     */
+    public static RequestResponse callHttpDelete(HttpJsonRpcClient client, String url,
+            Map<String, Object> headers, Map<String, Object> urlParams) {
+        return client.doDelete(url, headers, urlParams);
     }
 
     /**
@@ -158,6 +236,22 @@ public class JsonRpcUtils {
      */
     public static RequestResponse callHttpDelete(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
-        return httpJsonRpcClient.doDelete(url, headers, urlParams, requestData);
+        return callHttpDelete(httpJsonRpcClient, url, headers, urlParams, requestData);
+    }
+
+    /**
+     * Perform a HTTP DELETE request.
+     * 
+     * @param client
+     * @param url
+     * @param headers
+     * @param urlParams
+     * @param requestData
+     * @return
+     * @since 0.9.1.6
+     */
+    public static RequestResponse callHttpDelete(HttpJsonRpcClient client, String url,
+            Map<String, Object> headers, Map<String, Object> urlParams, Object requestData) {
+        return client.doDelete(url, headers, urlParams, requestData);
     }
 }
