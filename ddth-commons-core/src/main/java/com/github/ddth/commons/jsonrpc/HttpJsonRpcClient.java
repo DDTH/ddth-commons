@@ -1,12 +1,12 @@
 package com.github.ddth.commons.jsonrpc;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import com.github.ddth.commons.jsonrpc.RequestResponse.RpcStatus;
 import com.github.ddth.commons.utils.SerializationUtils;
 
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -126,34 +126,22 @@ public class HttpJsonRpcClient implements AutoCloseable {
         destroy();
     }
 
-    private static String buildUrl(String url, Map<String, Object> urlParams) {
-        StringBuilder sb = new StringBuilder(url);
-        boolean needAnd = false;
-        if (url.indexOf("?") >= 0) {
-            needAnd = true;
-        } else {
-            sb.append("?");
-        }
+    private static HttpUrl buildUrl(String url, Map<String, Object> urlParams) {
+        HttpUrl.Builder builder = HttpUrl.parse(url.replaceAll("[\\?&\\s]+$", "")).newBuilder();
         if (urlParams != null) {
-            for (Entry<String, Object> entry : urlParams.entrySet()) {
-                if (needAnd) {
-                    sb.append("&");
-                }
-                sb.append(entry.getKey()).append("=").append(entry.getValue().toString());
-                needAnd = true;
-            }
+            urlParams.forEach(
+                    (k, v) -> builder.addQueryParameter(k, v != null ? v.toString().trim() : ""));
         }
-        return sb.toString();
+        return builder.build();
     }
 
     private static Request.Builder buildRequest(String url, Map<String, Object> headers,
             Map<String, Object> urlParams) {
-        String finalUrl = buildUrl(url, urlParams);
+        HttpUrl finalUrl = buildUrl(url, urlParams);
         Request.Builder requestBuilder = new Request.Builder().url(finalUrl);
         if (headers != null) {
-            for (Entry<String, Object> entry : headers.entrySet()) {
-                requestBuilder.addHeader(entry.getKey(), entry.getValue().toString());
-            }
+            headers.forEach(
+                    (k, v) -> requestBuilder.addHeader(k, v != null ? v.toString().trim() : ""));
         }
         return requestBuilder;
     }

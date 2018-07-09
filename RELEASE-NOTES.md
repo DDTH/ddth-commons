@@ -1,5 +1,10 @@
 # ddth-commons release notes
 
+## 0.9.1.7 - 2018-07-09
+
+- Bug fixes & enhancements: `HttpJsonRpcClient` - escape the final url before making http request.
+
+
 ## 0.9.1.6 - 2018-06-22
 
 - `HttpJsonRpcClient`: refactor so that `OkHttpClient client` can be customized.
