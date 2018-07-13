@@ -115,8 +115,8 @@ dependency artifact(s) to reduce the number of unused jar files.
 
 ## Utility/Helper Classes
 
-* See: [com.github.ddth.commons.jsonrpc](src/main/java/com/github/ddth/commons/jsonrpc/README.md).
-* See: [com.github.ddth.commons.osgi](src/main/java/com/github/ddth/commons/osgi/README.md).
-* See: [com.github.ddth.commons.redis](src/main/java/com/github/ddth/commons/redis/README.md).
-* See: [com.github.ddth.commons.rocksdb](src/main/java/com/github/ddth/commons/rocksdb/README.md).
-* See: [com.github.ddth.commons.utils](src/main/java/com/github/ddth/commons/utils/README.md).
+* See: [com.github.ddth.commons.jsonrpc](ddth-commons-core/src/main/java/com/github/ddth/commons/jsonrpc/README.md).
+* See: [com.github.ddth.commons.osgi](ddth-commons-core/src/main/java/com/github/ddth/commons/osgi/README.md).
+* See: [com.github.ddth.commons.redis](ddth-commons-core/src/main/java/com/github/ddth/commons/redis/README.md).
+* See: [com.github.ddth.commons.rocksdb](ddth-commons-core/src/main/java/com/github/ddth/commons/rocksdb/README.md).
+* See: [com.github.ddth.commons.utils](ddth-commons-core/src/main/java/com/github/ddth/commons/utils/README.md).
