@@ -1,5 +1,10 @@
 # ddth-commons release notes
 
+## 0.9.1.8 - 2018-10-17
+
+- Update dependencies (vulnerabilities in `jackson-databind` and `spring-core`)
+
+
 ## 0.9.1.7 - 2018-07-09
 
 - Bug fixes & enhancements: `HttpJsonRpcClient` - escape the final url before making http request.
