@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.ddth.commons.utils.JacksonUtils;
 import com.github.ddth.commons.utils.MapUtils;
@@ -16,9 +19,20 @@ import com.github.ddth.commons.utils.SerializationUtils;
  * @since 0.9.0
  */
 public class RequestResponse {
+    private final static Logger LOGGER = LoggerFactory.getLogger(RequestResponse.class);
 
+    /**
+     * RPC call status.
+     * 
+     * <ul>
+     * <li>{@link #NO_RESPONSE}: no response from RPC call yet (the request has not been made, or
+     * response has not arrived)</li>
+     * <li>{@link #OK}: the RPC call was successful</li>
+     * <li>{@link #ERROR}: there was an error while making RPC call</li>
+     * </ul>
+     */
     public static enum RpcStatus {
-        NO_RESPONSE(0) // no response from RPC call get
+        NO_RESPONSE(0) // no response from RPC call yet
         , OK(1) // call successful
         , ERROR(-1) // call error
         ;
@@ -50,85 +64,162 @@ public class RequestResponse {
     private long timestampEnd = 0;
 
     /*------------------------------------------------------------*/
+    /**
+     * Timestamp when RPC starts.
+     * 
+     * @return
+     */
     public long getTimestampStart() {
         return timestampStart;
     }
 
+    /**
+     * Timestamp when RPC starts.
+     * 
+     * @param timestamp
+     * @return
+     */
     public RequestResponse setTimestampStart(long timestamp) {
         this.timestampStart = timestamp;
         return this;
     }
 
+    /**
+     * Timestamp when RPC ends.
+     * 
+     * @return
+     */
     public long getTimestampEnd() {
         return timestampEnd;
     }
 
+    /**
+     * Timestamp when RPC ends.
+     * 
+     * @param timestamp
+     * @return
+     */
     public RequestResponse setTimestampEnd(long timestamp) {
         this.timestampEnd = timestamp;
         return this;
     }
 
-    public Throwable getRpcError() {
-        return rpcError;
-    }
-
-    public RequestResponse setRpcError(Throwable error) {
-        this.rpcError = error;
-        return this;
-    }
-
+    /**
+     * HTTP request method (GET, POST, etc).
+     * 
+     * @return
+     */
     public String getRequestMethod() {
         return requestMethod;
     }
 
+    /**
+     * HTTP request method (GET, POST, etc).
+     * 
+     * @param method
+     * @return
+     */
     public RequestResponse setRequestMethod(String method) {
         this.requestMethod = method;
         return this;
     }
 
+    /**
+     * HTTP request URL.
+     * 
+     * @return
+     */
     public String getRequestUrl() {
         return requestUrl;
     }
 
+    /**
+     * HTTP request URL.
+     * 
+     * @param url
+     * @return
+     */
     public RequestResponse setRequestUrl(String url) {
         this.requestUrl = url;
         return this;
     }
 
+    /**
+     * HTTP request headers.
+     * 
+     * @return
+     */
     public Map<String, Object> getRequestHeaders() {
         return requestHeaders;
     }
 
+    /**
+     * HTTP request headers.
+     * 
+     * @param requestHeaders
+     * @return
+     */
     public RequestResponse setRequestHeaders(Map<String, Object> requestHeaders) {
         this.requestHeaders = requestHeaders;
         return this;
     }
 
+    /**
+     * HTTP URL's query string as a map.
+     * 
+     * @return
+     */
     public Map<String, Object> getRequestParams() {
         return requestParams;
     }
 
+    /**
+     * HTTP URL's query string as a map.
+     * 
+     * @param requestParams
+     * @return
+     */
     public RequestResponse setRequestParams(Map<String, Object> requestParams) {
         this.requestParams = requestParams;
         return this;
     }
 
+    /**
+     * HTTP request body.
+     * 
+     * @return
+     */
     public Object getRequestData() {
         return requestData;
     }
 
-    synchronized public RequestResponse setRequestData(Object requestData) {
+    /**
+     * HTTP request body.
+     * 
+     * @param requestData
+     * @return
+     */
+    public RequestResponse setRequestData(Object requestData) {
         this.requestData = requestData;
-        this.requestJson = requestData != null ? SerializationUtils.toJson(requestData) : null;
+        requestJson = requestData != null
+                ? (requestData instanceof JsonNode ? (JsonNode) requestData
+                        : SerializationUtils.toJson(requestData))
+                : null;
         return this;
     }
 
+    /**
+     * HTTP request body as Json.
+     * 
+     * @return
+     */
     public JsonNode getRequestJson() {
         return requestJson;
     }
     /*------------------------------------------------------------*/
 
     /**
+     * RPC call status.
      * 
      * @return
      * @see RpcStatus
@@ -138,10 +229,11 @@ public class RequestResponse {
     }
 
     /**
+     * RPC call status.
      * 
      * @param rpcStatus
      * @return
-     * @see RpcStatusFs
+     * @see RpcStatus
      */
     public RequestResponse setRpcStatus(RpcStatus rpcStatus) {
         this.rpcStatus = rpcStatus;
@@ -149,7 +241,27 @@ public class RequestResponse {
     }
 
     /**
-     * Response status from RPC call (if any).
+     * RPC error, if any.
+     * 
+     * @return
+     */
+    public Throwable getRpcError() {
+        return rpcError;
+    }
+
+    /**
+     * RPC error, if any.
+     * 
+     * @param error
+     * @return
+     */
+    public RequestResponse setRpcError(Throwable error) {
+        this.rpcError = error;
+        return this;
+    }
+
+    /**
+     * HTTP response status (200, 403, etc).
      * 
      * @return
      */
@@ -157,13 +269,19 @@ public class RequestResponse {
         return responseStatus;
     }
 
+    /**
+     * HTTP response status (200, 403, etc).
+     * 
+     * @param responseStatus
+     * @return
+     */
     public RequestResponse setResponseStatus(String responseStatus) {
         this.responseStatus = responseStatus;
         return this;
     }
 
     /**
-     * Raw response data from RPC call.
+     * Raw HTTP response data.
      * 
      * @return
      */
@@ -171,14 +289,25 @@ public class RequestResponse {
         return responseData;
     }
 
-    synchronized public RequestResponse setResponseData(byte[] responseData) {
+    /**
+     * Raw HTTP response data.
+     * 
+     * @param responseData
+     * @return
+     */
+    public RequestResponse setResponseData(byte[] responseData) {
         this.responseData = responseData;
-        this.responseJson = responseData != null ? SerializationUtils.readJson(responseData) : null;
+        try {
+            responseJson = responseData != null ? SerializationUtils.readJson(responseData) : null;
+        } catch (Exception e) {
+            responseJson = null;
+            LOGGER.error(e.getMessage(), e);
+        }
         return this;
     }
 
     /**
-     * Response data from RPC call as Json object.
+     * HTTP response data as Json object.
      * 
      * @return
      */
@@ -186,18 +315,44 @@ public class RequestResponse {
         return responseJson;
     }
 
-    public JsonNode getResponseValue(String path) {
-        return JacksonUtils.getValue(responseJson, path);
+    /**
+     * Get a response value from the JSON tree using dPath expression.
+     * 
+     * @param dPath
+     * @return
+     */
+    public JsonNode getResponseValue(String dPath) {
+        return JacksonUtils.getValue(responseJson, dPath);
     }
 
+    /**
+     * Get a response value from the JSON tree using dPath expression.
+     * 
+     * @param path
+     * @return
+     */
     public Optional<JsonNode> getResponseValueOptional(String path) {
         return JacksonUtils.getValueOptional(responseJson, path);
     }
 
+    /**
+     * Get a response value from the JSON tree using dPath expression.
+     * 
+     * @param path
+     * @param clazz
+     * @return
+     */
     public <T> T getResponseValue(String path, Class<T> clazz) {
         return JacksonUtils.getValue(responseJson, path, clazz);
     }
 
+    /**
+     * Get a response value from the JSON tree using dPath expression.
+     * 
+     * @param path
+     * @param clazz
+     * @return
+     */
     public <T> Optional<T> getResponseValueOptional(String path, Class<T> clazz) {
         return JacksonUtils.getValueOptional(responseJson, path, clazz);
     }

@@ -110,7 +110,9 @@ public class HttpJsonRpcClient implements AutoCloseable {
     }
 
     public HttpJsonRpcClient init() {
-        setHttpClient(buildHttpClient());
+        if (client == null) {
+            setHttpClient(buildHttpClient());
+        }
         return this;
     }
 
@@ -155,28 +157,34 @@ public class HttpJsonRpcClient implements AutoCloseable {
     }
 
     private static RequestResponse doCall(OkHttpClient client, Request request,
-            RequestResponse requestResponse) {
+            RequestResponse rr) {
         try {
             Response response = client.newCall(request).execute();
             if (response != null) {
                 int httpCode = response.code();
-                requestResponse.setResponseStatus(String.valueOf(httpCode)).setRpcStatus(
+                rr.setResponseStatus(String.valueOf(httpCode)).setRpcStatus(
                         200 >= httpCode && httpCode < 300 ? RpcStatus.OK : RpcStatus.ERROR);
                 ResponseBody body = response.body();
-                requestResponse.setResponseData(body != null ? body.bytes() : null);
+                rr.setResponseData(body != null ? body.bytes() : null);
             } else {
-                requestResponse.setRpcStatus(RpcStatus.ERROR);
+                rr.setRpcStatus(RpcStatus.ERROR);
             }
         } catch (Throwable e) {
-            requestResponse.setRpcStatus(RpcStatus.ERROR).setRpcError(e);
+            rr.setRpcStatus(RpcStatus.ERROR).setRpcError(e);
         }
-        requestResponse.setTimestampEnd(System.currentTimeMillis());
-        return requestResponse;
+        rr.setTimestampEnd(System.currentTimeMillis());
+        return rr;
     }
 
-    private static RequestBody buildRequestBody(Object data) {
-        return data != null
-                ? RequestBody.create(MEDIA_TYPE_JSON, SerializationUtils.toJsonString(data)) : null;
+    // private static RequestBody buildRequestBody(Object data) {
+    // return data != null
+    // ? RequestBody.create(MEDIA_TYPE_JSON, SerializationUtils.toJsonString(data))
+    // : null;
+    // }
+
+    private static RequestBody buildRequestBody(RequestResponse rr) {
+        return rr.getRequestJson() != null ? RequestBody.create(MEDIA_TYPE_JSON,
+                SerializationUtils.toJsonString(rr.getRequestJson())) : null;
     }
 
     /**
@@ -205,11 +213,10 @@ public class HttpJsonRpcClient implements AutoCloseable {
      */
     public RequestResponse doPost(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
-        RequestResponse requestResponse = initRequestResponse("POST", url, headers, urlParams,
-                requestData);
+        RequestResponse rr = initRequestResponse("POST", url, headers, urlParams, requestData);
         Request.Builder requestBuilder = buildRequest(url, headers, urlParams)
-                .post(buildRequestBody(requestData));
-        return doCall(client, requestBuilder.build(), requestResponse);
+                .post(buildRequestBody(rr));
+        return doCall(client, requestBuilder.build(), rr);
     }
 
     /**
@@ -223,11 +230,10 @@ public class HttpJsonRpcClient implements AutoCloseable {
      */
     public RequestResponse doPut(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
-        RequestResponse requestResponse = initRequestResponse("PUT", url, headers, urlParams,
-                requestData);
+        RequestResponse rr = initRequestResponse("PUT", url, headers, urlParams, requestData);
         Request.Builder requestBuilder = buildRequest(url, headers, urlParams)
-                .put(buildRequestBody(requestData));
-        return doCall(client, requestBuilder.build(), requestResponse);
+                .put(buildRequestBody(rr));
+        return doCall(client, requestBuilder.build(), rr);
     }
 
     /**
@@ -241,11 +247,10 @@ public class HttpJsonRpcClient implements AutoCloseable {
      */
     public RequestResponse doPatch(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
-        RequestResponse requestResponse = initRequestResponse("PATCH", url, headers, urlParams,
-                requestData);
+        RequestResponse rr = initRequestResponse("PATCH", url, headers, urlParams, requestData);
         Request.Builder requestBuilder = buildRequest(url, headers, urlParams)
-                .patch(buildRequestBody(requestData));
-        return doCall(client, requestBuilder.build(), requestResponse);
+                .patch(buildRequestBody(rr));
+        return doCall(client, requestBuilder.build(), rr);
     }
 
     /**
@@ -272,27 +277,10 @@ public class HttpJsonRpcClient implements AutoCloseable {
      */
     public RequestResponse doDelete(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
-        RequestResponse requestResponse = initRequestResponse("DELETE", url, headers, urlParams,
-                requestData);
+        RequestResponse rr = initRequestResponse("DELETE", url, headers, urlParams, requestData);
         Request.Builder requestBuilder = buildRequest(url, headers, urlParams)
-                .delete(buildRequestBody(requestData));
-        return doCall(client, requestBuilder.build(), requestResponse);
+                .delete(buildRequestBody(rr));
+        return doCall(client, requestBuilder.build(), rr);
     }
 
-    /*----------------------------------------------------------------------*/
-    public static void main(String[] args) {
-        try (HttpJsonRpcClient client = new HttpJsonRpcClient()) {
-            client.init();
-
-            System.out.println(client.doGet("https://httpbin.org/get", null, null));
-            System.out
-                    .println(client.doPost("https://httpbin.org/post", null, null, "post-request"));
-            System.out.println(client.doPut("https://httpbin.org/put", null, null, "put-request"));
-            System.out.println(
-                    client.doPatch("https://httpbin.org/patch", null, null, "patch-request"));
-            System.out.println(client.doDelete("https://httpbin.org/delete", null, null));
-            System.out.println(
-                    client.doDelete("https://httpbin.org/delete", null, null, "delete-request"));
-        }
-    }
 }
