@@ -23,9 +23,119 @@ public class DateTimeUtils {
     }
 
     /*----------------------------------------------------------------------*/
+    /**
+     * Sync values of calendar's fields.
+     * 
+     * @param cal
+     * @return the original supplied calendar instance
+     * @since 0.9.2
+     */
+    private static Calendar sync(Calendar cal) {
+        cal.getTimeInMillis();
+        return cal;
+    }
+
+    /**
+     * Calculate the next-millisecond point of a supplied {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar nextMillisecond(Calendar origin) {
+        return addMilliseconds(origin, 1);
+    }
+
+    /**
+     * Calculate the previous-millisecond point of a supplied {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar prevMillisecond(Calendar origin) {
+        return addMilliseconds(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of milliseconds to the given {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addMilliseconds(Calendar origin, int value) {
+        Calendar cal = sync((Calendar) origin.clone());
+        cal.add(Calendar.MILLISECOND, value);
+        return sync(cal);
+    }
+
+    /**
+     * Calculate the next-millisecond point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar nextMillisecond(Date origin) {
+        return addMilliseconds(origin, 1);
+    }
+
+    /**
+     * Calculate the previous-millisecond point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar prevMillisecond(Date origin) {
+        return addMilliseconds(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of milliseconds to the given {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addMilliseconds(Date origin, int value) {
+        return addMilliseconds(createCalendar(origin), value);
+    }
 
     /**
      * Calculate the start-of-second point of a supplied {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced. Note: if {@code origin} has
+     * unsynced field, it may cause side-effect.
+     * </p>
      * 
      * @param origin
      * @return
@@ -40,31 +150,57 @@ public class DateTimeUtils {
     /**
      * Calculate the next-second point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar nextSecond(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.SECOND, 1);
-        return cal;
+        return addSeconds(origin, 1);
     }
 
     /**
      * Calculate the previous-second point of a supplied {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
      * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar prevSecond(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.SECOND, -1);
-        return cal;
+        return addSeconds(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of seconds to the given {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addSeconds(Calendar origin, int value) {
+        Calendar cal = sync((Calendar) origin.clone());
+        cal.add(Calendar.SECOND, value);
+        return sync(cal);
     }
 
     /**
      * Calculate the start-of-second point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced.
+     * </p>
      * 
      * @param origin
      * @return
@@ -77,29 +213,58 @@ public class DateTimeUtils {
     /**
      * Calculate the next-second point of a supplied {@link Date}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar nextSecond(Date origin) {
-        return nextSecond(createCalendar(origin));
+        return addSeconds(origin, 1);
     }
 
     /**
      * Calculate the previous-second point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
      * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar prevSecond(Date origin) {
-        return prevSecond(createCalendar(origin));
+        return addSeconds(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of seconds to the given {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addSeconds(Date origin, int value) {
+        return addSeconds(createCalendar(origin), value);
     }
 
     /*----------------------------------------------------------------------*/
 
     /**
      * Calculate the start-of-minute point of a supplied {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced. Note: if {@code origin} has
+     * unsynced field, it may cause side-effect.
+     * </p>
      * 
      * @param origin
      * @return
@@ -114,29 +279,55 @@ public class DateTimeUtils {
     /**
      * Calculate the next-minute point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar nextMinute(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.MINUTE, 1);
-        return cal;
+        return addMinutes(origin, 1);
     }
 
     /**
      * Calculate the previous-minute point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar prevMinute(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.MINUTE, -1);
-        return cal;
+        return addMinutes(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of minutes to the given {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addMinutes(Calendar origin, int value) {
+        Calendar cal = sync((Calendar) origin.clone());
+        cal.add(Calendar.MINUTE, value);
+        return sync(cal);
     }
 
     /**
      * Calculate the start-of-minute point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced.
+     * </p>
      * 
      * @param origin
      * @return
@@ -149,29 +340,58 @@ public class DateTimeUtils {
     /**
      * Calculate the next-minute point of a supplied {@link Date}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar nextMinute(Date origin) {
-        return nextMinute(createCalendar(origin));
+        return addMinutes(origin, 1);
     }
 
     /**
      * Calculate the previous-minute point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
      * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar prevMinute(Date origin) {
-        return prevMinute(createCalendar(origin));
+        return addMinutes(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of minutes to the given {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addMinutes(Date origin, int value) {
+        return addMinutes(createCalendar(origin), value);
     }
 
     /*----------------------------------------------------------------------*/
 
     /**
      * Calculate the start-of-hour point of a supplied {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced. Note: if {@code origin} has
+     * unsynced field, it may cause side-effect.
+     * </p>
      * 
      * @param origin
      * @return
@@ -187,29 +407,55 @@ public class DateTimeUtils {
     /**
      * Calculate the next-hour point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar nextHour(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.HOUR_OF_DAY, 1);
-        return cal;
+        return addHours(origin, 1);
     }
 
     /**
      * Calculate the previous-hour point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar prevHour(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.HOUR_OF_DAY, -1);
-        return cal;
+        return addHours(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of hours to the given {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addHours(Calendar origin, int value) {
+        Calendar cal = sync((Calendar) origin.clone());
+        cal.add(Calendar.HOUR_OF_DAY, value);
+        return sync(cal);
     }
 
     /**
      * Calculate the start-of-hour point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced.
+     * </p>
      * 
      * @param origin
      * @return
@@ -222,29 +468,58 @@ public class DateTimeUtils {
     /**
      * Calculate the next-hour point of a supplied {@link Date}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar nextHour(Date origin) {
-        return nextHour(createCalendar(origin));
+        return addHours(origin, 1);
     }
 
     /**
      * Calculate the previous-hour point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
      * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar prevHour(Date origin) {
-        return prevHour(createCalendar(origin));
+        return addHours(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of hours to the given {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addHours(Date origin, int value) {
+        return addHours(createCalendar(origin), value);
     }
 
     /*----------------------------------------------------------------------*/
 
     /**
      * Calculate the start-of-day point of a supplied {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced. Note: if {@code origin} has
+     * unsynced field, it may cause side-effect.
+     * </p>
      * 
      * @param origin
      * @return
@@ -261,29 +536,55 @@ public class DateTimeUtils {
     /**
      * Calculate the next-date point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar nextDay(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.DATE, 1);
-        return cal;
+        return addDays(origin, 1);
     }
 
     /**
      * Calculate the previous-day point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar prevDay(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.DATE, -1);
-        return cal;
+        return addDays(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of days to the given {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addDays(Calendar origin, int value) {
+        Calendar cal = sync((Calendar) origin.clone());
+        cal.add(Calendar.DATE, value);
+        return sync(cal);
     }
 
     /**
      * Calculate the start-of-day point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced.
+     * </p>
      * 
      * @param origin
      * @return
@@ -296,29 +597,58 @@ public class DateTimeUtils {
     /**
      * Calculate the next-date point of a supplied {@link Date}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar nextDay(Date origin) {
-        return nextDay(createCalendar(origin));
+        return addDays(origin, 1);
     }
 
     /**
      * Calculate the previous-day point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
      * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar prevDay(Date origin) {
-        return prevDay(createCalendar(origin));
+        return addDays(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of days to the given {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addDays(Date origin, int value) {
+        return addDays(createCalendar(origin), value);
     }
 
     /*----------------------------------------------------------------------*/
 
     /**
      * Calculate the start-of-week point of a supplied {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced. Note: if {@code origin} has
+     * unsynced field, it may cause side-effect.
+     * </p>
      * 
      * @param origin
      * @return
@@ -336,29 +666,55 @@ public class DateTimeUtils {
     /**
      * Calculate the next-week point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar nextWeek(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.WEEK_OF_YEAR, 1);
-        return cal;
+        return addWeeks(origin, 1);
     }
 
     /**
      * Calculate the previous-week point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar prevWeek(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.WEEK_OF_YEAR, -1);
-        return cal;
+        return addWeeks(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of weeks to the given {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addWeeks(Calendar origin, int value) {
+        Calendar cal = sync((Calendar) origin.clone());
+        cal.add(Calendar.WEEK_OF_YEAR, value);
+        return sync(cal);
     }
 
     /**
      * Calculate the start-of-week point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced.
+     * </p>
      * 
      * @param origin
      * @return
@@ -371,28 +727,57 @@ public class DateTimeUtils {
     /**
      * Calculate the next-week point of a supplied {@link Date}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar nextWeek(Date origin) {
-        return nextWeek(createCalendar(origin));
+        return addWeeks(origin, 1);
     }
 
     /**
      * Calculate the previous-week point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
      * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar prevWeek(Date origin) {
-        return prevWeek(createCalendar(origin));
+        return addWeeks(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of weeks to the given {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addWeeks(Date origin, int value) {
+        return addWeeks(createCalendar(origin), value);
     }
     /*----------------------------------------------------------------------*/
 
     /**
      * Calculate the start-of-month point of a supplied {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced. Note: if {@code origin} has
+     * unsynced field, it may cause side-effect.
+     * </p>
      * 
      * @param origin
      * @return
@@ -410,29 +795,55 @@ public class DateTimeUtils {
     /**
      * Calculate the next-month point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar nextMonth(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.MONTH, 1);
-        return cal;
+        return addMonths(origin, 1);
     }
 
     /**
      * Calculate the previous-month point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar prevMonth(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.MONDAY, -1);
-        return cal;
+        return addMonths(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of months to the given {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addMonths(Calendar origin, int value) {
+        Calendar cal = sync((Calendar) origin.clone());
+        cal.add(Calendar.MONTH, value);
+        return sync(cal);
     }
 
     /**
      * Calculate the start-of-month point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced.
+     * </p>
      * 
      * @param origin
      * @return
@@ -445,29 +856,58 @@ public class DateTimeUtils {
     /**
      * Calculate the next-month point of a supplied {@link Date}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar nextMonth(Date origin) {
-        return nextMonth(createCalendar(origin));
+        return addMonths(origin, 1);
     }
 
     /**
      * Calculate the previous-month point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
      * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar prevMonth(Date origin) {
-        return prevMonth(createCalendar(origin));
+        return addMonths(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of months to the given {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addMonths(Date origin, int value) {
+        return addMonths(createCalendar(origin), value);
     }
 
     /*----------------------------------------------------------------------*/
 
     /**
      * Calculate the start-of-year point of a supplied {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced. Note: if {@code origin} has
+     * unsynced field, it may cause side-effect.
+     * </p>
      * 
      * @param origin
      * @return
@@ -485,29 +925,55 @@ public class DateTimeUtils {
     /**
      * Calculate the next-year point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar nextYear(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.YEAR, 1);
-        return cal;
+        return addYears(origin, 1);
     }
 
     /**
      * Calculate the previous-year point of a supplied {@link Calendar}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      */
     public static Calendar prevYear(Calendar origin) {
-        Calendar cal = (Calendar) origin.clone();
-        cal.add(Calendar.YEAR, -1);
-        return cal;
+        return addYears(origin, -1);
+    }
+
+    /**
+     * Add/Subtract the specified amount of years to the given {@link Calendar}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addYears(Calendar origin, int value) {
+        Calendar cal = sync((Calendar) origin.clone());
+        cal.add(Calendar.YEAR, value);
+        return sync(cal);
     }
 
     /**
      * Calculate the start-of-year point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields unsynced.
+     * </p>
      * 
      * @param origin
      * @return
@@ -520,30 +986,46 @@ public class DateTimeUtils {
     /**
      * Calculate the next-year point of a supplied {@link Date}.
      * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar nextYear(Date origin) {
-        return nextYear(createCalendar(origin));
+        return addYears(origin, 1);
     }
 
     /**
      * Calculate the previous-year point of a supplied {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
      * 
      * @param origin
      * @return
      * @since 0.9.1.1
      */
     public static Calendar prevYear(Date origin) {
-        return prevYear(createCalendar(origin));
+        return addYears(origin, -1);
     }
 
-    public static void main(String[] args) {
-        Calendar cal = Calendar.getInstance();
-        System.out.println(cal.getTime());
-        System.out.println(startOfYear(cal).getTime());
-        System.out.println(nextYear(cal).getTime());
-        System.out.println(prevYear(cal).getTime());
+    /**
+     * Add/Subtract the specified amount of years to the given {@link Date}.
+     * 
+     * <p>
+     * The returned {@link Calendar} has its fields synced.
+     * </p>
+     * 
+     * @param origin
+     * @param value
+     * @return
+     * @since 0.9.2
+     */
+    public static Calendar addYears(Date origin, int value) {
+        return addYears(createCalendar(origin), value);
     }
 }

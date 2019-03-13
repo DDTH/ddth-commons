@@ -1,6 +1,6 @@
 package com.github.ddth.commons.serialization;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import com.github.ddth.commons.utils.SerializationUtils;
 
@@ -12,9 +12,6 @@ import com.github.ddth.commons.utils.SerializationUtils;
  * @since 0.5.0
  */
 public class JsonSerDeser implements ISerDeser {
-
-    private final static Charset UTF8 = Charset.forName("UTF-8");
-
     /**
      * {@inheritDoc}
      */
@@ -29,7 +26,7 @@ public class JsonSerDeser implements ISerDeser {
     @Override
     public byte[] toBytes(Object obj, ClassLoader classLoader) throws SerializationException {
         String json = SerializationUtils.toJsonString(obj, classLoader);
-        return json != null ? json.getBytes(UTF8) : null;
+        return json != null ? json.getBytes(StandardCharsets.UTF_8) : null;
     }
 
     /**
@@ -46,7 +43,7 @@ public class JsonSerDeser implements ISerDeser {
     @Override
     public <T> T fromBytes(byte[] data, Class<T> clazz, ClassLoader classLoader)
             throws DeserializationException {
-        String json = data != null ? new String(data, UTF8) : null;
+        String json = data != null ? new String(data, StandardCharsets.UTF_8) : null;
         return SerializationUtils.fromJsonString(json, clazz, classLoader);
     }
 

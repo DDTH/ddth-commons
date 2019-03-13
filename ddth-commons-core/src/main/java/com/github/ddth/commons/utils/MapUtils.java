@@ -11,7 +11,6 @@ import java.util.Map;
  * @since 0.6.1
  */
 public class MapUtils {
-
     /**
      * Extract a date value from the map. If the extracted value is
      * a string, parse it as a {@link Date} using the specified date-time format.
@@ -80,5 +79,4 @@ public class MapUtils {
         });
         return result;
     }
-
 }

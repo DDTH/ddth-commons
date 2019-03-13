@@ -12,7 +12,6 @@ import java.util.List;
  * @since 0.5.0
  */
 public class ReflectionUtils {
-
     /**
      * Get a class' constructor. Return {@code null} if no such constructor found.
      * 
@@ -148,8 +147,6 @@ public class ReflectionUtils {
         if (clazz == null || iface == null || clazz == iface) {
             return false;
         }
-
         return iface.isInterface() && iface.isAssignableFrom(clazz);
     }
-
 }

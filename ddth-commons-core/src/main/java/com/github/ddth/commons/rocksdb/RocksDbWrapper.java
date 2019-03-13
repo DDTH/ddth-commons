@@ -2,6 +2,7 @@ package com.github.ddth.commons.rocksdb;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,7 +39,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     public final static String DEFAULT_COLUMN_FAMILY = new String(RocksDB.DEFAULT_COLUMN_FAMILY,
-            RocksDbUtils.UTF8);
+            StandardCharsets.UTF_8);
 
     /**
      * Open a {@link RocksDB} with default options in read-only mode.
@@ -252,7 +253,7 @@ public class RocksDbWrapper implements AutoCloseable {
         if (columnFamilies != null) {
             this.columnFamilies.addAll(columnFamilies);
             this.columnFamilies.iterator().forEachRemaining(x -> {
-                this.columnFamilyNames.add(new String(x.columnFamilyName(), RocksDbUtils.UTF8));
+                this.columnFamilyNames.add(new String(x.getName(), StandardCharsets.UTF_8));
             });
         }
         return this;
@@ -386,9 +387,9 @@ public class RocksDbWrapper implements AutoCloseable {
         }
 
         for (int i = 0, n = cfdList.size(); i < n; i++) {
-            byte[] cfName = cfdList.get(i).columnFamilyName();
+            byte[] cfName = cfdList.get(i).getName();
             ColumnFamilyHandle cfh = cfhList.get(i);
-            columnFamilyHandles.put(new String(cfName, RocksDbUtils.UTF8), cfh);
+            columnFamilyHandles.put(new String(cfName, StandardCharsets.UTF_8), cfh);
         }
 
         return this;
@@ -412,7 +413,7 @@ public class RocksDbWrapper implements AutoCloseable {
 
         boolean hasDefaultCf = false;
         for (ColumnFamilyDescriptor cfd : columnFamilies) {
-            if (Arrays.equals(cfd.columnFamilyName(), RocksDB.DEFAULT_COLUMN_FAMILY)) {
+            if (Arrays.equals(cfd.getName(), RocksDB.DEFAULT_COLUMN_FAMILY)) {
                 hasDefaultCf = true;
                 break;
             }
@@ -544,7 +545,8 @@ public class RocksDbWrapper implements AutoCloseable {
             cfName = DEFAULT_COLUMN_FAMILY;
         }
         try {
-            delete(getColumnFamilyHandle(cfName), writeOptions, key.getBytes(RocksDbUtils.UTF8));
+            delete(getColumnFamilyHandle(cfName), writeOptions,
+                    key.getBytes(StandardCharsets.UTF_8));
         } catch (RocksDbException.ColumnFamilyNotExists e) {
             throw new RocksDbException.ColumnFamilyNotExists(cfName);
         }
@@ -629,7 +631,7 @@ public class RocksDbWrapper implements AutoCloseable {
      * @throws RocksDbException
      */
     public void put(String cfName, String key, String value) throws RocksDbException {
-        put(cfName, key, value != null ? value.getBytes(RocksDbUtils.UTF8) : null);
+        put(cfName, key, value != null ? value.getBytes(StandardCharsets.UTF_8) : null);
     }
 
     /**
@@ -643,7 +645,8 @@ public class RocksDbWrapper implements AutoCloseable {
      */
     public void put(String cfName, WriteOptions writeOptions, String key, String value)
             throws RocksDbException {
-        put(cfName, writeOptions, key, value != null ? value.getBytes(RocksDbUtils.UTF8) : null);
+        put(cfName, writeOptions, key,
+                value != null ? value.getBytes(StandardCharsets.UTF_8) : null);
     }
 
     /**
@@ -673,7 +676,7 @@ public class RocksDbWrapper implements AutoCloseable {
             cfName = DEFAULT_COLUMN_FAMILY;
         }
         try {
-            put(columnFamilyHandles.get(cfName), writeOptions, key.getBytes(RocksDbUtils.UTF8),
+            put(columnFamilyHandles.get(cfName), writeOptions, key.getBytes(StandardCharsets.UTF_8),
                     value);
         } catch (RocksDbException.ColumnFamilyNotExists e) {
             throw new RocksDbException.ColumnFamilyNotExists(cfName);
@@ -763,7 +766,7 @@ public class RocksDbWrapper implements AutoCloseable {
         if (cfh == null) {
             throw new RocksDbException.ColumnFamilyNotExists(cfName);
         }
-        return get(cfh, readOptions, key.getBytes(RocksDbUtils.UTF8));
+        return get(cfh, readOptions, key.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

@@ -2,7 +2,7 @@ package com.github.ddth.commons.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +31,7 @@ public class HashUtils {
 
     public final static HashFunction fastHashFunc = murmur3;
 
-    public final static Charset UTF8 = Charset.forName("UTF-8");
+    /*---------- Hashing methods ----------*/
 
     /**
      * Calculate checksum of an object using Murmur3 hash.
@@ -126,13 +126,12 @@ public class HashUtils {
      * </p>
      * 
      * <ul>
-     * <li>Checksum is calculated recursively (if the target object is not scala type).</li>
-     * <li>If {@code obj} is {@code null}, {@code 0} is returned.</li>
+     * <li>Checksum is calculated recursively (if the target object is not scalar type).</li>
+     * <li>If {@code obj} is {@code null}: return {@code 0L}.</li>
      * <li>If {@code obj} is wrapper type ({@link Integer}, {@link Long}, {@link Boolean}, etc), or
-     * {@link String}: hash {@code obj} using the supplied {@code hashFunc} and return the hash
-     * value as long.</li>
-     * <li>If {@code obj} is {@link BigInteger} or {@link BigDecimal}: hash {@code obj.hashCode()}
-     * using the supplied {@code hashFunc} and return the hash value as long.</li>
+     * {@link String}: return {@code hashFunc(obj)}.</li>
+     * <li>If {@code obj} is {@link BigInteger} or {@link BigDecimal}: return
+     * {@code hashFunc(obj.hashCode())}.</li>
      * <li>If {@code obj} is array of primitive types, {@link Object}s or a {@link List}: combine
      * each array/list entry's checksum in-order and return the final hash value as long.</li>
      * <li>If {@code obj} is of type {@code Map}: combine each map entry's (key & value) checksum
@@ -146,18 +145,18 @@ public class HashUtils {
      * Note:
      * <ul>
      * <li>{@code Checksum(BigInteger(x))} should NOT be equal to
-     * {@code Checksum(BigDecimal(x))}</li>
-     * <li>{@code Checksum(Double(x))} should be equal to {@code Checksum(Float(x))}</li>
+     * {@code Checksum(BigDecimal(x))}.</li>
+     * <li>{@code Checksum(Double(x))} should be equal to {@code Checksum(Float(x)).}</li>
      * <li>{@code Checksum(Byte(x))}, {@code Checksum(Short(x))}, {@code Checksum(Integer(x))} and
-     * {@code Checksum(Long(x))} should be equal</li>
+     * {@code Checksum(Long(x))} should be equal.</li>
      * <li>{@code Checksum(int[1,2,3,4])}, {@code Checksum(Long[1,2,3,4])} and
-     * {@code Checksum(List<integer-type>[1,2,3,4])} should be equal</li>
+     * {@code Checksum(List<integer-type>[1,2,3,4])} should be equal.</li>
      * <li>{@code Checksum(Map[key1=>value1,key2=>value2])} should be equal to
-     * {@code Checksum(Map[key2=>value2,key1=>value1])}</li>
-     * <li>{@code Checksum(non-list-Collection[value1,value2)} should be equal to
-     * {@code Checksum(non-list-Collection[value2,value1)}</li>
-     * <li>{@code Checksum(array[1,2,3,4])} and {@code Checksum(List[1,2,3,4])} should NOT be equal
-     * to {@code Checksum(non-list-Collection[1,2,3,4)}</li>
+     * {@code Checksum(Map[key2=>value2,key1=>value1])}.</li>
+     * <li>{@code Checksum(non-list-Collection[value1,value2]} should be equal to
+     * {@code Checksum(non-list-Collection[value2,value1]}.</li>
+     * <li>{@code Checksum(array[1,2,3,4])} should be equal to {@code Checksum(List[1,2,3,4])}, but
+     * should NOT be equal to {@code Checksum(non-list-Collection[1,2,3,4]}.</li>
      * </ul>
      * </p>
      * 
@@ -171,19 +170,16 @@ public class HashUtils {
             return 0;
         }
         if (obj instanceof Number) {
-            /*
-             * BigDecimal & BigInteger should have same checksum value.
-             * Double & Float should have same checksum value.
-             * Integers (Byte, Short, Integer, Double) should have same checksum value.
-             */
-
             Number num = (Number) obj;
             if (num instanceof BigDecimal || num instanceof BigInteger) {
+                // BigDecimal & BigInteger have DIFFERENT checksum values.
                 return hashFunc.newHasher().putInt(obj.hashCode()).hash().padToLong();
             }
             if (num instanceof Double || num instanceof Float) {
+                // Double & Float should have same checksum value.
                 return hashFunc.newHasher().putDouble(num.doubleValue()).hash().padToLong();
             }
+            // Integers (Byte, Short, Integer, Double) should have same checksum value.
             return hashFunc.newHasher().putLong(num.longValue()).hash().padToLong();
         }
 
@@ -195,7 +191,8 @@ public class HashUtils {
             return hashFunc.newHasher().putChar(((Character) obj).charValue()).hash().padToLong();
         }
         if (obj instanceof String) {
-            return hashFunc.newHasher().putString(obj.toString(), UTF8).hash().padToLong();
+            return hashFunc.newHasher().putString(obj.toString(), StandardCharsets.UTF_8).hash()
+                    .padToLong();
         }
         if (obj instanceof byte[] || obj instanceof short[] || obj instanceof int[]
                 || obj instanceof long[] || obj instanceof float[] || obj instanceof double[]
@@ -205,49 +202,41 @@ public class HashUtils {
             case "byte[]":
                 for (byte v : (byte[]) obj) {
                     hasher.putLong(checksum(v, hashFunc));
-                    // hasher.putByte(v);
                 }
                 break;
             case "short[]":
                 for (short v : (short[]) obj) {
                     hasher.putLong(checksum(v, hashFunc));
-                    // hasher.putShort(v);
                 }
                 break;
             case "int[]":
                 for (int v : (int[]) obj) {
                     hasher.putLong(checksum(v, hashFunc));
-                    // hasher.putInt(v);
                 }
                 break;
             case "long[]":
                 for (long v : (long[]) obj) {
                     hasher.putLong(checksum(v, hashFunc));
-                    // hasher.putLong(v);
                 }
                 break;
             case "float[]":
                 for (float v : (float[]) obj) {
                     hasher.putLong(checksum(v, hashFunc));
-                    // hasher.putFloat(v);
                 }
                 break;
             case "double[]":
                 for (double v : (double[]) obj) {
                     hasher.putLong(checksum(v, hashFunc));
-                    // hasher.putDouble(v);
                 }
                 break;
             case "boolean[]":
                 for (boolean v : (boolean[]) obj) {
                     hasher.putLong(checksum(v, hashFunc));
-                    // hasher.putBoolean(v);
                 }
                 break;
             case "char[]":
                 for (char v : (char[]) obj) {
                     hasher.putLong(checksum(v, hashFunc));
-                    // hasher.putChar(v);
                 }
                 break;
             default:
@@ -289,6 +278,8 @@ public class HashUtils {
         return obj.hashCode();
     }
 
+    /*---------- Hashing methods ----------*/
+
     /**
      * Calculate hash value of an object using a fast
      * non-cryptographic-strength hash function.
@@ -302,7 +293,7 @@ public class HashUtils {
         }
         HashFunction hashFunction = fastHashFunc;
         if (object instanceof Boolean || object instanceof Number || object instanceof String) {
-            return hashFunction.hashString(object.toString(), UTF8).asLong();
+            return hashFunction.hashString(object.toString(), StandardCharsets.UTF_8).asLong();
         }
         return hashFunction.hashInt(object.hashCode()).asLong();
     }
@@ -361,7 +352,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        return murmur332bit.hashString(value, UTF8).toString().toLowerCase();
+        return murmur332bit.hashString(value, StandardCharsets.UTF_8).toString().toLowerCase();
     }
 
     /**
@@ -389,7 +380,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        return murmur3.hashString(value, UTF8).toString().toLowerCase();
+        return murmur3.hashString(value, StandardCharsets.UTF_8).toString().toLowerCase();
     }
 
     /**
@@ -416,7 +407,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        return crc32.hashString(value, UTF8).toString().toLowerCase();
+        return crc32.hashString(value, StandardCharsets.UTF_8).toString().toLowerCase();
     }
 
     /**
@@ -442,7 +433,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        return md5.hashString(value, UTF8).toString().toLowerCase();
+        return md5.hashString(value, StandardCharsets.UTF_8).toString().toLowerCase();
     }
 
     /**
@@ -468,7 +459,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        return sha1.hashString(value, UTF8).toString().toLowerCase();
+        return sha1.hashString(value, StandardCharsets.UTF_8).toString().toLowerCase();
     }
 
     /**
@@ -494,7 +485,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        return sha256.hashString(value, UTF8).toString().toLowerCase();
+        return sha256.hashString(value, StandardCharsets.UTF_8).toString().toLowerCase();
     }
 
     /**
@@ -520,7 +511,7 @@ public class HashUtils {
         if (value == null) {
             return null;
         }
-        return sha512.hashString(value, UTF8).toString().toLowerCase();
+        return sha512.hashString(value, StandardCharsets.UTF_8).toString().toLowerCase();
     }
 
     /**
@@ -535,5 +526,4 @@ public class HashUtils {
         }
         return sha512.hashBytes(value).toString().toLowerCase();
     }
-
 }

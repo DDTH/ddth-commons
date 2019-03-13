@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
+import com.fasterxml.jackson.databind.node.POJONode;
 
 /**
  * Utility class to convert values.
@@ -50,6 +51,9 @@ public class ValueUtils {
      */
     @SuppressWarnings("unchecked")
     public static <N> N convertNumber(Object target, Class<N> clazz) throws NumberFormatException {
+        if (target instanceof JsonNode) {
+            return convertNumber((JsonNode) target, clazz);
+        }
         if (clazz == Number.class) {
             return target instanceof Number ? (N) target : null;
         }
@@ -114,6 +118,9 @@ public class ValueUtils {
      * @return
      */
     public static Boolean convertBoolean(Object target) {
+        if (target instanceof JsonNode) {
+            return convertBoolean((JsonNode) target);
+        }
         return target instanceof Boolean ? (Boolean) target
                 : target instanceof String ? Boolean.parseBoolean(target.toString())
                         : Boolean.FALSE;
@@ -131,6 +138,9 @@ public class ValueUtils {
      * @return
      */
     public static Character convertChar(Object target) {
+        if (target instanceof JsonNode) {
+            return convertChar((JsonNode) target);
+        }
         return target instanceof Character ? (Character) target
                 : target instanceof Number ? (char) ((Number) target).intValue()
                         : target instanceof String
@@ -145,6 +155,9 @@ public class ValueUtils {
      * @return
      */
     public static Date convertDate(Object target) {
+        if (target instanceof JsonNode) {
+            return convertDate((JsonNode) target);
+        }
         DateFormat df = new SimpleDateFormat();
         try {
             return target instanceof Date ? (Date) target
@@ -165,6 +178,9 @@ public class ValueUtils {
      * @since 0.6.3.1
      */
     public static Date convertDate(Object target, String dateTimeFormat) {
+        if (target instanceof JsonNode) {
+            return convertDate((JsonNode) target, dateTimeFormat);
+        }
         return target instanceof Number ? new Date(((Number) target).longValue())
                 : (target instanceof String
                         ? DateFormatUtils.fromString(target.toString(), dateTimeFormat)
@@ -178,6 +194,9 @@ public class ValueUtils {
      * @return
      */
     public static List<?> convertArrayOrList(Object target) {
+        if (target instanceof JsonNode) {
+            return convertArrayOrList((JsonNode) target);
+        }
         return target instanceof Object[] ? Arrays.asList((Object[]) target)
                 : target instanceof Collection ? new ArrayList<Object>((Collection<?>) target)
                         : null;
@@ -197,6 +216,9 @@ public class ValueUtils {
         }
         if (target == null) {
             return null;
+        }
+        if (target instanceof JsonNode) {
+            return convertValue((JsonNode) target, clazz);
         }
         if (Number.class.isAssignableFrom(clazz) || byte.class == clazz || short.class == clazz
                 || int.class == clazz || long.class == clazz || float.class == clazz
@@ -238,7 +260,7 @@ public class ValueUtils {
      * 
      * @param node
      * @param clazz
-     *            one of {@link Byte}, {@link byte},
+     *            one of {@link Number}, {@link Byte}, {@link byte},
      *            {@link Short}, {@link short}, {@link Integer}, {@link int},
      *            {@link Long}, {@link long}, {@link Float}, {@link float},
      *            {@link Double}, {@link double}, {@link BigInteger} or
@@ -248,6 +270,9 @@ public class ValueUtils {
      */
     @SuppressWarnings("unchecked")
     public static <N> N convertNumber(JsonNode node, Class<N> clazz) {
+        if (node instanceof POJONode) {
+            return convertNumber(DPathUtils.extractValue((POJONode) node), clazz);
+        }
         if (clazz == Byte.class || clazz == byte.class) {
             byte value = node.isNumber() ? (byte) node.asInt()
                     : node.isTextual() ? Byte.parseByte(node.asText()) : 0;
@@ -288,6 +313,14 @@ public class ValueUtils {
                     : BigDecimal.valueOf(node.isTextual() ? Double.parseDouble(node.asText()) : 0);
             return (N) value;
         }
+        if (clazz == Number.class && node.isNumber()) {
+            if (node.isIntegralNumber()) {
+                return (N) Long.valueOf(node.asLong());
+            }
+            if (node.isFloatingPointNumber()) {
+                return (N) Double.valueOf(node.asDouble());
+            }
+        }
         return null;
     }
 
@@ -304,6 +337,9 @@ public class ValueUtils {
      * @since 0.6.2
      */
     public static Boolean convertBoolean(JsonNode node) {
+        if (node instanceof POJONode) {
+            return convertBoolean(DPathUtils.extractValue((POJONode) node));
+        }
         boolean value = node.isBoolean() ? node.asBoolean()
                 : node.isTextual() ? Boolean.parseBoolean(node.asText()) : false;
         return Boolean.valueOf(value);
@@ -322,6 +358,9 @@ public class ValueUtils {
      * @since 0.6.2
      */
     public static Character convertChar(JsonNode node) {
+        if (node instanceof POJONode) {
+            return convertChar(DPathUtils.extractValue((POJONode) node));
+        }
         return node.isNumber() ? (char) node.asInt()
                 : node.isTextual() ? (node.asText().length() > 0 ? node.asText().charAt(0) : 0) : 0;
     }
@@ -333,8 +372,8 @@ public class ValueUtils {
      * @return
      */
     public static Date convertDate(JsonNode node) {
-        if (node == null) {
-            return null;
+        if (node instanceof POJONode) {
+            return convertDate(DPathUtils.extractValue((POJONode) node));
         }
         DateFormat df = new SimpleDateFormat();
         try {
@@ -354,8 +393,8 @@ public class ValueUtils {
      * @since 0.6.3.1
      */
     public static Date convertDate(JsonNode node, String dateTimeFormat) {
-        if (node == null) {
-            return null;
+        if (node instanceof POJONode) {
+            return convertDate(DPathUtils.extractValue((POJONode) node), dateTimeFormat);
         }
         return node.isNumber() ? new Date(node.asLong())
                 : node.isTextual() ? DateFormatUtils.fromString(node.asText(), dateTimeFormat)
@@ -368,7 +407,10 @@ public class ValueUtils {
      * @param node
      * @return
      */
-    public static List<JsonNode> convertArrayOrList(JsonNode node) {
+    public static List<?> convertArrayOrList(JsonNode node) {
+        if (node instanceof POJONode) {
+            return convertArrayOrList(DPathUtils.extractValue((POJONode) node));
+        }
         if (node instanceof ArrayNode) {
             List<JsonNode> result = new ArrayList<>();
             ArrayNode arrNode = (ArrayNode) node;
@@ -390,11 +432,17 @@ public class ValueUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> T convertValue(JsonNode node, Class<T> clazz) {
+        if (node instanceof POJONode) {
+            return convertValue(DPathUtils.extractValue((POJONode) node), clazz);
+        }
         if (clazz == null) {
             throw new NullPointerException("Class parameter is null!");
         }
         if (node == null || node instanceof NullNode || node instanceof MissingNode) {
             return null;
+        }
+        if (node instanceof POJONode) {
+            return convertValue(DPathUtils.extractValue((POJONode) node), clazz);
         }
         if (Number.class.isAssignableFrom(clazz) || byte.class == clazz || short.class == clazz
                 || int.class == clazz || long.class == clazz || float.class == clazz

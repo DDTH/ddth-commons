@@ -1,13 +1,10 @@
 package com.github.ddth.commons.utils;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -20,9 +17,7 @@ import org.nustaq.serialization.FSTConfiguration;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.pool.KryoCallback;
-import com.esotericsoftware.kryo.pool.KryoFactory;
-import com.esotericsoftware.kryo.pool.KryoPool;
+import com.esotericsoftware.kryo.util.Pool;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -60,6 +55,8 @@ public class SerializationUtils {
      * 
      * @param obj
      * @return
+     * @deprecated since 0.9.2 with no replacement, use {@link #toByteArrayFst(Object)} or
+     *             {@link #toByteArrayKryo(Object)}
      */
     public static byte[] toByteArray(Object obj) {
         return toByteArray(obj, null);
@@ -77,6 +74,8 @@ public class SerializationUtils {
      * @param obj
      * @param classLoader
      * @return
+     * @deprecated since 0.9.2 with no replacement, use {@link #toByteArrayFst(Object, ClassLoader)}
+     *             or {@link #toByteArrayKryo(Object, ClassLoader)}
      */
     public static byte[] toByteArray(Object obj, ClassLoader classLoader) {
         if (obj instanceof ISerializationSupport) {
@@ -106,6 +105,8 @@ public class SerializationUtils {
      * @param data
      * @param clazz
      * @return
+     * @deprecated since 0.9.2 with no replacement, use {@link #fromByteArrayFst(byte[], Class)} or
+     *             {@link #fromByteArrayKryo(byte[], Class)}
      */
     public static <T> T fromByteArray(byte[] data, Class<T> clazz) {
         return fromByteArray(data, clazz, null);
@@ -124,6 +125,9 @@ public class SerializationUtils {
      * @param clazz
      * @param classLoader
      * @return
+     * @deprecated since 0.9.2 with no replacement, use
+     *             {@link #fromByteArrayFst(byte[], Class, ClassLoader)} or
+     *             {@link #fromByteArrayKryo(byte[], Class, ClassLoader)}
      */
     public static <T> T fromByteArray(byte[] data, Class<T> clazz, ClassLoader classLoader) {
         if (data == null) {
@@ -151,16 +155,32 @@ public class SerializationUtils {
     }
 
     /*----------------------------------------------------------------------*/
-    private static KryoPool kryoPool;
+    private static Pool<Kryo> kryoPool;
+    private static Pool<Output> kryoOutputPool;
+    private static Pool<Input> kryoInputPool;
     static {
-        KryoFactory factory = new KryoFactory() {
-            public Kryo create() {
+        int numCpuCores = Runtime.getRuntime().availableProcessors();
+        kryoPool = new Pool<Kryo>(true /* thread-safe */, false/* soft-ref */, numCpuCores) {
+            protected Kryo create() {
                 Kryo kryo = new Kryo();
+                kryo.setRegistrationRequired(false);
+                kryo.setWarnUnregisteredClasses(false);
+                // (optional) configure the Kryo instance
                 return kryo;
             }
         };
-        Queue<Kryo> queue = new LinkedBlockingQueue<Kryo>(100);
-        kryoPool = new KryoPool.Builder(factory).queue(queue).softReferences().build();
+
+        kryoOutputPool = new Pool<Output>(true/* thread-safe */, false/* soft-ref */, numCpuCores) {
+            protected Output create() {
+                return new Output(1024, -1);
+            }
+        };
+
+        kryoInputPool = new Pool<Input>(true/* thread-safe */, false/* soft-ref */, numCpuCores) {
+            protected Input create() {
+                return new Input(1024);
+            }
+        };
     }
 
     /**
@@ -188,35 +208,36 @@ public class SerializationUtils {
      * @param classLoader
      * @return
      */
-    public static byte[] toByteArrayKryo(final Object obj, final ClassLoader classLoader) {
+    public static byte[] toByteArrayKryo(Object obj, ClassLoader classLoader) {
         if (obj == null) {
             return null;
         }
-        return kryoPool.run(new KryoCallback<byte[]>() {
-            @Override
-            public byte[] execute(Kryo kryo) {
-                ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
-                if (classLoader != null) {
-                    Thread.currentThread().setContextClassLoader(classLoader);
-                }
-                try {
-                    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                        try (Output output = new Output(baos)) {
-                            kryo.setClassLoader(classLoader != null ? classLoader : oldClassLoader);
-                            // kryo.writeObject(output, obj);
-                            kryo.writeClassAndObject(output, obj);
-                            output.flush();
-                            return baos.toByteArray();
-                        }
-                    } catch (Exception e) {
-                        throw e instanceof SerializationException ? (SerializationException) e
-                                : new SerializationException(e);
-                    }
-                } finally {
-                    Thread.currentThread().setContextClassLoader(oldClassLoader);
-                }
+        Kryo kryo = kryoPool.obtain();
+        try {
+            ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader != null) {
+                Thread.currentThread().setContextClassLoader(classLoader);
             }
-        });
+            try {
+                Output output = kryoOutputPool.obtain();
+                try {
+                    kryo.setClassLoader(classLoader != null ? classLoader : oldClassLoader);
+                    // kryo.writeObject(output, obj);
+                    kryo.writeClassAndObject(output, obj);
+                    output.close();
+                    return output.toBytes();
+                } catch (Exception e) {
+                    throw e instanceof SerializationException ? (SerializationException) e
+                            : new SerializationException(e);
+                } finally {
+                    kryoOutputPool.free(output);
+                }
+            } finally {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
+        } finally {
+            kryoPool.free(kryo);
+        }
     }
 
     /**
@@ -275,38 +296,34 @@ public class SerializationUtils {
      * @param classLoader
      * @return
      */
-    public static <T> T fromByteArrayKryo(byte[] data, final Class<T> clazz,
-            final ClassLoader classLoader) {
+    @SuppressWarnings("unchecked")
+    public static <T> T fromByteArrayKryo(byte[] data, Class<T> clazz, ClassLoader classLoader) {
         if (data == null) {
             return null;
         }
-        return kryoPool.run(new KryoCallback<T>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public T execute(Kryo kryo) {
-                ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
-                if (classLoader != null) {
-                    Thread.currentThread().setContextClassLoader(classLoader);
-                }
-                try {
-                    try (Input input = new Input(new ByteArrayInputStream(data))) {
-                        kryo.setClassLoader(classLoader != null ? classLoader : oldClassLoader);
-                        // return kryo.readObject(input, clazz);
-                        Object result = kryo.readClassAndObject(input);
-                        if (result != null && clazz.isAssignableFrom(result.getClass())) {
-                            return (T) result;
-                        } else {
-                            return null;
-                        }
-                    } catch (Exception e) {
-                        throw e instanceof DeserializationException ? (DeserializationException) e
-                                : new DeserializationException(e);
-                    }
-                } finally {
-                    Thread.currentThread().setContextClassLoader(oldClassLoader);
-                }
+        Kryo kryo = kryoPool.obtain();
+        try {
+            ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader != null) {
+                Thread.currentThread().setContextClassLoader(classLoader);
             }
-        });
+            try {
+                Input input = kryoInputPool.obtain();
+                try {
+                    kryo.setClassLoader(classLoader != null ? classLoader : oldClassLoader);
+                    input.setInputStream(new ByteArrayInputStream(data));
+                    Object obj = kryo.readClassAndObject(input);
+                    input.close();
+                    return obj != null && clazz.isAssignableFrom(obj.getClass()) ? (T) obj : null;
+                } finally {
+                    kryoInputPool.free(input);
+                }
+            } finally {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
+        } finally {
+            kryoPool.free(kryo);
+        }
     }
 
     /*----------------------------------------------------------------------*/

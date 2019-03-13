@@ -3,7 +3,6 @@ package com.github.ddth.commons.utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -20,6 +19,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -27,6 +27,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -35,7 +36,6 @@ import org.apache.commons.lang3.StringUtils;
  * <p>
  * Encrypt/Decrypt data, sign data and verify signature using RSA public/private key:
  * <ul>
- * <li>Default: 512, 1024, 2048 bit encryption key</li>
  * <li>Default: {@code RSA/ECB/PKCS1Padding} transformation (11-byte padding size)</li>
  * <li>Support custom transformation and padding size</li>
  * </ul>
@@ -43,24 +43,34 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Thanh Nguyen <btnguyen2k@gmail.com>
  * @since 0.7.0
+ * @see <a href=
+ *      "https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#cipherTable">Java
+ *      Cryptography Architecture Oracle Providers Documentation for JDK 8</a>
+ * @see <a href=
+ *      "https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#Cipher">Java
+ *      Cryptography Architecture Standard Algorithm Name Documentation for JDK 8</a>
  */
 public class RSAUtils {
-    public final static Charset UTF8 = Charset.forName("UTF-8");
     public final static String CIPHER_ALGORITHM = "RSA";
 
-    public final static String CIPHER_RSA_ECB_PKCS1Padding = "RSA/ECB/PKCS1Padding";
-    public final static int PADDING_SIZE_RSA_ECB_PKCS1Padding = 11;
+    public final static String CIPHER_MODE = "ECB";
 
-    public final static String CIPHER_RSA_ECB_OAEPWithSHA1AndMGF1Padding = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
-    public final static int PADDING_SIZE_RSA_ECB_OAEPWithSHA1AndMGF1Padding = 42;
-
-    public final static String CIPHER_RSA_ECB_OAEPWithSHA256AndMGF1Padding = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
-    public final static int PADDING_SIZE_RSA_ECB_OAEPWithSHA256AndMGF1Padding = 66;
+    public final static String[] CIPHER_PADDINGS = { "NoPadding", "PKCS1Padding",
+            "OAEPWithMD5AndMGF1Padding", "OAEPWithSHA1AndMGF1Padding",
+            "OAEPWithSHA-1AndMGF1Padding", "OAEPWithSHA-224AndMGF1Padding",
+            "OAEPWithSHA-256AndMGF1Padding", "OAEPWithSHA-384AndMGF1Padding",
+            "OAEPWithSHA-512AndMGF1Padding" };
+    public final static int[] CIPHER_PADDINGS_SIZE = { 1, 11, 34, 42, 42, 58, 66, 98, 130 };
 
     public final static String DEFAULT_CIPHER_TRANSFORMATION = "RSA/ECB/PKCS1Padding";
-    public final static int DEFAULT_PADDING_SIZE = PADDING_SIZE_RSA_ECB_PKCS1Padding;
+    public final static int DEFAULT_PADDING_SIZE = 11;
 
-    public final static String SIGNATURE_ALGORITHM = "SHA1withRSA";
+    public final static String[] SIGNATURE_ALGORITHMS = { "MD2withRSA", "MD5withRSA", "SHA1withRSA",
+            "SHA224withRSA", "SHA256withRSA", "SHA384withRSA", "SHA512withRSA" };
+
+    public final static String DEFAULT_SIGNATURE_ALGORITHM = "SHA1withRSA";
+
+    private final static SecureRandom SECURE_RNG = new SecureRandom();
 
     static {
         try {
@@ -142,7 +152,8 @@ public class RSAUtils {
      * @param message
      *            the message to sign
      * @param signAlgo
-     *            signature algorithm to use. If empty, {@link #SIGNATURE_ALGORITHM} will be used.
+     *            signature algorithm to use. If empty, {@link #DEFAULT_SIGNATURE_ALGORITHM} will be
+     *            used.
      * @return the signature
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeyException
@@ -151,16 +162,16 @@ public class RSAUtils {
     public static byte[] signMessage(RSAPrivateKey key, byte[] message, String signAlgo)
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         if (StringUtils.isBlank(signAlgo)) {
-            signAlgo = SIGNATURE_ALGORITHM;
+            signAlgo = DEFAULT_SIGNATURE_ALGORITHM;
         }
         Signature sign = Signature.getInstance(signAlgo);
-        sign.initSign(key, SecureRandom.getInstanceStrong());
+        sign.initSign(key, SECURE_RNG);
         sign.update(message);
         return sign.sign();
     }
 
     /**
-     * Sign a message with RSA private key, using {@link #SIGNATURE_ALGORITHM}.
+     * Sign a message with RSA private key, using {@link #DEFAULT_SIGNATURE_ALGORITHM}.
      * 
      * @param key
      * @param message
@@ -171,7 +182,7 @@ public class RSAUtils {
      */
     public static byte[] signMessage(RSAPrivateKey key, byte[] message)
             throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
-        return signMessage(key, message, SIGNATURE_ALGORITHM);
+        return signMessage(key, message, DEFAULT_SIGNATURE_ALGORITHM);
     }
 
     /**
@@ -181,7 +192,8 @@ public class RSAUtils {
      *            RSA private key data (value of {@link RSAPrivateKey#getEncoded()})
      * @param message
      * @param signAlgo
-     *            signature algorithm to use. If empty, {@link #SIGNATURE_ALGORITHM} will be used.
+     *            signature algorithm to use. If empty, {@link #DEFAULT_SIGNATURE_ALGORITHM} will be
+     *            used.
      * @return
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeySpecException
@@ -196,7 +208,7 @@ public class RSAUtils {
     }
 
     /**
-     * Sign a message with RSA private key, using {@link #SIGNATURE_ALGORITHM}.
+     * Sign a message with RSA private key, using {@link #DEFAULT_SIGNATURE_ALGORITHM}.
      * 
      * @param keyData
      *            RSA private key data (value of {@link RSAPrivateKey#getEncoded()})
@@ -210,7 +222,7 @@ public class RSAUtils {
     public static byte[] signMessageWithPrivateKey(byte[] keyData, byte[] message)
             throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException,
             SignatureException {
-        return signMessageWithPrivateKey(keyData, message, SIGNATURE_ALGORITHM);
+        return signMessageWithPrivateKey(keyData, message, DEFAULT_SIGNATURE_ALGORITHM);
     }
 
     /**
@@ -220,7 +232,8 @@ public class RSAUtils {
      *            RSA private key in base64 (base64 of {@link RSAPrivateKey#getEncoded()})
      * @param message
      * @param signAlgo
-     *            signature algorithm to use. If empty, {@link #SIGNATURE_ALGORITHM} will be used.
+     *            signature algorithm to use. If empty, {@link #DEFAULT_SIGNATURE_ALGORITHM} will be
+     *            used.
      * @return
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeySpecException
@@ -235,7 +248,7 @@ public class RSAUtils {
     }
 
     /**
-     * Sign a message with RSA private key, using {@link #SIGNATURE_ALGORITHM}.
+     * Sign a message with RSA private key, using {@link #DEFAULT_SIGNATURE_ALGORITHM}.
      * 
      * @param base64PrivateKeyData
      *            RSA private key in base64 (base64 of {@link RSAPrivateKey#getEncoded()})
@@ -249,7 +262,8 @@ public class RSAUtils {
     public static byte[] signMessageWithPrivateKey(String base64PrivateKeyData, byte[] message)
             throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException,
             SignatureException {
-        return signMessageWithPrivateKey(base64PrivateKeyData, message, SIGNATURE_ALGORITHM);
+        return signMessageWithPrivateKey(base64PrivateKeyData, message,
+                DEFAULT_SIGNATURE_ALGORITHM);
     }
 
     /*----------------------------------------------------------------------*/
@@ -262,7 +276,8 @@ public class RSAUtils {
      * @param signature
      *            the signature created by {@link #signMessage(RSAPrivateKey, byte[])}
      * @param signAlgo
-     *            signature algorithm to use. If empty, {@link #SIGNATURE_ALGORITHM} will be used.
+     *            signature algorithm to use. If empty, {@link #DEFAULT_SIGNATURE_ALGORITHM} will be
+     *            used.
      * @return
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeyException
@@ -272,7 +287,7 @@ public class RSAUtils {
             String signAlgo)
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         if (StringUtils.isBlank(signAlgo)) {
-            signAlgo = SIGNATURE_ALGORITHM;
+            signAlgo = DEFAULT_SIGNATURE_ALGORITHM;
         }
         Signature sign = Signature.getInstance(signAlgo);
         sign.initVerify(key);
@@ -281,7 +296,7 @@ public class RSAUtils {
     }
 
     /**
-     * Verify a signature with RSA public key, using {@link #SIGNATURE_ALGORITHM}.
+     * Verify a signature with RSA public key, using {@link #DEFAULT_SIGNATURE_ALGORITHM}.
      * 
      * @param key
      * @param message
@@ -293,7 +308,7 @@ public class RSAUtils {
      */
     public static boolean verifySignature(RSAPublicKey key, byte[] message, byte[] signature)
             throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
-        return verifySignature(key, message, signature, SIGNATURE_ALGORITHM);
+        return verifySignature(key, message, signature, DEFAULT_SIGNATURE_ALGORITHM);
     }
 
     /**
@@ -304,7 +319,8 @@ public class RSAUtils {
      * @param message
      * @param signature
      * @param signAlgo
-     *            signature algorithm to use. If empty, {@link #SIGNATURE_ALGORITHM} will be used.
+     *            signature algorithm to use. If empty, {@link #DEFAULT_SIGNATURE_ALGORITHM} will be
+     *            used.
      * @return
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeySpecException
@@ -319,7 +335,7 @@ public class RSAUtils {
     }
 
     /**
-     * Verify a signature with RSA public key, using {@link #SIGNATURE_ALGORITHM}.
+     * Verify a signature with RSA public key, using {@link #DEFAULT_SIGNATURE_ALGORITHM}.
      * 
      * @param keyData
      *            RSA public key data (value of {@link RSAPublicKey#getEncoded()})
@@ -334,7 +350,8 @@ public class RSAUtils {
     public static boolean verifySignatureWithPublicKey(byte[] keyData, byte[] message,
             byte[] signature) throws InvalidKeyException, NoSuchAlgorithmException,
             InvalidKeySpecException, SignatureException {
-        return verifySignatureWithPublicKey(keyData, message, signature, SIGNATURE_ALGORITHM);
+        return verifySignatureWithPublicKey(keyData, message, signature,
+                DEFAULT_SIGNATURE_ALGORITHM);
     }
 
     /**
@@ -345,7 +362,8 @@ public class RSAUtils {
      * @param message
      * @param signature
      * @param signAlgo
-     *            signature algorithm to use. If empty, {@link #SIGNATURE_ALGORITHM} will be used.
+     *            signature algorithm to use. If empty, {@link #DEFAULT_SIGNATURE_ALGORITHM} will be
+     *            used.
      * @return
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeySpecException
@@ -360,7 +378,7 @@ public class RSAUtils {
     }
 
     /**
-     * Verify a signature with RSA public key, using {@link #SIGNATURE_ALGORITHM}.
+     * Verify a signature with RSA public key, using {@link #DEFAULT_SIGNATURE_ALGORITHM}.
      * 
      * @param base64PublicKeyData
      *            RSA public key in base64 (base64 of {@link RSAPublicKey#getEncoded()})
@@ -376,7 +394,7 @@ public class RSAUtils {
             byte[] signature) throws InvalidKeyException, NoSuchAlgorithmException,
             InvalidKeySpecException, SignatureException {
         return verifySignatureWithPublicKey(base64PublicKeyData, message, signature,
-                SIGNATURE_ALGORITHM);
+                DEFAULT_SIGNATURE_ALGORITHM);
     }
     /*----------------------------------------------------------------------*/
 
@@ -597,15 +615,28 @@ public class RSAUtils {
     public static byte[] decrypt(RSAPrivateKey key, byte[] encryptedData,
             String cipherTransformation) throws NoSuchAlgorithmException, NoSuchPaddingException,
             IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher cipher = Cipher.getInstance(StringUtils.isBlank(cipherTransformation)
-                ? DEFAULT_CIPHER_TRANSFORMATION : cipherTransformation);
+        Cipher cipher = Cipher.getInstance(
+                StringUtils.isBlank(cipherTransformation) ? DEFAULT_CIPHER_TRANSFORMATION
+                        : cipherTransformation);
         cipher.init(Cipher.DECRYPT_MODE, key);
         try (ByteArrayInputStream bois = new ByteArrayInputStream(encryptedData)) {
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 int bytesRead;
                 byte[] buf = new byte[key.getModulus().bitLength() / 8];
                 while ((bytesRead = bois.read(buf)) != -1) {
-                    baos.write(cipher.doFinal(buf, 0, bytesRead));
+                    byte[] buff = cipher.doFinal(buf, 0, bytesRead);
+                    if ("RSA/ECB/NoPadding".equals(cipherTransformation)) {
+                        // remove leading zeros
+                        int index = 0;
+                        while (index < buff.length && buff[index] == 0)
+                            index++;
+                        if (index >= buff.length) {
+                            buff = ArrayUtils.EMPTY_BYTE_ARRAY;
+                        } else {
+                            buff = Arrays.copyOfRange(buff, index, buff.length);
+                        }
+                    }
+                    baos.write(buff);
                 }
                 return baos.toByteArray();
             }
@@ -767,7 +798,7 @@ public class RSAUtils {
         }
 
         KeyPairGenerator kpg = KeyPairGenerator.getInstance(CIPHER_ALGORITHM);
-        kpg.initialize(numBitsPow2, SecureRandom.getInstanceStrong());
+        kpg.initialize(numBitsPow2, SECURE_RNG);
         KeyPair keyPair = kpg.generateKeyPair();
         return keyPair;
     }
@@ -800,107 +831,5 @@ public class RSAUtils {
      */
     public static String extractPublicKeyAsBase64(KeyPair keyPair) {
         return toBase64(keyPair.getPublic());
-    }
-
-    /*----------------------------------------------------------------------*/
-    public static void main(String[] args) throws Exception {
-        final int keySize = 2048;
-        KeyPair keyPair = generateKeys(keySize);
-        String privateKey = extractPrivateKeyAsBase64(keyPair);
-        String publicKey = extractPublicKeyAsBase64(keyPair);
-        PrivateKey privKey = keyPair.getPrivate();
-        PublicKey pubKey = keyPair.getPublic();
-        System.out.println("Private key (" + keySize + "/" + privKey.getAlgorithm() + ":"
-                + privKey.getFormat() + "): " + privateKey);
-        System.out.println("Public key (" + keySize + "/" + pubKey.getAlgorithm() + ":"
-                + pubKey.getFormat() + "): " + publicKey);
-        System.out.println(StringUtils.repeat('=', 80));
-
-        {
-            System.out.println("-= DEFAULT =-");
-            final String data = "Nguyễn Bá Thành - https://github.com/DDTH/";
-            final byte[] dataBytes = data.getBytes(UTF8);
-            final byte[] encryptedData = encryptWithPublicKey(publicKey, dataBytes);
-            final byte[] decryptedData = decryptWithPrivateKey(privateKey, encryptedData);
-            System.out.println("Data     : " + data);
-            System.out.println("Data Size: " + dataBytes.length);
-            System.out.println("Encrypted: " + encryptedData.length);
-            System.out.println("Decrypted: " + new String(decryptedData, UTF8));
-
-            final byte[] signature = signMessageWithPrivateKey(privateKey, dataBytes);
-            System.out.println("Signature: " + signature.length);
-            System.out.println(
-                    "Verify   : " + verifySignatureWithPublicKey(publicKey, dataBytes, signature));
-
-            System.out.println(StringUtils.repeat('=', 80));
-        }
-
-        {
-            System.out.println("-= LONG DATA =-");
-            final String data = StringUtils.repeat("Nguyễn Bá Thành - https://github.com/DDTH/",
-                    102);
-            final byte[] dataBytes = data.getBytes(UTF8);
-            final byte[] encryptedData = encryptWithPublicKey(publicKey, dataBytes);
-            final byte[] decryptedData = decryptWithPrivateKey(privateKey, encryptedData);
-            System.out.println("Data     : " + data);
-            System.out.println("Data Size: " + dataBytes.length);
-            System.out.println("Encrypted: " + encryptedData.length);
-            System.out.println("Decrypted: " + new String(decryptedData, UTF8));
-
-            final byte[] signature = signMessageWithPrivateKey(privateKey, dataBytes);
-            System.out.println("Signature: " + signature.length);
-            System.out.println(
-                    "Verify   : " + verifySignatureWithPublicKey(publicKey, dataBytes, signature));
-
-            System.out.println(StringUtils.repeat('=', 80));
-        }
-
-        {
-            System.out.println("-= LONG DATA: RSA/ECB/OAEPWithSHA-1AndMGF1Padding =-");
-            final String data = StringUtils.repeat("Nguyễn Bá Thành - https://github.com/DDTH/",
-                    102);
-            final String cipherTransformation = CIPHER_RSA_ECB_OAEPWithSHA1AndMGF1Padding;
-            final int paddingSize = PADDING_SIZE_RSA_ECB_OAEPWithSHA1AndMGF1Padding;
-            final byte[] dataBytes = data.getBytes(UTF8);
-            final byte[] encryptedData = encryptWithPublicKey(publicKey, dataBytes,
-                    cipherTransformation, paddingSize);
-            final byte[] decryptedData = decryptWithPrivateKey(privateKey, encryptedData,
-                    cipherTransformation);
-            System.out.println("Data     : " + data);
-            System.out.println("Data Size: " + dataBytes.length);
-            System.out.println("Encrypted: " + encryptedData.length);
-            System.out.println("Decrypted: " + new String(decryptedData, UTF8));
-
-            final byte[] signature = signMessageWithPrivateKey(privateKey, dataBytes);
-            System.out.println("Signature: " + signature.length);
-            System.out.println(
-                    "Verify   : " + verifySignatureWithPublicKey(publicKey, dataBytes, signature));
-
-            System.out.println(StringUtils.repeat('=', 80));
-        }
-
-        {
-            System.out.println("-= LONG DATA: RSA/ECB/OAEPWithSHA256AndMGF1Padding =-");
-            final String data = StringUtils.repeat("Nguyễn Bá Thành - https://github.com/DDTH/",
-                    102);
-            final String cipherTransformation = CIPHER_RSA_ECB_OAEPWithSHA256AndMGF1Padding;
-            final int paddingSize = PADDING_SIZE_RSA_ECB_OAEPWithSHA256AndMGF1Padding;
-            final byte[] dataBytes = data.getBytes(UTF8);
-            final byte[] encryptedData = encryptWithPublicKey(publicKey, dataBytes,
-                    cipherTransformation, paddingSize);
-            final byte[] decryptedData = decryptWithPrivateKey(privateKey, encryptedData,
-                    cipherTransformation);
-            System.out.println("Data     : " + data);
-            System.out.println("Data Size: " + dataBytes.length);
-            System.out.println("Encrypted: " + encryptedData.length);
-            System.out.println("Decrypted: " + new String(decryptedData, UTF8));
-
-            final byte[] signature = signMessageWithPrivateKey(privateKey, dataBytes);
-            System.out.println("Signature: " + signature.length);
-            System.out.println(
-                    "Verify   : " + verifySignatureWithPublicKey(publicKey, dataBytes, signature));
-
-            System.out.println(StringUtils.repeat('=', 80));
-        }
     }
 }

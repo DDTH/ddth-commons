@@ -2,6 +2,7 @@ package com.github.ddth.commons.utils;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -352,7 +353,7 @@ public class JacksonUtils {
             return 0;
         }
         if (node instanceof ValueNode) {
-            return hashFunc.hashString(node.toString(), HashUtils.UTF8).asLong();
+            return hashFunc.hashString(node.toString(), StandardCharsets.UTF_8).asLong();
         }
         if (node instanceof ArrayNode) {
             final List<HashCode> hashCodes = new ArrayList<>();
@@ -366,8 +367,9 @@ public class JacksonUtils {
             node.fields().forEachRemaining(new Consumer<Entry<String, JsonNode>>() {
                 @Override
                 public void accept(Entry<String, JsonNode> entry) {
-                    hashCodes.add(hashFunc.newHasher().putString(entry.getKey(), HashUtils.UTF8)
-                            .putLong(checksum(entry.getValue(), hashFunc)).hash());
+                    hashCodes.add(
+                            hashFunc.newHasher().putString(entry.getKey(), StandardCharsets.UTF_8)
+                                    .putLong(checksum(entry.getValue(), hashFunc)).hash());
                 }
             });
             return hashCodes.size() > 0 ? Hashing.combineUnordered(hashCodes).padToLong() : 0;

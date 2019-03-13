@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
  * @since 0.3.2
  */
 public class Ipv4Utils {
-
     private final static Pattern IP_PATTERN_FULL = Pattern
             .compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
 

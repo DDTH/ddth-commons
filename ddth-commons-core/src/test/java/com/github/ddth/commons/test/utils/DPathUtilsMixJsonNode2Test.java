@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -21,14 +22,14 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class DPathUtilsJsonNodeTest extends TestCase {
+public class DPathUtilsMixJsonNode2Test extends TestCase {
 
-    public DPathUtilsJsonNodeTest(String testName) {
+    public DPathUtilsMixJsonNode2Test(String testName) {
         super(testName);
     }
 
     public static Test suite() {
-        return new TestSuite(DPathUtilsJsonNodeTest.class);
+        return new TestSuite(DPathUtilsMixJsonNode2Test.class);
     }
 
     private static JsonNode COMPANY;
@@ -72,9 +73,10 @@ public class DPathUtilsJsonNodeTest extends TestCase {
         employee2.put("email", EMPLOYEE2_EMAIL);
         employee2.put("age", EMPLOYEE2_AGE);
         employee2.put("join_date", EMPLOYEE2_JOIN_DATE);
-        employees.add(employee2);
+        // employees.add(employee2);
 
         COMPANY = JacksonUtils.toJson(company);
+        ((ArrayNode) COMPANY.get("employees")).addPOJO(employee2);
     }
 
     @After

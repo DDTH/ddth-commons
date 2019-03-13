@@ -1,7 +1,5 @@
 package com.github.ddth.commons.test.utils;
 
-import static org.junit.Assert.assertNotEquals;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -19,6 +17,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.junit.Assert;
 
 import com.github.ddth.commons.utils.HashUtils;
 import com.google.common.hash.HashFunction;
@@ -38,11 +37,11 @@ public class HashUtilsTest extends TestCase {
     }
 
     private void testChecksumEquals(HashFunction hf, Object left, Object right) {
-        assertEquals(HashUtils.checksum(left, hf), HashUtils.checksum(right, hf));
+        Assert.assertEquals(HashUtils.checksum(left, hf), HashUtils.checksum(right, hf));
     }
 
     private void testChecksumNotEquals(HashFunction hf, Object left, Object right) {
-        assertNotEquals(HashUtils.checksum(left, hf), HashUtils.checksum(right, hf));
+        Assert.assertNotEquals(HashUtils.checksum(left, hf), HashUtils.checksum(right, hf));
     }
 
     private final static HashFunction[] HF_LIST = { HashUtils.crc32, HashUtils.fastHashFunc,
@@ -92,7 +91,7 @@ public class HashUtilsTest extends TestCase {
     private final static byte[] byteArr = { 1, 2, 3, 4, 5 };
     private final static short[] shortArr = { 1, 2, 3, 4, 5 };
     private final static int[] intArr = { 1, 2, 3, 4, 5 };
-    private final static long[] longArr = { 1, 2, 3, 4, 5 };
+    private final static long[] longArr = { 1L, 2L, 3L, 4L, 5L };
 
     private final static Byte[] ByteArr = { 1, 2, 3, 4, 5 };
     private final static Short[] ShortArr = { 1, 2, 3, 4, 5 };
@@ -104,8 +103,8 @@ public class HashUtilsTest extends TestCase {
     private final static List<Integer> intList = Arrays.asList(IntegerArr);
     private final static List<Long> longList = Arrays.asList(LongArr);
 
-    private final static float[] floatArr = { 1, 2, 3, 4, 5 };
-    private final static double[] doubleArr = { 1, 2, 3, 4, 5 };
+    private final static float[] floatArr = { 1f, 2f, 3f, 4f, 5f };
+    private final static double[] doubleArr = { 1d, 2d, 3d, 4d, 5d };
     private final static Float[] FloatArr = { 1f, 2f, 3f, 4f, 5f };
     private final static Double[] DoubleArr = { 1d, 2d, 3d, 4d, 5d };
     private final static List<Float> floatList = Arrays.asList(FloatArr);
@@ -131,6 +130,20 @@ public class HashUtilsTest extends TestCase {
             for (int i = 0; i < data.length; i++) {
                 for (int j = 0; j < data.length; j++) {
                     testChecksumEquals(hf, data[i], data[j]);
+                }
+            }
+        }
+    }
+
+    @org.junit.Test
+    public void testChecksumByteShortIntegerLongListFloatDoubleList() {
+        Object[] left = { byteArr, shortArr, intArr, longArr, ByteArr, ShortArr, IntegerArr,
+                LongArr, byteList, shortList, intList, longList };
+        Object[] right = { floatArr, doubleArr, FloatArr, DoubleArr, floatList, doubleList };
+        for (HashFunction hf : HF_LIST) {
+            for (int i = 0; i < left.length; i++) {
+                for (int j = 0; j < right.length; j++) {
+                    testChecksumNotEquals(hf, left[i], right[j]);
                 }
             }
         }

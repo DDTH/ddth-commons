@@ -12,6 +12,7 @@ import org.junit.Before;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.ddth.commons.utils.DPathUtils;
 import com.github.ddth.commons.utils.DateFormatUtils;
@@ -21,14 +22,14 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class DPathUtilsJsonNodeTest extends TestCase {
+public class DPathUtilsMixJsonNode1Test extends TestCase {
 
-    public DPathUtilsJsonNodeTest(String testName) {
+    public DPathUtilsMixJsonNode1Test(String testName) {
         super(testName);
     }
 
     public static Test suite() {
-        return new TestSuite(DPathUtilsJsonNodeTest.class);
+        return new TestSuite(DPathUtilsMixJsonNode1Test.class);
     }
 
     private static JsonNode COMPANY;
@@ -56,7 +57,7 @@ public class DPathUtilsJsonNodeTest extends TestCase {
         company.put("year", "2003");
 
         List<Map<String, Object>> employees = new ArrayList<Map<String, Object>>();
-        company.put("employees", employees);
+        // company.put("employees", employees);
 
         Map<String, Object> employee1 = new HashMap<String, Object>();
         employee1.put("first_name", EMPLOYEE1_FIRST_NAME);
@@ -75,6 +76,7 @@ public class DPathUtilsJsonNodeTest extends TestCase {
         employees.add(employee2);
 
         COMPANY = JacksonUtils.toJson(company);
+        ((ObjectNode) COMPANY).putPOJO("employees", employees);
     }
 
     @After

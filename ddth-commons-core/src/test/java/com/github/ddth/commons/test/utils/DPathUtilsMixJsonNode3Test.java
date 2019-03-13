@@ -9,10 +9,8 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.ddth.commons.utils.DPathUtils;
 import com.github.ddth.commons.utils.DateFormatUtils;
 import com.github.ddth.commons.utils.JacksonUtils;
@@ -21,17 +19,17 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class DPathUtilsJsonNodeTest extends TestCase {
+public class DPathUtilsMixJsonNode3Test extends TestCase {
 
-    public DPathUtilsJsonNodeTest(String testName) {
+    public DPathUtilsMixJsonNode3Test(String testName) {
         super(testName);
     }
 
     public static Test suite() {
-        return new TestSuite(DPathUtilsJsonNodeTest.class);
+        return new TestSuite(DPathUtilsMixJsonNode3Test.class);
     }
 
-    private static JsonNode COMPANY;
+    private static Map<String, Object> COMPANY;
     private static final String COMPANY_NAME = "Monster Corp.";
     private static final int COMPANY_YEAR = 2003;
 
@@ -56,7 +54,7 @@ public class DPathUtilsJsonNodeTest extends TestCase {
         company.put("year", "2003");
 
         List<Map<String, Object>> employees = new ArrayList<Map<String, Object>>();
-        company.put("employees", employees);
+        // company.put("employees", employees);
 
         Map<String, Object> employee1 = new HashMap<String, Object>();
         employee1.put("first_name", EMPLOYEE1_FIRST_NAME);
@@ -74,7 +72,8 @@ public class DPathUtilsJsonNodeTest extends TestCase {
         employee2.put("join_date", EMPLOYEE2_JOIN_DATE);
         employees.add(employee2);
 
-        COMPANY = JacksonUtils.toJson(company);
+        COMPANY = company;
+        company.put("employees", JacksonUtils.toJson(employees));
     }
 
     @After
@@ -82,19 +81,122 @@ public class DPathUtilsJsonNodeTest extends TestCase {
     }
 
     @org.junit.Test
+    public void testSplitDpath() {
+        {
+            String dpath = "a.b.c.d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(4, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("d", paths[3]);
+        }
+
+        {
+            String dpath = "a.b.c.[i].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(5, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("d", paths[4]);
+        }
+
+        {
+            String dpath = "a.b.c.d[i]";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(5, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("d", paths[3]);
+            assertEquals("[i]", paths[4]);
+        }
+
+        {
+            String dpath = "a.b.c[i].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(5, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("d", paths[4]);
+        }
+
+        {
+            String dpath = "a.b.c.[i]d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(4, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]d", paths[3]);
+        }
+
+        {
+            String dpath = "a.b.c.[i].[j].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(6, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("[j]", paths[4]);
+            assertEquals("d", paths[5]);
+        }
+
+        {
+            String dpath = "a.b.c.[i][j].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(6, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("[j]", paths[4]);
+            assertEquals("d", paths[5]);
+        }
+
+        {
+            String dpath = "a.b.c[i].[j].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(6, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("[j]", paths[4]);
+            assertEquals("d", paths[5]);
+        }
+
+        {
+            String dpath = "a.b.c[i][j].d";
+            String[] paths = DPathUtils.splitDpath(dpath);
+            assertEquals(6, paths.length);
+            assertEquals("a", paths[0]);
+            assertEquals("b", paths[1]);
+            assertEquals("c", paths[2]);
+            assertEquals("[i]", paths[3]);
+            assertEquals("[j]", paths[4]);
+            assertEquals("d", paths[5]);
+        }
+    }
+
+    @org.junit.Test
     public void testGetValue() {
         String companyName = DPathUtils.getValue(COMPANY, "name", String.class);
         assertEquals(COMPANY_NAME, companyName);
 
-        Long companyYear = DPathUtils.getValue(COMPANY, "year", Long.class);
+        Integer companyYear = DPathUtils.getValue(COMPANY, "year", Integer.class);
         assertEquals(COMPANY_YEAR, companyYear.intValue());
 
-        Integer employee1Age = DPathUtils.getValue(COMPANY, "employees.[0].age", Integer.class);
+        Number employee1Age = DPathUtils.getValue(COMPANY, "employees.[0].age", Number.class);
         assertEquals(EMPLOYEE1_AGE, employee1Age.intValue());
 
-        Object employee2Email = DPathUtils.getValue(COMPANY, "employees[1].email");
-        assertTrue(employee2Email instanceof TextNode);
-        assertEquals(EMPLOYEE2_EMAIL, ((TextNode) employee2Email).asText());
+        Object employee2Email = DPathUtils.getValue(COMPANY, "employees[1].email", String.class);
+        assertEquals(EMPLOYEE2_EMAIL, employee2Email.toString());
 
         Date employee1JoinDate = DPathUtils.getDate(COMPANY, "employees[0].join_date",
                 EMPLOYEE1_JOIN_DATE_DF);
@@ -121,21 +223,20 @@ public class DPathUtilsJsonNodeTest extends TestCase {
 
     @org.junit.Test
     public void testSetValue() {
-        JsonNode notExists = DPathUtils.getValue(COMPANY, "employees.[0].not_found");
+        Object notExists = DPathUtils.getValue(COMPANY, "employees.[0].not_found");
         assertNull(notExists);
 
         DPathUtils.setValue(COMPANY, "employees[0].not_found", "not_found");
-        JsonNode exists = DPathUtils.getValue(COMPANY, "employees[0].not_found");
-        assertTrue(exists instanceof TextNode);
-        assertEquals("not_found", ((TextNode) exists).asText());
+        Object exists = DPathUtils.getValue(COMPANY, "employees[0].not_found", String.class);
+        assertEquals("not_found", exists.toString());
     }
 
     @org.junit.Test
     public void testSetValue2() {
         DPathUtils.setValue(COMPANY, "employees[0]", null);
-        JsonNode nullNow = DPathUtils.getValue(COMPANY, "employees[0]");
+        Object nullNow = DPathUtils.getValue(COMPANY, "employees[0]");
         assertTrue(
-                nullNow == null || nullNow instanceof NullNode || nullNow instanceof MissingNode);
+                nullNow == null || nullNow instanceof MissingNode || nullNow instanceof NullNode);
     }
 
     @org.junit.Test

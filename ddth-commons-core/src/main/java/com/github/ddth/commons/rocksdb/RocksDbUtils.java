@@ -1,6 +1,6 @@
 package com.github.ddth.commons.rocksdb;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
  * @since 0.8.0
  */
 public class RocksDbUtils {
-    public final static Charset UTF8 = Charset.forName("UTF-8");
     private final static Logger LOGGER = LoggerFactory.getLogger(RocksDbUtils.class);
 
     /**
@@ -186,7 +185,7 @@ public class RocksDbUtils {
         }
         List<String> result = new ArrayList<>(cfList.size());
         for (byte[] cf : cfList) {
-            result.add(new String(cf, UTF8));
+            result.add(new String(cf, StandardCharsets.UTF_8));
         }
         return result.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
     }
@@ -210,8 +209,9 @@ public class RocksDbUtils {
      */
     public static ColumnFamilyDescriptor buildColumnFamilyDescriptor(ColumnFamilyOptions cfOptions,
             String cfName) {
-        return cfOptions != null ? new ColumnFamilyDescriptor(cfName.getBytes(UTF8), cfOptions)
-                : new ColumnFamilyDescriptor(cfName.getBytes(UTF8));
+        return cfOptions != null
+                ? new ColumnFamilyDescriptor(cfName.getBytes(StandardCharsets.UTF_8), cfOptions)
+                : new ColumnFamilyDescriptor(cfName.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

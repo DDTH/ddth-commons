@@ -2,7 +2,7 @@
 
 ## Included in `ddth-commons-core`
 
-***Maven***
+**Maven**
 
 ```xml
 <dependency>
@@ -17,8 +17,21 @@
 AES encryption utility class.
 
 - Default: 128-bit encryption key
-- Default: `AES/ECB/PKCS5PADDING` transformation
+- Default: `AES/CTR/NoPadding` transformation
 - Support custom transformation and IV
+
+See [Java Cryptography Architecture Oracle Providers Documentation for JDK 8](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#cipherTable)
+
+**New since v0.9.2**
+
+- Support all AES cipher modes provided by [SunJCE Provider](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#cipherTable).
+- Change `DEFAULT_CIPHER_TRANSFORMATION` to `AES/CTR/NoPadding`
+- New methods:
+  - `String randomIV(int)` and `byte[] randomIVAsBytes(int)`
+  - `byte[] randomKeyAsBytesSecure()`, `byte[] randomIVAsBytesSecure()` and `byte[] randomIVAsBytesSecure(int)`
+  - `Cipher createCipher(int, byte[], byte[], String)`
+  - `encrypt(...)` and `decrypt(...)` that support encrypting/decrypting stream of large data.
+- New classes `CipherException`, `DdthCipherInputStream` and  `DdthCipherOutputStream`.
 
 
 ### DateFormatUtils
@@ -27,16 +40,22 @@ Utility to format a `java.util.Date` to string, and parse a string to `java.util
 
 - Use a pool of `java.text.DateFormat`s for multi-threading environment.
 
-***New since v0.6.1***
+**New since v0.6.1**
 
 - New constant `DF_ISO8601`: ISO8601 datetime format
 
 
-### DateTimeUtils
+### DateTimeUtils & CalendarWrapper
 
 Helper class to work with `java.util.Date` and `java.util.Calendar`.
 
 - Calculate the start-of-second/minute/hour/day/week/month/year point of a supplied `Calendar`.
+
+**New since v0.9.2**
+
+- New methods:
+  - `nextMillisecond(Calendar)` and `nextMillisecond(Date)`
+  - `addMilliseconds(...)`, `addSeconds(...)`, `addMinutes(...)`, `addHours(...)`, `addDays(...)`, `addWeeks(...)`, `addMonths(...)` and `addYears(...)`
 
 
 ### DPathUtils
@@ -108,13 +127,17 @@ Long age2 = DPathUtils.getValue(company, "employees.[1].age", Long.class);
 //got a Long value of 30
 ```
 
-***New since v0.1.2***
+**New since v0.1.2**
 
 - `DPathUtils.getValue(Object target, String dPath, Class clazz)` now tries its best to convert returned value to the specified type. For example, the value extracted by `dPath` is a string `"12345"` and the clazz is of type `Integer`, the method will parse the string `"12345"` to the integer `12345`.
 
-***New since v0.6.2***
+**New since v0.6.2**
 
 - `DPathUtils` now supports reading/writing values from/to Jackson's JSON tree (need `ddth-commons-serialization`).
+
+**New since v0.9.2**
+
+- Can mix `JsonNode`s & POJOs in a tree.
 
 
 ### HashUtils
@@ -126,7 +149,7 @@ Helper class to calculate hash values.
 - Consistent hashing map an object to a bucket (object -> [0, numBuckets)).
 - CRC32, MD5, SHA1, SHA256, SHA512 hashing functions.
 
-***New since v0.6.3***
+**New since v0.6.3**
 
 - New methods `long checksumXXX(...)`: calculate checksum of an object.
 - New methods `String murmur3(String)` and `String murmur3(byte[])`.
@@ -159,7 +182,7 @@ IPV4 utility class.
 
 ### MapUtils
 
-***New since v0.6.1***
+**New since v0.6.1**
 
 Helper class to work with `java.util.Map`.
 
@@ -167,14 +190,14 @@ Helper class to work with `java.util.Map`.
 - Construct a map from flat array of objects.
 - Calculate map's checksum.
 
-***New since v0.6.3***
+**New since v0.6.3**
 
 - Remove method `long checksum(Map<?,?>)`, use `HashUtils.checksumXXX(...)` instead.
 
 
 ### ReflectionUtils
 
-***New sintce v0.5.0***
+**New sintce v0.5.0**
 
 Reflection utility class.
 
@@ -183,9 +206,14 @@ Reflection utility class.
 
 RSA encryption utility class.
 
-- Default: 512, 1024, 2048 bit encryption key
+- Support: 512, 1024, 2048 bit encryption key
 - Default: `RSA/ECB/PKCS1Padding` transformation (11-byte padding size)
 - Support custom transformation and padding size
+
+**New since v0.9.2**
+
+- Unit tested with all RSA cipher modes provided by [SunJCE Provider](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#cipherTable).
+- Unit tested with all RSA signature algorithms provides by [SunRsaSign](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#SunRsaSignProvider).
 
 
 ### UnsignedUtils
@@ -200,9 +228,13 @@ Utility to work with unsigned `long`s and `int`s, radix up to `62` (`0-9`, `A-Z`
 
 ### ValueUtils
 
-***New since v0.6.1***
+**New since v0.6.1**
 
 Common utility class used by `MapUtils`, `DPathUtils` and `JacksonUtils` (need `ddth-commons-serialization`).
+
+**New since v0.9.2**
+
+Can mix `JsonNode` and POJO.
 
 
 ### VersionUtils
@@ -220,7 +252,7 @@ VersionUtils.compareVersions("0.2.0", "0.1.19");
 
 ## Included in `ddth-commons-serialization`
 
-***Maven***
+**Maven**
 
 ```xml
 <dependency>
@@ -232,19 +264,24 @@ VersionUtils.compareVersions("0.2.0", "0.1.19");
 
 ### SerializationUtils
 
-***New since v0.2.0***
+**New since v0.2.0**
 
 - Serialize/De-serialize object to/from JSON string (use FasterXML's Jackson library).
 - Serialize/De-serialize objecct to/from `byte[]` (use Jboss Serialization libary).
 
-***New since v0.6.2***
+**New since v0.6.2**
 
 - Serialize/De-serialize object to/from Jackson's `JsonNode`.
+
+**New since v0.9.2**
+
+- `toByteArray(...)` and `fromByteArray(...)` are now `deprecated` with no replacement. Use `toByteArrayKryo(...)`, `fromByteArrayKryo(...)`, `toByteArrayFst(...)` and `fromByteArrayFst(...)` explicitly.
+- Migrate `Kryo` to version `5.0.0-RC2`.
 
 
 ## JacksonUtils
 
-***New since v0.6.2***
+**New since v0.6.2**
 
 Helper class to work with Jackson's `JsonNode`.
 
@@ -253,18 +290,18 @@ Helper class to work with Jackson's `JsonNode`.
 - Load JSON tree from source.
 - Access data from JSON tree using DPath expression.
 
-***New since v0.6.2.1***
+**New since v0.6.2.1**
 
 - New method `long checksum(JsonNode)`: calculate checksum of a `JsonNode`
 
-***New since v0.6.3***
+**New since v0.6.3**
 
 - Improve `JsonNode`'s checksum calculation.
 
 
 ## Included in `ddth-commons-spring`
 
-***Maven***
+**Maven**
 
 ```xml
 <dependency>
@@ -283,7 +320,7 @@ Helper class to obtain Spring's beans from an `ApplicationContext`.
 
 ## Included in `ddth-commons-thrift`
 
-***Maven***
+**Maven**
 
 ```xml
 <dependency>
@@ -295,7 +332,7 @@ Helper class to obtain Spring's beans from an `ApplicationContext`.
 
 ### ThriftUtils
 
-***New since v0.4.0***
+**New since v0.4.0**
 
 Helper class to work with Apache Thrift.
 
@@ -305,7 +342,7 @@ Helper class to work with Apache Thrift.
 
 ## Included in `ddth-commons-typesafeconfig`
 
-***Maven***
+**Maven**
 
 ```xml
 <dependency>
@@ -317,7 +354,7 @@ Helper class to work with Apache Thrift.
 
 ### TypesafeConfigUtils
 
-***New since v0.9.1***
+**New since v0.9.1**
 
 Helper class to work with application's config file:
 

@@ -27,7 +27,11 @@ public class DateTimeUtilsTest extends TestCase {
         final Calendar cal = Calendar.getInstance();
         for (int i = 0; i < FIELDS.length; i++) {
             cal.set(FIELDS[i], FIELD_VALUES[i]);
+            // Calendar.set() does not interpret the value, hence we need to force the update by
+            // calling Calendar.getTimeInMillis()
+            cal.getTimeInMillis();
         }
+
         return cal;
     }
 
@@ -232,6 +236,33 @@ public class DateTimeUtilsTest extends TestCase {
     }
 
     /*----------------------------------------------------------------------*/
+    @org.junit.Test
+    public void testNextMillisecondCalendar() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.nextMillisecond(cal);
+        assertEquals(cal.get(Calendar.MILLISECOND) + 1, actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testNextMillisecondDate() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.nextMillisecond(cal.getTime());
+        assertEquals(cal.get(Calendar.MILLISECOND) + 1, actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
 
     @org.junit.Test
     public void testNextSecondCalendar() {
@@ -426,7 +457,35 @@ public class DateTimeUtilsTest extends TestCase {
         assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR) + 1, actual.get(Calendar.YEAR));
     }
+
     /*----------------------------------------------------------------------*/
+    @org.junit.Test
+    public void testPrevMillisecondCalendar() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.prevMillisecond(cal);
+        assertEquals(cal.get(Calendar.MILLISECOND) - 1, actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testPrevMillisecondDate() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.prevMillisecond(cal.getTime());
+        assertEquals(cal.get(Calendar.MILLISECOND) - 1, actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
 
     @org.junit.Test
     public void testPrevSecondCalendar() {
@@ -471,7 +530,7 @@ public class DateTimeUtilsTest extends TestCase {
     }
 
     @org.junit.Test
-    public void testNextPrevDate() {
+    public void testPrevMinuteDate() {
         Calendar cal = testData();
         Calendar actual = DateTimeUtils.prevMinute(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
@@ -499,7 +558,7 @@ public class DateTimeUtilsTest extends TestCase {
     }
 
     @org.junit.Test
-    public void testPrevDate() {
+    public void testPrevHourDate() {
         Calendar cal = testData();
         Calendar actual = DateTimeUtils.prevHour(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
@@ -618,6 +677,227 @@ public class DateTimeUtilsTest extends TestCase {
         assertEquals(cal.get(Calendar.DAY_OF_YEAR), actual.get(Calendar.DAY_OF_YEAR));
         assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR) - 1, actual.get(Calendar.YEAR));
+    }
+
+    /*----------------------------------------------------------------------*/
+    @org.junit.Test
+    public void testAddMillisecondsCalendar() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addMilliseconds(cal, 3);
+        assertEquals(cal.get(Calendar.MILLISECOND) + 3, actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddMillisecondsDate() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addMilliseconds(cal.getTime(), -3);
+        assertEquals(cal.get(Calendar.MILLISECOND) - 3, actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddSecondsCalendar() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addSeconds(cal, -1);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND) - 1, actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddSecondsDate() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addSeconds(cal.getTime(), 7);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND) + 7, actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddMinutesCalendar() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addMinutes(cal, 3);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE) + 3, actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddMinutesDate() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addMinutes(cal.getTime(), -5);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE) - 5, actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddHoursCalendar() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addHours(cal, -2);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY) - 2, actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddHoursDate() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addHours(cal.getTime(), 3);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY) + 3, actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddDaysCalendar() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addDays(cal, 7);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH) + 7, actual.get(Calendar.DAY_OF_MONTH));
+        // assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddDaysDate() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addDays(cal.getTime(), -1);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH) - 1, actual.get(Calendar.DAY_OF_MONTH));
+        // assertEquals(cal.get(Calendar.WEEK_OF_YEAR), actual.get(Calendar.WEEK_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddWeeksCalendar() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addWeeks(cal, 2);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_WEEK), actual.get(Calendar.DAY_OF_WEEK));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR) + 2, actual.get(Calendar.WEEK_OF_YEAR));
+        // assertEquals(cal.get(Calendar.MONTH) - 1, actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddWeeksDate() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addWeeks(cal.getTime(), -3);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_WEEK), actual.get(Calendar.DAY_OF_WEEK));
+        assertEquals(cal.get(Calendar.WEEK_OF_YEAR) - 3, actual.get(Calendar.WEEK_OF_YEAR));
+        // assertEquals(cal.get(Calendar.MONTH) - 1, actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddMonthsCalendar() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addMonths(cal, 3);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.MONTH) + 3, actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddMonthsDate() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addMonths(cal.getTime(), -2);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_MONTH), actual.get(Calendar.DAY_OF_MONTH));
+        assertEquals(cal.get(Calendar.MONTH) - 2, actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR), actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddYearsCalendar() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addYears(cal, -7);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_YEAR), actual.get(Calendar.DAY_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR) - 7, actual.get(Calendar.YEAR));
+    }
+
+    @org.junit.Test
+    public void testAddYearsDate() {
+        Calendar cal = testData();
+        Calendar actual = DateTimeUtils.addYears(cal.getTime(), 5);
+        assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
+        assertEquals(cal.get(Calendar.SECOND), actual.get(Calendar.SECOND));
+        assertEquals(cal.get(Calendar.MINUTE), actual.get(Calendar.MINUTE));
+        assertEquals(cal.get(Calendar.HOUR_OF_DAY), actual.get(Calendar.HOUR_OF_DAY));
+        assertEquals(cal.get(Calendar.DAY_OF_YEAR), actual.get(Calendar.DAY_OF_YEAR));
+        assertEquals(cal.get(Calendar.MONTH), actual.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR) + 5, actual.get(Calendar.YEAR));
     }
 
     /*----------------------------------------------------------------------*/
@@ -760,6 +1040,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.DAY_OF_WEEK, cal.getMaximum(Calendar.DAY_OF_WEEK));
+
         Calendar actual = DateTimeUtils.nextSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));

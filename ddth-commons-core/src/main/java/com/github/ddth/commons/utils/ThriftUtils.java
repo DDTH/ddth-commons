@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.thrift.TProcessorFactory;
@@ -48,14 +47,11 @@ public class ThriftUtils {
             return null;
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            TTransport transport = new TIOStreamTransport(null, baos);
-            TProtocol oProtocol = protocolFactory.getProtocol(transport);
-            record.write(oProtocol);
-            return baos.toByteArray();
-        } finally {
-            IOUtils.closeQuietly(baos);
-        }
+        TTransport transport = new TIOStreamTransport(null, baos);
+        TProtocol oProtocol = protocolFactory.getProtocol(transport);
+        record.write(oProtocol);
+        // baos.close();
+        return baos.toByteArray();
     }
 
     /**
@@ -77,11 +73,10 @@ public class ThriftUtils {
             TProtocol iProtocol = protocolFactory.getProtocol(transport);
             T record = clazz.newInstance();
             record.read(iProtocol);
+            // bais.close();
             return record;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new TException(e);
-        } finally {
-            IOUtils.closeQuietly(bais);
         }
     }
 

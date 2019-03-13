@@ -35,6 +35,11 @@ public class CalendarWrapper {
         return this;
     }
 
+    private CalendarWrapper _setCalendar(Calendar calendar) {
+        this.calendar = calendar;
+        return this;
+    }
+
     public Calendar getCalendar() {
         return (Calendar) calendar.clone();
     }
@@ -44,86 +49,174 @@ public class CalendarWrapper {
     }
 
     public CalendarWrapper startOfSecond() {
-        return setCalendar(DateTimeUtils.startOfSecond(calendar));
+        return _setCalendar(DateTimeUtils.startOfSecond(calendar));
     }
 
     public CalendarWrapper startOfMinute() {
-        return setCalendar(DateTimeUtils.startOfMinute(calendar));
+        return _setCalendar(DateTimeUtils.startOfMinute(calendar));
     }
 
     public CalendarWrapper startOfHour() {
-        return setCalendar(DateTimeUtils.startOfHour(calendar));
+        return _setCalendar(DateTimeUtils.startOfHour(calendar));
     }
 
     public CalendarWrapper startOfDay() {
-        return setCalendar(DateTimeUtils.startOfDay(calendar));
+        return _setCalendar(DateTimeUtils.startOfDay(calendar));
     }
 
     public CalendarWrapper startOfWeek() {
-        return setCalendar(DateTimeUtils.startOfWeek(calendar));
+        return _setCalendar(DateTimeUtils.startOfWeek(calendar));
     }
 
     public CalendarWrapper startOfMonth() {
-        return setCalendar(DateTimeUtils.startOfMonth(calendar));
+        return _setCalendar(DateTimeUtils.startOfMonth(calendar));
     }
 
     public CalendarWrapper startOfYear() {
-        return setCalendar(DateTimeUtils.startOfYear(calendar));
+        return _setCalendar(DateTimeUtils.startOfYear(calendar));
+    }
+
+    /**
+     * @return
+     * @since 0.9.2
+     */
+    public CalendarWrapper nextMillisecond() {
+        return _setCalendar(DateTimeUtils.nextMillisecond(calendar));
     }
 
     public CalendarWrapper nextSecond() {
-        return setCalendar(DateTimeUtils.nextSecond(calendar));
+        return _setCalendar(DateTimeUtils.nextSecond(calendar));
     }
 
     public CalendarWrapper nextMinute() {
-        return setCalendar(DateTimeUtils.nextMinute(calendar));
+        return _setCalendar(DateTimeUtils.nextMinute(calendar));
     }
 
     public CalendarWrapper nextHour() {
-        return setCalendar(DateTimeUtils.nextHour(calendar));
+        return _setCalendar(DateTimeUtils.nextHour(calendar));
     }
 
     public CalendarWrapper nextDay() {
-        return setCalendar(DateTimeUtils.nextDay(calendar));
+        return _setCalendar(DateTimeUtils.nextDay(calendar));
     }
 
     public CalendarWrapper nextWeek() {
-        return setCalendar(DateTimeUtils.nextWeek(calendar));
+        return _setCalendar(DateTimeUtils.nextWeek(calendar));
     }
 
     public CalendarWrapper nextMonth() {
-        return setCalendar(DateTimeUtils.nextMonth(calendar));
+        return _setCalendar(DateTimeUtils.nextMonth(calendar));
     }
 
     public CalendarWrapper nextYear() {
-        return setCalendar(DateTimeUtils.nextYear(calendar));
+        return _setCalendar(DateTimeUtils.nextYear(calendar));
+    }
+
+    /**
+     * @return
+     * @since 0.9.2
+     */
+    public CalendarWrapper prevMillisecond() {
+        return _setCalendar(DateTimeUtils.prevMillisecond(calendar));
     }
 
     public CalendarWrapper prevSecond() {
-        return setCalendar(DateTimeUtils.prevSecond(calendar));
+        return _setCalendar(DateTimeUtils.prevSecond(calendar));
     }
 
     public CalendarWrapper prevMinute() {
-        return setCalendar(DateTimeUtils.prevMinute(calendar));
+        return _setCalendar(DateTimeUtils.prevMinute(calendar));
     }
 
     public CalendarWrapper prevHour() {
-        return setCalendar(DateTimeUtils.prevHour(calendar));
+        return _setCalendar(DateTimeUtils.prevHour(calendar));
     }
 
     public CalendarWrapper prevDay() {
-        return setCalendar(DateTimeUtils.prevDay(calendar));
+        return _setCalendar(DateTimeUtils.prevDay(calendar));
     }
 
     public CalendarWrapper prevWeek() {
-        return setCalendar(DateTimeUtils.prevWeek(calendar));
+        return _setCalendar(DateTimeUtils.prevWeek(calendar));
     }
 
     public CalendarWrapper prevMonth() {
-        return setCalendar(DateTimeUtils.prevMonth(calendar));
+        return _setCalendar(DateTimeUtils.prevMonth(calendar));
     }
 
     public CalendarWrapper prevYear() {
-        return setCalendar(DateTimeUtils.prevYear(calendar));
+        return _setCalendar(DateTimeUtils.prevYear(calendar));
+    }
+
+    /**
+     * @param amount
+     * @return
+     * @since 0.9.2
+     */
+    public CalendarWrapper addMilliseconds(int amount) {
+        return _setCalendar(DateTimeUtils.addMilliseconds(calendar, amount));
+    }
+
+    /**
+     * @param amount
+     * @return
+     * @since 0.9.2
+     */
+    public CalendarWrapper addSeconds(int amount) {
+        return _setCalendar(DateTimeUtils.addSeconds(calendar, amount));
+    }
+
+    /**
+     * @param amount
+     * @return
+     * @since 0.9.2
+     */
+    public CalendarWrapper addMinutes(int amount) {
+        return _setCalendar(DateTimeUtils.addMinutes(calendar, amount));
+    }
+
+    /**
+     * @param amount
+     * @return
+     * @since 0.9.2
+     */
+    public CalendarWrapper addHours(int amount) {
+        return _setCalendar(DateTimeUtils.addHours(calendar, amount));
+    }
+
+    /**
+     * @param amount
+     * @return
+     * @since 0.9.2
+     */
+    public CalendarWrapper addDays(int amount) {
+        return _setCalendar(DateTimeUtils.addDays(calendar, amount));
+    }
+
+    /**
+     * @param amount
+     * @return
+     * @since 0.9.2
+     */
+    public CalendarWrapper addWeeks(int amount) {
+        return _setCalendar(DateTimeUtils.addWeeks(calendar, amount));
+    }
+
+    /**
+     * @param amount
+     * @return
+     * @since 0.9.2
+     */
+    public CalendarWrapper addMonths(int amount) {
+        return _setCalendar(DateTimeUtils.addMonths(calendar, amount));
+    }
+
+    /**
+     * @param amount
+     * @return
+     * @since 0.9.2
+     */
+    public CalendarWrapper addYears(int amount) {
+        return _setCalendar(DateTimeUtils.addYears(calendar, amount));
     }
 }

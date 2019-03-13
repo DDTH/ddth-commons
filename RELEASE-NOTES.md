@@ -1,5 +1,46 @@
 # ddth-commons release notes
 
+## 0.9.2 - 2019-03-13
+
+General:
+- Replace constants `UTF8` with `StandardCharsets.UTF_8`.
+- More unit tests.
+
+`AESUtils`:
+- Support all AES cipher modes provided by [SunJCE Provider](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#cipherTable).
+- Change `DEFAULT_CIPHER_TRANSFORMATION` to `AES/CTR/NoPadding`
+- New methods:
+  - `String randomIV(int)` and `byte[] randomIVAsBytes(int)`
+  - `byte[] randomKeyAsBytesSecure()`, `byte[] randomIVAsBytesSecure()` and `byte[] randomIVAsBytesSecure(int)`
+  - `Cipher createCipher(int, byte[], byte[], String)`
+  - `encrypt(...)` and `decrypt(...)` that support encrypting/decrypting stream of large data.
+- New classes `CipherException`, `DdthCipherInputStream` and  `DdthCipherOutputStream`.
+
+`RSAUtils`:
+- Unit tested with all RSA cipher modes provided by [SunJCE Provider](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#cipherTable).
+- Unit tested with all RSA signature algorithms provides by [SunRsaSign](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#SunRsaSignProvider).
+
+`CalendarWrapper` & `DateTimeUtils`:
+- Fix side-effect when Calender's fields are not synced.
+- New methods:
+  - `nextMillisecond(Calendar)` and `nextMillisecond(Date)`
+  - `addMilliseconds(...)`, `addSeconds(...)`, `addMinutes(...)`, `addHours(...)`, `addDays(...)`, `addWeeks(...)`, `addMonths(...)` and `addYears(...)`
+
+`HashUtils`: bug fixes & enhancements
+
+`IdGenerator`: bug fixes & enhancements & more unit tests.
+
+`DPathUtils` & `ValueUtils`:
+- Can mix `JsonNode` & Java objects in a tree.
+
+`SerializationUtils`:
+- `toByteArray(...)` and `fromByteArray(...)` are now `deprecated` with no replacement. Use `toByteArrayKryo(...)`, `fromByteArrayKryo(...)`, `toByteArrayFst(...)` and `fromByteArrayFst(...)` explicitly.
+- Migrate `Kryo` to version `5.0.0-RC2`.
+
+Others:
+- Upgrade/Update dependency libs.
+
+
 ## 0.9.1.8 - 2018-10-17
 
 - Update dependencies (vulnerabilities in `jackson-databind` and `spring-core`)
