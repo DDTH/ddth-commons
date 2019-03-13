@@ -81,8 +81,6 @@
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
-			<!-- <exclusions> <exclusion> <groupId>org.slf4j</groupId> <artifactId>slf4j-simple</artifactId> 
-				</exclusion> </exclusions> -->
 		</dependency>
 
 		<dependency>
@@ -126,21 +124,12 @@
 		</dependency>
 
 		<!-- for SpringUtils -->
-		<!-- <dependency> <groupId>org.springframework</groupId> <artifactId>spring-core</artifactId> 
-			<version>${version.spring}</version> <optional>true</optional> </dependency> 
-			<dependency> <groupId>org.springframework</groupId> <artifactId>spring-expression</artifactId> 
-			<version>${version.spring}</version> <optional>true</optional> </dependency> -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 			<version>${version.spring}</version>
 			<optional>true</optional>
-		</dependency><!-- <dependency> <groupId>org.springframework</groupId> <artifactId>spring-aop</artifactId> 
-			<version>${version.spring}</version> <optional>true</optional> </dependency> 
-			<dependency> <groupId>org.springframework</groupId> <artifactId>spring-context</artifactId> 
-			<version>${version.spring}</version> <optional>true</optional> </dependency> 
-			<dependency> <groupId>org.springframework</groupId> <artifactId>spring-context-support</artifactId> 
-			<version>${version.spring}</version> <optional>true</optional> </dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.osgi</groupId>
 			<artifactId>spring-osgi-core</artifactId>
@@ -161,15 +150,12 @@
 			<version>${version.jackson}</version>
 			<optional>true</optional>
 		</dependency>
-		<!-- 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 			<version>${version.jackson}</version>
 			<optional>true</optional>
-		</dependency> -->
-		<!-- <dependency> <groupId>com.esotericsoftware</groupId> <artifactId>kryo-shaded</artifactId> 
-			<version>${version.kryo}</version> <optional>true</optional> </dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>com.esotericsoftware</groupId>
 			<artifactId>kryo</artifactId>
