@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.github.ddth</groupId>
 		<artifactId>ddth-commons</artifactId>
-		<version>0.9.3-SNAPSHOT</version>
+		<version>0.9.3</version>
 	</parent>
 
 	<artifactId>ddth-commons-spring</artifactId>
@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>com.github.ddth</groupId>
 			<artifactId>ddth-commons-core</artifactId>
-			<version>0.9.3-SNAPSHOT</version>
+			<version>0.9.3</version>
 		</dependency>
 
 		<!-- for SpringUtils -->
