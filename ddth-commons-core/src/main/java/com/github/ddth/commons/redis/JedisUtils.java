@@ -50,7 +50,7 @@ public class JedisUtils {
     /*----------------------------------------------------------------------*/
 
     /**
-     * Create a new {@link JedisPool} with default pool configs.
+     * Create a new {@link JedisPool} with default pool configurations.
      *
      * @param hostAndPort
      *            format {@code host:port} or {@code host}, default Redis port is used if not
@@ -62,7 +62,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisPool} with specified pool configs.
+     * Create a new {@link JedisPool} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostAndPort
@@ -76,7 +76,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisPool} with default pool configs.
+     * Create a new {@link JedisPool} with default pool configurations.
      *
      * @param hostAndPort
      *            format {@code host:port} or {@code host}, default Redis port is used if not
@@ -89,7 +89,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisPool} with specified pool configs.
+     * Create a new {@link JedisPool} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostAndPort
@@ -104,7 +104,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisPool} with default pool configs.
+     * Create a new {@link JedisPool} with default pool configurations.
      *
      * @param hostAndPort
      *            format {@code host:port} or {@code host}, default Redis port is used if not
@@ -117,7 +117,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisPool} with specified pool configs.
+     * Create a new {@link JedisPool} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostAndPort
@@ -133,7 +133,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisPool} with default pool configs.
+     * Create a new {@link JedisPool} with default pool configurations.
      *
      * @param hostAndPort
      *            format {@code host:port} or {@code host}, default Redis port is used if not
@@ -147,7 +147,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisPool} with specified pool configs.
+     * Create a new {@link JedisPool} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostAndPort
@@ -164,7 +164,24 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisPool}.
+     * Create a new {@link JedisPool} with default pool configurations.
+     *
+     * @param hostAndPort
+     *            format {@code host:port} or {@code host}, default Redis port is used if not
+     *            specified
+     * @param password
+     * @param db
+     * @param timeoutMs
+     * @return
+     * @since 0.9.4
+     */
+    public static JedisPool newJedisPool(String hostAndPort, String password, int db,
+            int timeoutMs) {
+        return newJedisPool(defaultJedisPoolConfig, hostAndPort, password, db, timeoutMs);
+    }
+
+    /**
+     * Create a new {@link JedisPool} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostAndPort
@@ -189,7 +206,7 @@ public class JedisUtils {
     /*----------------------------------------------------------------------*/
 
     /**
-     * Create a new {@link JedisCluster} with default pool configs.
+     * Create a new {@link JedisCluster} with default pool configurations.
      *
      * @param hostsAndPorts
      *            format {@code host1:port1,host2:port2,...}, default Redis port is used if not
@@ -201,7 +218,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisCluster} with specified pool configs.
+     * Create a new {@link JedisCluster} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostsAndPorts
@@ -214,7 +231,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisCluster} with default pool configs.
+     * Create a new {@link JedisCluster} with default pool configurations.
      *
      * @param hostsAndPorts
      *            format {@code host1:port1,host2:port2,...}, default Redis port is used if not
@@ -227,7 +244,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisCluster} with specified pool configs.
+     * Create a new {@link JedisCluster} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostsAndPorts
@@ -242,7 +259,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisCluster} with default pool configs.
+     * Create a new {@link JedisCluster} with default pool configurations.
      *
      * @param hostsAndPorts
      *            format {@code host1:port1,host2:port2,...}, default Redis port is used if not
@@ -255,7 +272,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisCluster} with specified pool configs.
+     * Create a new {@link JedisCluster} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostsAndPorts
@@ -270,7 +287,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisCluster} with default pool configs.
+     * Create a new {@link JedisCluster} with default pool configurations.
      *
      * @param hostsAndPorts
      *            format {@code host1:port1,host2:port2,...}, default Redis port is used if not
@@ -285,7 +302,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisCluster} with specified pool configs.
+     * Create a new {@link JedisCluster} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostsAndPorts
@@ -301,9 +318,28 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link JedisCluster}.
+     * Create a new {@link JedisCluster} with default pool configurations.
+     * 
+     * @param hostsAndPorts
+     *            format {@code host1:port1,host2:port2,...}, default Redis port is used if not
+     *            specified
+     * @param password
+     * @param timeoutMs
+     * @param maxAttempts
+     * @return
+     * @since 0.9.4
+     */
+    public static JedisCluster newJedisCluster(String hostsAndPorts, String password, int timeoutMs,
+            int maxAttempts) {
+        return newJedisCluster(defaultJedisPoolConfig, hostsAndPorts, password, timeoutMs,
+                maxAttempts);
+    }
+
+    /**
+     * Create a new {@link JedisCluster} with specific pool configurations.
      * 
      * @param poolConfig
+     * @param hostsAndPorts
      *            format {@code host1:port1,host2:port2,...}, default Redis port is used if not
      *            specified
      * @param password
@@ -329,7 +365,7 @@ public class JedisUtils {
 
     /*----------------------------------------------------------------------*/
     /**
-     * Create a new {@link ShardedJedisPool} with default pool configs.
+     * Create a new {@link ShardedJedisPool} with default pool configurations.
      *
      * @param hostsAndPorts
      *            format {@code host1:port1,host2:port2,...}, default Redis port is used if not
@@ -341,7 +377,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link ShardedJedisPool} with specified pool configs.
+     * Create a new {@link ShardedJedisPool} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostsAndPorts
@@ -355,7 +391,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link ShardedJedisPool} with default pool configs.
+     * Create a new {@link ShardedJedisPool} with default pool configurations.
      *
      * @param hostsAndPorts
      *            format {@code host1:port1,host2:port2,...}, default Redis port is used if not
@@ -368,7 +404,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link ShardedJedisPool} with specified pool configs.
+     * Create a new {@link ShardedJedisPool} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostsAndPorts
@@ -383,7 +419,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link ShardedJedisPool} with default pool configs.
+     * Create a new {@link ShardedJedisPool} with default pool configurations.
      *
      * @param hostsAndPorts
      *            format {@code host1:port1,host2:port2,...}, default Redis port is used if not
@@ -396,7 +432,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link ShardedJedisPool} with specified pool configs.
+     * Create a new {@link ShardedJedisPool} with specific pool configurations.
      *
      * @param poolConfig
      * @param hostsAndPorts
@@ -411,7 +447,7 @@ public class JedisUtils {
     }
 
     /**
-     * Create a new {@link ShardedJedisPool} with default pool configs.
+     * Create a new {@link ShardedJedisPool} with default pool configurations.
      *
      * @param hostsAndPorts
      *            format {@code host1:port1,host2:port2,...}, default Redis port is used if not

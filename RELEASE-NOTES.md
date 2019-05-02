@@ -1,5 +1,25 @@
 # ddth-commons release notes
 
+## 0.9.4 - 2019-04-29
+
+General:
+- Review & Update dependency libs.
+- Review & Update readme(s).
+
+`com.github.ddth.commons.jsonrpc`:
+- DELETE call with body is deprecated.
+
+`com.github.ddth.commons.redis`:
+- Minor update: add some missing methods.
+
+`com.github.ddth.commons.rocksdb`:
+- Upgrade to `rocksdbjni:6.0.1`.
+- Build default options following [Setup Options and Basic Tuning](https://github.com/facebook/rocksdb/wiki/Setup-Options-and-Basic-Tuning) guidelines.
+
+`com.github.ddth.commons.serialization`:
+- Add class `FstSerDeser`.
+
+
 ## 0.9.2 - 2019-03-13
 
 General:

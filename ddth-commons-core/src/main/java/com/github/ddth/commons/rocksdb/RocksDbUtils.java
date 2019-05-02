@@ -7,14 +7,15 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.rocksdb.ColumnFamilyDescriptor;
 import org.rocksdb.ColumnFamilyOptions;
+import org.rocksdb.CompressionType;
 import org.rocksdb.DBOptions;
 import org.rocksdb.Env;
 import org.rocksdb.Options;
+import org.rocksdb.Priority;
 import org.rocksdb.ReadOptions;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksObject;
-import org.rocksdb.SkipListMemTableConfig;
 import org.rocksdb.WriteOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,127 +31,109 @@ public class RocksDbUtils {
     private final static Logger LOGGER = LoggerFactory.getLogger(RocksDbUtils.class);
 
     /**
-     * Builds default RocksDb {@link Options}.
+     * Build {@link DBOptions} with default options.
+     * 
+     * <p>
+     * Default options are set following guidelines at
+     * {@linkplain https://github.com/facebook/rocksdb/wiki/Setup-Options-and-Basic-Tuning}.
+     * </p>
+     * <ul>
+     * <li>{@code createIfMissing=true}</li>
+     * <li>{@code createMissingColumnFamilies=true}</li>
+     * <li>{@code errorIfExists=false}</li>
+     * <li>{@code maxBackgroundFlushes=2}</li>
+     * <li>{@code maxBackgroundCompactions=4}</li>
+     * <li>{@code increaseParallelism=8}</li>
+     * <li>{@code backgroundThreads[HIGH=2,LOW=4,BOTTOM=8]}</li>
+     * <li>{@code bytesPerSync=1Mb}</li>
+     * <li>Keep all logs in one log file ({@code maxLogFileSize=0}), rotated daily
+     * ({@code logFileTimeToRoll=86400}), keep last 1000 log files
+     * ({@code keepLogFileNum=1000}).</li>
+     * </ul>
      * 
      * @return
+     * @since 0.9.4
      */
-    public static Options buildOptions() {
-        return buildOptions(4, 128, 8L * 1024L * 1024, 32L * 1024L * 1024L);
+    public static DBOptions defaultDbOptions() {
+        DBOptions opts = new DBOptions();
+        opts.setEnv(Env.getDefault());
+        opts.setCreateIfMissing(true).setCreateMissingColumnFamilies(true).setErrorIfExists(false);
+        opts.getEnv().setBackgroundThreads(2, Priority.HIGH).setBackgroundThreads(4, Priority.LOW)
+                .setBackgroundThreads(8, Priority.BOTTOM);
+        opts.setMaxBackgroundCompactions(4).setMaxBackgroundFlushes(2).setIncreaseParallelism(8);
+        opts.setBytesPerSync(1024 * 1024);
+        opts.setMaxLogFileSize(0).setLogFileTimeToRoll(24 * 3600).setKeepLogFileNum(1000);
+        return opts;
     }
 
     /**
-     * Builds RocksDb {@link Options}.
+     * Build {@link ReadOptions} with default options.
      * 
-     * @param maxBackgroundThreads
-     * @param levelZeloFileNumCompactionTrigger
-     * @param writeBufferSize
-     * @param targetFileSizeBase
+     * <p>
+     * Default options are set following guidelines at
+     * {@linkplain https://github.com/facebook/rocksdb/wiki/Setup-Options-and-Basic-Tuning}.
+     * </p>
+     * <ul>
+     * <li>{@code tailing=true}</li>
+     * <li>{@code backgroundPurgeOnIteratorCleanup=true}</li>
+     * </ul>
+     * 
      * @return
+     * @since 0.9.4
      */
-    public static Options buildOptions(int maxBackgroundThreads,
-            int levelZeloFileNumCompactionTrigger, long writeBufferSize, long targetFileSizeBase) {
-        Options rocksOptions = new Options();
-        rocksOptions.setCreateIfMissing(true).getEnv().setBackgroundThreads(1, Env.FLUSH_POOL)
-                .setBackgroundThreads(maxBackgroundThreads, Env.COMPACTION_POOL);
-        rocksOptions.setMaxBackgroundFlushes(1).setMaxBackgroundCompactions(maxBackgroundThreads);
-        rocksOptions.setWriteBufferSize(writeBufferSize).setMinWriteBufferNumberToMerge(2)
-                .setLevelZeroFileNumCompactionTrigger(levelZeloFileNumCompactionTrigger)
-                .setTargetFileSizeBase(targetFileSizeBase);
-
-        rocksOptions.setMemTableConfig(new SkipListMemTableConfig());
-        // rocksOptions.setMemTableConfig(new HashSkipListMemTableConfig());
-        // rocksOptions.setMemTableConfig(new HashLinkedListMemTableConfig());
-
-        return rocksOptions;
+    public static ReadOptions defaultReadOptions() {
+        ReadOptions opts = new ReadOptions();
+        opts.setTailing(true).setBackgroundPurgeOnIteratorCleanup(true);
+        return opts;
     }
 
     /**
-     * Builds default RocskDb DBOptions.
+     * Build {@link WriteOptions} with default options.
+     * 
+     * <p>
+     * Default options are set following guidelines at
+     * {@linkplain https://github.com/facebook/rocksdb/wiki/Setup-Options-and-Basic-Tuning}.
+     * </p>
+     * <ul>
+     * <li>{@code disableWAL=false}</li>
+     * <li>{@code sync=false}</li>
+     * </ul>
      * 
      * @return
+     * @since 0.9.4
+     * @return
      */
-    public static DBOptions buildDbOptions() {
-        return buildDbOptions(2, 4, 8, 0 /* write all logs to one file and roll by time */);
+    public static WriteOptions defaultWriteOptions() {
+        WriteOptions opts = new WriteOptions();
+        opts.setDisableWAL(false).setSync(false);
+        return opts;
     }
 
     /**
-     * Builds RocksDb {@link DBOptions}.
+     * Build {@link ColumnFamilyOptions} with default options.
      * 
-     * @param maxBackgroundFlushes
-     *            high priority threads, usually 1 or 2 would be enough
-     * @param maxBackgroundCompactions
-     *            low priority threads, between 1 - num_cpu_cores
-     * @param maxBackgroundThreads
-     *            {@code >= maxBackgroundFlushes, maxBackgroundCompactions}
-     * @param maxLogFileSize
-     *            if equal to {@code 0}, write all logs to one file and roll by time
+     * <p>
+     * Default options are set following guidelines at
+     * {@linkplain https://github.com/facebook/rocksdb/wiki/Setup-Options-and-Basic-Tuning}.
+     * </p>
+     * <ul>
+     * <li>{@code levelCompactionDynamicLevelBytes=true}</li>
+     * <li>{@code compressionType=LZ4_COMPRESSION}</li>
+     * <li>{@code bottommostCompressionType=ZSTD_COMPRESSION}</li>
+     * </ul>
+     * 
      * @return
+     * @since 0.9.4
      */
-    public static DBOptions buildDbOptions(int maxBackgroundFlushes, int maxBackgroundCompactions,
-            int maxBackgroundThreads, long maxLogFileSize) {
-        DBOptions dbOptions = new DBOptions();
-        dbOptions.setCreateIfMissing(true).setCreateMissingColumnFamilies(true)
-                .setErrorIfExists(false);
-        dbOptions.setMaxBackgroundFlushes(maxBackgroundFlushes)
-                .setMaxBackgroundCompactions(maxBackgroundCompactions)
-                .setIncreaseParallelism(maxBackgroundThreads);
-        dbOptions.setAllowMmapReads(true).setAllowMmapWrites(true);
-        dbOptions.setMaxOpenFiles(-1);
-        dbOptions.setKeepLogFileNum(100).setLogFileTimeToRoll(3600)
-                .setMaxLogFileSize(maxLogFileSize);
-        return dbOptions;
+    public static ColumnFamilyOptions defaultColumnFamilyOptions() {
+        ColumnFamilyOptions opts = new ColumnFamilyOptions();
+        opts.setLevelCompactionDynamicLevelBytes(true)
+                .setCompressionType(CompressionType.LZ4_COMPRESSION)
+                .setBottommostCompressionType(CompressionType.ZSTD_COMPRESSION);
+        return opts;
     }
 
-    /**
-     * Builds default RocskDb WriteOptions.
-     * 
-     * @return
-     */
-    public static WriteOptions buildWriteOptions() {
-        /*
-         * As of RocksDB v3.10.1, no data lost if process crashes even if
-         * sync==false. Data lost only when server/OS crashes. So it's
-         * relatively safe to set sync=false for fast write.
-         */
-        return buildWriteOptions(false, false);
-    }
-
-    /**
-     * Builds RocksDb {@link WriteOptions}.
-     * 
-     * @param sync
-     *            As of RocksDB v3.10.1, no data lost if process crashes even if sync==false. Data
-     *            lost only when server/OS crashes. So it's relatively safe to set sync=false for
-     *            fast write
-     * @param disableWAL
-     * @return
-     */
-    public static WriteOptions buildWriteOptions(boolean sync, boolean disableWAL) {
-        WriteOptions writeOptions = new WriteOptions();
-        writeOptions.setSync(sync).setDisableWAL(disableWAL);
-        return writeOptions;
-    }
-
-    /**
-     * Builds default RocskDb ReadOptions.
-     * 
-     * @return
-     */
-    public static ReadOptions buildReadOptions() {
-        return buildReadOptions(true);
-    }
-
-    /**
-     * Builds RocksDb {@link ReadOptions}.
-     * 
-     * @param isTailing
-     * @return
-     */
-    public static ReadOptions buildReadOptions(boolean isTailing) {
-        ReadOptions readOptions = new ReadOptions();
-        readOptions.setTailing(isTailing);
-        return readOptions;
-    }
+    /*----------------------------------------------------------------------*/
 
     /**
      * Silently close RocksDb objects.
@@ -172,7 +155,7 @@ public class RocksDbUtils {
     }
 
     /**
-     * Gets all available column family names from a RocksDb data directory.
+     * Get all available column family names from a RocksDb data directory.
      * 
      * @param path
      * @return
@@ -191,17 +174,17 @@ public class RocksDbUtils {
     }
 
     /**
-     * Builds a {@link ColumnFamilyDescriptor} with default options.
+     * Build a {@link ColumnFamilyDescriptor} with default options.
      * 
      * @param cfName
      * @return
      */
     public static ColumnFamilyDescriptor buildColumnFamilyDescriptor(String cfName) {
-        return buildColumnFamilyDescriptor(null, cfName);
+        return buildColumnFamilyDescriptor(defaultColumnFamilyOptions(), cfName);
     }
 
     /**
-     * Builds a {@link ColumnFamilyDescriptor}, specifying options.
+     * Build a {@link ColumnFamilyDescriptor}, specifying options.
      * 
      * @param cfOptions
      * @param cfName
@@ -215,17 +198,17 @@ public class RocksDbUtils {
     }
 
     /**
-     * Builds a list of {@link ColumnFamilyDescriptor}s with default options.
+     * Build a list of {@link ColumnFamilyDescriptor}s with default options.
      * 
      * @param cfNames
      * @return
      */
     public static List<ColumnFamilyDescriptor> buildColumnFamilyDescriptors(String... cfNames) {
-        return buildColumnFamilyDescriptors(null, cfNames);
+        return buildColumnFamilyDescriptors(defaultColumnFamilyOptions(), cfNames);
     }
 
     /**
-     * Builds a list of {@link ColumnFamilyDescriptor}s, specifying options.
+     * Build a list of {@link ColumnFamilyDescriptor}s, specifying options.
      * 
      * @param cfOptions
      * @param cfNames

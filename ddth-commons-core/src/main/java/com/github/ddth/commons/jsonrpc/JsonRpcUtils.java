@@ -80,7 +80,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP GET request.
+     * Perform a HTTP GET request using default HTTP client.
      * 
      * @param url
      * @param headers
@@ -93,7 +93,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP GET request.
+     * Perform a HTTP GET request using supplied HTTP client.
      * 
      * @param client
      * @param url
@@ -108,7 +108,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP POST request.
+     * Perform a HTTP POST request using default HTTP client.
      * 
      * @param url
      * @param headers
@@ -122,7 +122,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP POST request.
+     * Perform a HTTP POST request using supplied HTTP client.
      * 
      * @param client
      * @param url
@@ -138,7 +138,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP PUT request.
+     * Perform a HTTP PUT request using default HTTP client.
      * 
      * @param url
      * @param headers
@@ -152,7 +152,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP PUT request.
+     * Perform a HTTP PUT request using supplied HTTP client.
      * 
      * @param client
      * @param url
@@ -168,7 +168,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP PATCH request.
+     * Perform a HTTP PATCH request using default HTTP client.
      * 
      * @param url
      * @param headers
@@ -182,7 +182,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP PATCH request.
+     * Perform a HTTP PATCH request using supplied HTTP client.
      * 
      * @param client
      * @param url
@@ -198,7 +198,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP DELETE request.
+     * Perform a HTTP DELETE request using default HTTP client.
      * 
      * @param url
      * @param headers
@@ -211,7 +211,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP DELETE request.
+     * Perform a HTTP DELETE request using supplied HTTP client.
      * 
      * @param client
      * @param url
@@ -226,13 +226,14 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP DELETE request.
+     * Perform a HTTP DELETE request using default HTTP client.
      * 
      * @param url
      * @param headers
      * @param urlParams
      * @param requestData
      * @return
+     * @deprecated since v0.9.4
      */
     public static RequestResponse callHttpDelete(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
@@ -240,7 +241,7 @@ public class JsonRpcUtils {
     }
 
     /**
-     * Perform a HTTP DELETE request.
+     * Perform a HTTP DELETE request using supplied HTTP client.
      * 
      * @param client
      * @param url
@@ -249,6 +250,7 @@ public class JsonRpcUtils {
      * @param requestData
      * @return
      * @since 0.9.1.6
+     * @deprecated since v0.9.4
      */
     public static RequestResponse callHttpDelete(HttpJsonRpcClient client, String url,
             Map<String, Object> headers, Map<String, Object> urlParams, Object requestData) {

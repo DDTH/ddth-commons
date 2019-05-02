@@ -3,13 +3,13 @@ package com.github.ddth.commons.serialization;
 import com.github.ddth.commons.utils.SerializationUtils;
 
 /**
- * This implementation of {@link ISerDeser} use Kryo library for
+ * This implementation of {@link ISerDeser} use Fst library for
  * serializing/deserializing.
  * 
  * @author Thanh Nguyen <btnguyen2k@gmail.com>
- * @since 0.5.0
+ * @since 0.9.4
  */
-public class KryoSerDeser implements ISerDeser {
+public class FstSerDeser implements ISerDeser {
     /**
      * {@inheritDoc}
      */
@@ -23,7 +23,7 @@ public class KryoSerDeser implements ISerDeser {
      */
     @Override
     public byte[] toBytes(Object obj, ClassLoader classLoader) throws SerializationException {
-        return SerializationUtils.toByteArrayKryo(obj, classLoader);
+        return SerializationUtils.toByteArrayFst(obj, classLoader);
     }
 
     /**
@@ -40,6 +40,6 @@ public class KryoSerDeser implements ISerDeser {
     @Override
     public <T> T fromBytes(byte[] data, Class<T> clazz, ClassLoader classLoader)
             throws DeserializationException {
-        return SerializationUtils.fromByteArrayKryo(data, clazz, classLoader);
+        return SerializationUtils.fromByteArrayFst(data, clazz, classLoader);
     }
 }

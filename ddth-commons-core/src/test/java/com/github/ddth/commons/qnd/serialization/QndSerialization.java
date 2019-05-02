@@ -1,31 +1,3 @@
-# com.github.ddth.commons.serialization
-
-Helper & Utility classes to serialize/deserialize Java objects
-
-_**Available since v0.5.0.**_
-
-## Maven
-
-```xml
-<dependency>
-    <groupId>com.github.ddth</groupId>
-    <artifactId>ddth-commons-serialization</artifactId>
-    <version>${ddth_commons_version}</version>
-    <type>pom</type>
-</dependency>
-```
-
-**Interfaces & Classes**
-
-- `ISerDeser`: Serializer/Deserializer interface.
-- `ISerializationSupport`: Marker interface -class implements this interface to provide its own serialization/deserialization methods.
-- `JsonSerDeser`: Serialize/deserialize Java object to/from JSON.
-- `KryoSerDeser`: Serialize/deserialize Java object to/from `byte[]` using [Kryo library](https://github.com/EsotericSoftware/kryo).
-- `FstSerDeser`: Serialize/deserialize Java object to/from `byte[]` using [Fst library](https://github.com/RuedigerMoeller/fast-serialization).
-
-## Examples
-
-```java
 package com.github.ddth.commons.qnd.serialization;
 
 import java.io.IOException;
@@ -99,12 +71,3 @@ public class QndSerialization {
         qndSerDeser(new KryoSerDeser());
     }
 }
-```
-
-## History
-
-**v0.9.4 - 2019-04-29**
-- Add `FstSerDeser`.
-
-**v0.5.0 - 2016-09-28**
-- First release

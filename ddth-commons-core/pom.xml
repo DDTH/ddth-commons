@@ -8,7 +8,7 @@
 	</parent>
 
 	<artifactId>ddth-commons-core</artifactId>
-	<version>0.9.3-SNAPSHOT</version>
+	<!-- <version>0.9.3-SNAPSHOT</version> -->
 	<packaging>bundle</packaging>
 
 	<name>ddth-commons-core</name>

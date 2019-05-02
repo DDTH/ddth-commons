@@ -1,36 +1,4 @@
-# com.github.ddth.commons.redis
-
-Utility to work with [Redis](https://redis.io) server using [Jedis](https://github.com/xetorthio/jedis).
-
-_**Available since v0.8.0.**_
-
-## Maven
-
-```xml
-<dependency>
-    <groupId>com.github.ddth</groupId>
-    <artifactId>ddth-commons-jedis</artifactId>
-    <version>${ddth_commons_version}</version>
-    <type>pom</type>
-</dependency>
-```
-
-**Class `JedisUtils`:**
-
-Helper class to:
-- Obtain default instance of `redis.clients.jedis.JedisPoolConfig`.
-- Create `redis.clients.jedis.JedisPool`, `redis.clients.jedis.JedisCluster`, `redis.clients.jedis.ShardedJedisPool` instances.
-
-**Class `JedisConnector`:**
-
-Wrapper class to manage connections to Redis' servers, clusters or sharded servers.
-
-## Examples
-
-Working wirh Redis using Jedis library: see [Jedis documentations](https://github.com/xetorthio/jedis).
-
-```java
-package qnd;
+package com.github.ddth.commons.qnd.redis;
 
 import com.github.ddth.commons.redis.JedisConnector;
 
@@ -80,4 +48,3 @@ public class QndJedisConnector {
         }
     }
 }
-```

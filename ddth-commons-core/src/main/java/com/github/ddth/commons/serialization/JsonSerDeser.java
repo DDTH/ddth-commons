@@ -46,5 +46,4 @@ public class JsonSerDeser implements ISerDeser {
         String json = data != null ? new String(data, StandardCharsets.UTF_8) : null;
         return SerializationUtils.fromJsonString(json, clazz, classLoader);
     }
-
 }

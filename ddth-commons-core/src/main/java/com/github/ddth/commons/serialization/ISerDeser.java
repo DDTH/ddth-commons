@@ -1,14 +1,14 @@
 package com.github.ddth.commons.serialization;
 
 /**
- * Serializer/Deserializer.
+ * Serializer/Deserializer interface.
  * 
  * @author Thanh Nguyen <btnguyen2k@gmail.com>
  * @since 0.5.0
  */
 public interface ISerDeser {
     /**
-     * Serializes an object.
+     * Serialize an object.
      * 
      * @return
      * @throws SerializationException
@@ -16,7 +16,7 @@ public interface ISerDeser {
     public byte[] toBytes(Object obj) throws SerializationException;
 
     /**
-     * Serializes an object.
+     * Serialize an object.
      * 
      * @param obj
      * @param classLoader
@@ -26,7 +26,7 @@ public interface ISerDeser {
     public byte[] toBytes(Object obj, ClassLoader classLoader) throws SerializationException;
 
     /**
-     * Deserializes an object.
+     * Deserialize an object.
      * 
      * @param data
      * @param clazz
@@ -36,7 +36,7 @@ public interface ISerDeser {
     public <T> T fromBytes(byte[] data, Class<T> clazz) throws DeserializationException;
 
     /**
-     * Deserializes an object.
+     * Deserialize an object.
      * 
      * @param data
      * @param clazz

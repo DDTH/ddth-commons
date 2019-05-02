@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -25,6 +24,8 @@ import org.rocksdb.RocksIterator;
 import org.rocksdb.WriteBatch;
 import org.rocksdb.WriteBatchWithIndex;
 import org.rocksdb.WriteOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Wrapper around {@link RocksDB} instance.
@@ -72,7 +73,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Open a {@link RocksDB} with specified options in read-only mode.
+     * Open a {@link RocksDB}, specifying options, in read-only mode.
      * 
      * @param directory
      *            existing {@link RocksDB} data directory
@@ -91,7 +92,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Open a {@link RocksDB} with specified options in read-only mode.
+     * Open a {@link RocksDB}, specifying options, in read-only mode.
      * 
      * @param dirPath
      *            existing {@link RocksDB} data directory
@@ -110,7 +111,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Open a {@link RocksDB} with default options in read/write mode.
+     * Open a {@link RocksDB} with default options in read-write mode.
      * 
      * @param directory
      *            directory to store {@link RocksDB} data
@@ -130,7 +131,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Open a {@link RocksDB} with default options in read/write mode.
+     * Open a {@link RocksDB} with default options in read-write mode.
      * 
      * @param dirPath
      *            directory to store {@link RocksDB} data
@@ -150,7 +151,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Open a {@link RocksDB} with specified options in read/write mode.
+     * Open a {@link RocksDB}, specifying options, in read-write mode.
      * 
      * @param directory
      *            directory to store {@link RocksDB} data
@@ -176,7 +177,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Open a {@link RocksDB} with specified options in read/write mode.
+     * Open a {@link RocksDB}, specifying options, in read-write mode.
      * 
      * @param dirPath
      *            directory to store {@link RocksDB} data
@@ -201,6 +202,8 @@ public class RocksDbWrapper implements AutoCloseable {
         return rocksDbWrapper;
     }
     /*----------------------------------------------------------------------*/
+
+    private final Logger LOGGER = LoggerFactory.getLogger(RocksDbWrapper.class);
 
     private File directory;
     private final boolean readOnly;
@@ -247,13 +250,14 @@ public class RocksDbWrapper implements AutoCloseable {
             Collection<ColumnFamilyDescriptor> columnFamilies) {
         this.columnFamilies.clear();
         this.columnFamilyNames.clear();
-        for (Entry<String, ColumnFamilyHandle> entry : this.columnFamilyHandles.entrySet()) {
-            RocksDbUtils.closeRocksObjects(entry.getValue());
-        }
+        RocksDbUtils.closeRocksObjects(
+                this.columnFamilyHandles.values().toArray(new ColumnFamilyHandle[0]));
+        this.columnFamilyHandles.clear();
+
         if (columnFamilies != null) {
-            this.columnFamilies.addAll(columnFamilies);
-            this.columnFamilies.iterator().forEachRemaining(x -> {
-                this.columnFamilyNames.add(new String(x.getName(), StandardCharsets.UTF_8));
+            columnFamilies.forEach(cf -> {
+                this.columnFamilies.add(cf);
+                this.columnFamilyNames.add(new String(cf.getName(), StandardCharsets.UTF_8));
             });
         }
         return this;
@@ -267,7 +271,7 @@ public class RocksDbWrapper implements AutoCloseable {
         return Collections.unmodifiableSet(columnFamilyNames);
     }
 
-    public RocksDbWrapper setDbOptions(DBOptions dbOptions) {
+    synchronized public RocksDbWrapper setDbOptions(DBOptions dbOptions) {
         if (this.dbOptions != null && myOwnDbOptions) {
             RocksDbUtils.closeRocksObjects(this.dbOptions);
         }
@@ -277,10 +281,10 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     public DBOptions getDbOptions() {
-        return this.dbOptions;
+        return dbOptions;
     }
 
-    public RocksDbWrapper setReadOptions(ReadOptions readOptions) {
+    synchronized public RocksDbWrapper setReadOptions(ReadOptions readOptions) {
         if (this.readOptions != null && myOwnReadOptions) {
             RocksDbUtils.closeRocksObjects(this.readOptions);
         }
@@ -290,10 +294,10 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     public ReadOptions getReadOptions() {
-        return this.readOptions;
+        return readOptions;
     }
 
-    public RocksDbWrapper setWriteOptions(WriteOptions writeOptions) {
+    synchronized public RocksDbWrapper setWriteOptions(WriteOptions writeOptions) {
         if (this.writeOptions != null && myOwnWriteOptions) {
             RocksDbUtils.closeRocksObjects(this.writeOptions);
         }
@@ -303,7 +307,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     public WriteOptions getWriteOptions() {
-        return this.writeOptions;
+        return writeOptions;
     }
 
     /**
@@ -315,8 +319,10 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     public void destroy() {
-        for (Entry<String, RocksIterator> entry : iterators.entrySet()) {
-            RocksDbUtils.closeRocksObjects(entry.getValue());
+        try {
+            RocksDbUtils.closeRocksObjects(iterators.values().toArray(new RocksIterator[0]));
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
         }
 
         if (myOwnReadOptions) {
@@ -331,14 +337,24 @@ public class RocksDbWrapper implements AutoCloseable {
             RocksDbUtils.closeRocksObjects(dbOptions);
         }
 
-        for (Entry<String, ColumnFamilyHandle> entry : columnFamilyHandles.entrySet()) {
-            RocksDbUtils.closeRocksObjects(entry.getValue());
+        try {
+            RocksDbUtils.closeRocksObjects(
+                    columnFamilyHandles.values().toArray(new ColumnFamilyHandle[0]));
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
         }
 
         RocksDbUtils.closeRocksObjects(rocksDb);
     }
 
-    public RocksDbWrapper init() throws IOException, RocksDbException {
+    private boolean inited = false;
+
+    synchronized public RocksDbWrapper init() throws IOException, RocksDbException {
+        if (inited) {
+            LOGGER.warn("This wrapper has been already initialized");
+            return this;
+        }
+
         if (!directory.exists() && !readOnly) {
             FileUtils.forceMkdir(directory);
         }
@@ -349,7 +365,7 @@ public class RocksDbWrapper implements AutoCloseable {
         prepareColumnFamilyDescriptors();
 
         if (dbOptions == null) {
-            dbOptions = RocksDbUtils.buildDbOptions();
+            dbOptions = RocksDbUtils.defaultDbOptions();
             myOwnDbOptions = true;
         } else {
             myOwnDbOptions = false;
@@ -361,40 +377,47 @@ public class RocksDbWrapper implements AutoCloseable {
         try {
             if (readOnly) {
                 if (readOptions == null) {
-                    readOptions = RocksDbUtils.buildReadOptions(true);
+                    readOptions = RocksDbUtils.defaultReadOptions();
                     myOwnReadOptions = true;
                 } else {
                     myOwnReadOptions = false;
                 }
                 rocksDb = RocksDB.openReadOnly(dbOptions, path, cfdList, cfhList);
             } else {
-                if (writeOptions == null) {
-                    writeOptions = RocksDbUtils.buildWriteOptions();
-                    myOwnWriteOptions = true;
-                } else {
-                    myOwnWriteOptions = false;
-                }
                 if (readOptions == null) {
-                    readOptions = RocksDbUtils.buildReadOptions(true);
+                    readOptions = RocksDbUtils.defaultReadOptions();
                     myOwnReadOptions = true;
                 } else {
                     myOwnReadOptions = false;
+                }
+                if (writeOptions == null) {
+                    writeOptions = RocksDbUtils.defaultWriteOptions();
+                    myOwnWriteOptions = true;
+                } else {
+                    myOwnWriteOptions = false;
                 }
                 rocksDb = RocksDB.open(dbOptions, path, cfdList, cfhList);
             }
         } catch (Exception e) {
             throw e instanceof RocksDbException ? (RocksDbException) e : new RocksDbException(e);
         }
-
-        for (int i = 0, n = cfdList.size(); i < n; i++) {
-            byte[] cfName = cfdList.get(i).getName();
-            ColumnFamilyHandle cfh = cfhList.get(i);
-            columnFamilyHandles.put(new String(cfName, StandardCharsets.UTF_8), cfh);
-        }
-
+        cfhList.forEach(cfh -> {
+            try {
+                columnFamilyHandles.put(new String(cfh.getName(), StandardCharsets.UTF_8), cfh);
+            } catch (Exception e) {
+                throw e instanceof RocksDbException ? (RocksDbException) e
+                        : new RocksDbException(e);
+            }
+        });
+        inited = true;
         return this;
     }
 
+    /**
+     * If column families are not specified, they will be fetched from existing data directory.
+     * 
+     * @throws RocksDbException
+     */
     protected void prepareColumnFamilyDescriptors() throws RocksDbException {
         if (columnFamilies == null || columnFamilies.size() == 0) {
             if (columnFamilies == null) {
@@ -462,7 +485,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Gets estimated number of keys for a column family.
+     * Get estimated number of keys for a column family.
      * 
      * @param cfName
      * @return
@@ -474,7 +497,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Obtains an iterator for a column family.
+     * Obtain an iterator for a column family.
      * 
      * <p>
      * Iterators will be automatically closed by this wrapper.
@@ -500,7 +523,7 @@ public class RocksDbWrapper implements AutoCloseable {
 
     /*----------------------------------------------------------------------*/
     /**
-     * Deletes a key from the default family.
+     * Delete a key from the default family.
      * 
      * @param key
      * @throws RocksDBException
@@ -510,7 +533,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Deletes a key from the default family, specifying write options.F
+     * Delete a key from the default family, specifying write options.F
      * 
      * @param writeOptions
      * @param key
@@ -521,7 +544,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Deletes a key from a column family.
+     * Delete a key from a column family.
      * 
      * @param cfName
      * @param key
@@ -532,7 +555,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Deletes a key from a column family, specifying write options.
+     * Delete a key from a column family, specifying write options.
      * 
      * @param cfName
      * @param writeOptions
@@ -553,7 +576,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Deletes a key.
+     * Delete a key.
      * 
      * @param cfh
      * @param writeOptions
@@ -577,7 +600,7 @@ public class RocksDbWrapper implements AutoCloseable {
 
     /*----------------------------------------------------------------------*/
     /**
-     * Puts a key/value to the default column family.
+     * Put a key/value to the default column family.
      * 
      * @param key
      * @param value
@@ -588,7 +611,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Puts a key/value to the default column family, specifying write options.
+     * Put a key/value to the default column family, specifying write options.
      * 
      * @param writeOptions
      * @param key
@@ -600,7 +623,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Puts a key/value to the default column family.
+     * Put a key/value to the default column family.
      * 
      * @param key
      * @param value
@@ -611,7 +634,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Puts a key/value to the default column family, specifying write options.
+     * Put a key/value to the default column family, specifying write options.
      * 
      * @param writeOptions
      * @param key
@@ -623,7 +646,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Puts a key/value to a column family.
+     * Put a key/value to a column family.
      * 
      * @param cfName
      * @param key
@@ -635,7 +658,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Puts a key/value to a column family, specifying write options.
+     * Put a key/value to a column family, specifying write options.
      * 
      * @param cfName
      * @param writeOptions
@@ -650,7 +673,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Puts a key/value to a column family.
+     * Put a key/value to a column family.
      * 
      * @param cfName
      * @param key
@@ -662,7 +685,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Puts a key/value to a column family, specifying write options.
+     * Put a key/value to a column family, specifying write options.
      * 
      * @param cfName
      * @param writeOptions
@@ -684,7 +707,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Puts a key/value.
+     * Put a key/value.
      * 
      * @param cfh
      * @param writeOptions
@@ -715,7 +738,7 @@ public class RocksDbWrapper implements AutoCloseable {
 
     /*----------------------------------------------------------------------*/
     /**
-     * Gets a value from the default column family.
+     * Get a value from the default column family.
      * 
      * @param key
      * @return
@@ -726,7 +749,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Gets a value from the default column family, specifying read options.
+     * Get a value from the default column family, specifying read options.
      * 
      * @param readOPtions
      * @param key
@@ -738,7 +761,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Gets a value from a column family.
+     * Get a value from a column family.
      * 
      * @param cfName
      * @param key
@@ -750,7 +773,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Gets a value from a column family, specifying read options.
+     * Get a value from a column family, specifying read options.
      * 
      * @param cfName
      * @param readOptions
@@ -770,7 +793,7 @@ public class RocksDbWrapper implements AutoCloseable {
     }
 
     /**
-     * Gets a value.
+     * Get a value.
      * 
      * @param cfh
      * @param readOptions
@@ -836,20 +859,6 @@ public class RocksDbWrapper implements AutoCloseable {
             rocksDb.write(writeOptions != null ? writeOptions : this.writeOptions, batch);
         } catch (Exception e) {
             throw e instanceof RocksDbException ? (RocksDbException) e : new RocksDbException(e);
-        }
-    }
-
-    /*----------------------------------------------------------------------*/
-    public static void main(String[] args) throws Exception {
-        try (RocksDbWrapper db = RocksDbWrapper.openReadWrite("/tmp/rocksdb")) {
-            db.put("demo", String.valueOf(System.currentTimeMillis()));
-        }
-
-        try (RocksDbWrapper db = RocksDbWrapper.openReadOnly("/tmp/rocksdb")) {
-            byte[] data = db.get("demo1");
-            System.out.println(new String(data));
-            // db.setWriteOptions(RocksDbUtils.buildWriteOptions());
-            // db.delete("demo");
         }
     }
 }

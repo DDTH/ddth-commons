@@ -176,12 +176,6 @@ public class HttpJsonRpcClient implements AutoCloseable {
         return rr;
     }
 
-    // private static RequestBody buildRequestBody(Object data) {
-    // return data != null
-    // ? RequestBody.create(MEDIA_TYPE_JSON, SerializationUtils.toJsonString(data))
-    // : null;
-    // }
-
     private static RequestBody buildRequestBody(RequestResponse rr) {
         return rr.getRequestJson() != null ? RequestBody.create(MEDIA_TYPE_JSON,
                 SerializationUtils.toJsonString(rr.getRequestJson())) : null;
@@ -263,7 +257,10 @@ public class HttpJsonRpcClient implements AutoCloseable {
      */
     public RequestResponse doDelete(String url, Map<String, Object> headers,
             Map<String, Object> urlParams) {
-        return doDelete(url, headers, urlParams, null);
+        RequestResponse rr = initRequestResponse("DELETE", url, headers, urlParams, null);
+        Request.Builder requestBuilder = buildRequest(url, headers, urlParams)
+                .delete(buildRequestBody(rr));
+        return doCall(client, requestBuilder.build(), rr);
     }
 
     /**
@@ -274,6 +271,7 @@ public class HttpJsonRpcClient implements AutoCloseable {
      * @param urlParams
      * @param requestData
      * @return
+     * @deprecated since 0.9.4
      */
     public RequestResponse doDelete(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
@@ -282,5 +280,4 @@ public class HttpJsonRpcClient implements AutoCloseable {
                 .delete(buildRequestBody(rr));
         return doCall(client, requestBuilder.build(), rr);
     }
-
 }

@@ -1,5 +1,11 @@
 package com.github.ddth.commons.rocksdb;
 
+/**
+ * Custom exception for RocksDb operations.
+ * 
+ * @author Thanh Nguyen <btnguyen2k@gmail.com>
+ * @since 0.8.0
+ */
 public class RocksDbException extends RuntimeException {
 
     private static final long serialVersionUID = "0.8.0".hashCode();
