@@ -21,7 +21,7 @@ public class CalendarWrapperTest extends TestCase {
 
     private static int[] FIELDS = { Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH,
             Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND, Calendar.MILLISECOND };
-    private static int[] FIELD_VALUES = { 2018, Calendar.MARCH, 02, 04, 29, 01, 981 };
+    private static int[] FIELD_VALUES = { 2018, Calendar.MARCH, 02, 04, 29, 19, 81 };
 
     private static Calendar testData() {
         final Calendar cal = Calendar.getInstance();
@@ -748,6 +748,7 @@ public class CalendarWrapperTest extends TestCase {
     public void testNextSecondMoveMinuteCalendar() {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 59);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -765,6 +766,7 @@ public class CalendarWrapperTest extends TestCase {
     public void testNextSecondMoveMinuteDate() {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 59);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -783,6 +785,7 @@ public class CalendarWrapperTest extends TestCase {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -802,6 +805,7 @@ public class CalendarWrapperTest extends TestCase {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -822,6 +826,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -841,6 +846,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -862,6 +868,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MONTH, Calendar.MARCH);
         cal.set(Calendar.DAY_OF_MONTH, 31);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -880,6 +887,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MONTH, Calendar.MARCH);
         cal.set(Calendar.DAY_OF_MONTH, 31);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -896,7 +904,8 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.HOUR_OF_DAY, 23);
-        cal.set(Calendar.DAY_OF_WEEK, cal.getMaximum(Calendar.DAY_OF_WEEK));
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek() + 6);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -916,7 +925,8 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.HOUR_OF_DAY, 23);
-        cal.set(Calendar.DAY_OF_WEEK, cal.getMaximum(Calendar.DAY_OF_WEEK));
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek() + 6);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -938,6 +948,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MONTH, Calendar.DECEMBER);
         cal.set(Calendar.DAY_OF_MONTH, 31);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -956,6 +967,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MONTH, Calendar.DECEMBER);
         cal.set(Calendar.DAY_OF_MONTH, 31);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).nextSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(0, actual.getCalendar().get(Calendar.SECOND));
@@ -972,6 +984,7 @@ public class CalendarWrapperTest extends TestCase {
     public void testPrevSecondMoveMinuteCalendar() {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 0);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -989,6 +1002,7 @@ public class CalendarWrapperTest extends TestCase {
     public void testPrevSecondMoveMinuteDate() {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 0);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1007,6 +1021,7 @@ public class CalendarWrapperTest extends TestCase {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1026,6 +1041,7 @@ public class CalendarWrapperTest extends TestCase {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1046,6 +1062,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1065,6 +1082,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1086,6 +1104,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MONTH, Calendar.APRIL);
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1104,6 +1123,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MONTH, Calendar.APRIL);
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1121,6 +1141,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1141,6 +1162,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1162,6 +1184,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1180,6 +1203,7 @@ public class CalendarWrapperTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.getTimeInMillis();
         CalendarWrapper actual = CalendarWrapper.newInstance(cal.getTime()).prevSecond();
         assertEquals(cal.get(Calendar.MILLISECOND), actual.getCalendar().get(Calendar.MILLISECOND));
         assertEquals(59, actual.getCalendar().get(Calendar.SECOND));
@@ -1189,5 +1213,4 @@ public class CalendarWrapperTest extends TestCase {
         assertEquals(Calendar.DECEMBER, actual.getCalendar().get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR) - 1, actual.getCalendar().get(Calendar.YEAR));
     }
-
 }

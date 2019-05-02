@@ -7,6 +7,9 @@ import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.ShardedJedis;
 
+/*
+ * mvn exec:java -Dexec.mainClass="com.github.ddth.commons.qnd.redis.QndJedisConnector"
+ */
 public class QndJedisConnector {
     public static void main(String[] args) {
         // create a JedisPoolConfig instance

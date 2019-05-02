@@ -24,6 +24,7 @@ public class QndReflectionUtils {
         protected void method2(String param) {
         }
 
+        @SuppressWarnings("unused")
         private void method3(long param) {
         }
 

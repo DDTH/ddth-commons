@@ -7,19 +7,19 @@ DDTH's Java Common Libraries and Utilities.
 Project home:
 [https://github.com/DDTH/ddth-commons](https://github.com/DDTH/ddth-commons)
 
-**`ddth-commons` requires Java 8+ since v0.5.0**
+**`ddth-commons` requires Java 11+ since v1.0.0, for Java 8, use v0.9.x**
 
 
 ## License
 
-See LICENSE.txt for details. Copyright (c) 2013-2018 Thanh Ba Nguyen.
+See LICENSE.txt for details. Copyright (c) 2013-2019 Thanh Ba Nguyen.
 
 Third party libraries are distributed under their own license(s).
 
 
 ## Installation
 
-Latest release version: `0.9.1.8`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
+Latest release version: `1.0.0`. See [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 Maven dependency: if only a sub-set of `ddth-commons` functionality is used, choose the corresponding
 dependency artifact(s) to reduce the number of unused jar files.
@@ -30,7 +30,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
 	<groupId>com.github.ddth</groupId>
 	<artifactId>ddth-commons-core</artifactId>
-	<version>0.9.1.8</version>
+	<version>1.0.0</version>
 </dependency>
 ```
 
@@ -40,7 +40,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-jedis</artifactId>
-    <version>0.9.1.8</version>
+    <version>1.0.0</version>
     <type>pom</type>
 </dependency>
 ```
@@ -51,7 +51,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-jsonrpc</artifactId>
-    <version>0.9.1.8</version>
+    <version>1.0.0</version>
     <type>pom</type>
 </dependency>
 ```
@@ -63,7 +63,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-rocksdb</artifactId>
-    <version>0.9.1.8</version>
+    <version>1.0.0</version>
     <type>pom</type>
 </dependency>
 ```
@@ -74,7 +74,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-spring</artifactId>
-    <version>0.9.1.8</version>
+    <version>1.0.0</version>
     <type>pom</type>
 </dependency>
 ```
@@ -85,7 +85,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-thrift</artifactId>
-    <version>0.9.1.8</version>
+    <version>1.0.0</version>
     <type>pom</type>
 </dependency>
 ```
@@ -96,7 +96,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-typesafeconfig</artifactId>
-    <version>0.9.1.8</version>
+    <version>1.0.0</version>
     <type>pom</type>
 </dependency>
 ```
@@ -107,7 +107,7 @@ dependency artifact(s) to reduce the number of unused jar files.
 <dependency>
     <groupId>com.github.ddth</groupId>
     <artifactId>ddth-commons-serialization</artifactId>
-    <version>0.9.1.8</version>
+    <version>1.0.0</version>
     <type>pom</type>
 </dependency>
 ```

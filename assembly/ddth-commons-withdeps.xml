@@ -13,17 +13,17 @@
 
 	<files>
 		<file>
-			<source>README.md</source>
+			<source>../README.md</source>
 			<outputDirectory></outputDirectory>
 			<filtered>true</filtered>
 		</file>
 		<file>
-			<source>RELEASE-NOTES.md</source>
+			<source>../RELEASE-NOTES.md</source>
 			<outputDirectory></outputDirectory>
 			<filtered>true</filtered>
 		</file>
 		<file>
-			<source>LICENSE.txt</source>
+			<source>../LICENSE.txt</source>
 			<outputDirectory></outputDirectory>
 		</file>
 	</files>

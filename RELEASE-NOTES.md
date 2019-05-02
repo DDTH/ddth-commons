@@ -1,5 +1,10 @@
 # ddth-commons release notes
 
+## 1.0.0 - 2019-05-02
+
+- Migrate to `Java 11`.
+
+
 ## 0.9.3 - 2019-04-29
 
 General:

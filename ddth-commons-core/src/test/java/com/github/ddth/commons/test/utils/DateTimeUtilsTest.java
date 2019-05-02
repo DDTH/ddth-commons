@@ -905,6 +905,7 @@ public class DateTimeUtilsTest extends TestCase {
     public void testNextSecondMoveMinuteCalendar() {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 59);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -920,6 +921,7 @@ public class DateTimeUtilsTest extends TestCase {
     public void testNextSecondMoveMinuteDate() {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 59);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -936,6 +938,7 @@ public class DateTimeUtilsTest extends TestCase {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -952,6 +955,7 @@ public class DateTimeUtilsTest extends TestCase {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -969,6 +973,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -986,6 +991,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -1005,6 +1011,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MONTH, Calendar.MARCH);
         cal.set(Calendar.DAY_OF_MONTH, 31);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -1023,6 +1030,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MONTH, Calendar.MARCH);
         cal.set(Calendar.DAY_OF_MONTH, 31);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -1039,8 +1047,8 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.HOUR_OF_DAY, 23);
-        cal.set(Calendar.DAY_OF_WEEK, cal.getMaximum(Calendar.DAY_OF_WEEK));
-
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek() + 6);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -1058,7 +1066,8 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.HOUR_OF_DAY, 23);
-        cal.set(Calendar.DAY_OF_WEEK, cal.getMaximum(Calendar.DAY_OF_WEEK));
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek() + 6);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -1078,6 +1087,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MONTH, Calendar.DECEMBER);
         cal.set(Calendar.DAY_OF_MONTH, 31);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -1096,6 +1106,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MONTH, Calendar.DECEMBER);
         cal.set(Calendar.DAY_OF_MONTH, 31);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.nextSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(0, actual.get(Calendar.SECOND));
@@ -1111,6 +1122,7 @@ public class DateTimeUtilsTest extends TestCase {
     public void testPrevSecondMoveMinuteCalendar() {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 0);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1126,6 +1138,7 @@ public class DateTimeUtilsTest extends TestCase {
     public void testPrevSecondMoveMinuteDate() {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 0);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1142,6 +1155,7 @@ public class DateTimeUtilsTest extends TestCase {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1158,6 +1172,7 @@ public class DateTimeUtilsTest extends TestCase {
         Calendar cal = testData();
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1175,6 +1190,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1192,6 +1208,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1211,6 +1228,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MONTH, Calendar.APRIL);
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1229,6 +1247,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MONTH, Calendar.APRIL);
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1246,6 +1265,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1264,6 +1284,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1283,6 +1304,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal);
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1301,6 +1323,7 @@ public class DateTimeUtilsTest extends TestCase {
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.getTimeInMillis();
         Calendar actual = DateTimeUtils.prevSecond(cal.getTime());
         assertEquals(cal.get(Calendar.MILLISECOND), actual.get(Calendar.MILLISECOND));
         assertEquals(59, actual.get(Calendar.SECOND));
@@ -1310,5 +1333,4 @@ public class DateTimeUtilsTest extends TestCase {
         assertEquals(Calendar.DECEMBER, actual.get(Calendar.MONTH));
         assertEquals(cal.get(Calendar.YEAR) - 1, actual.get(Calendar.YEAR));
     }
-
 }

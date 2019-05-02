@@ -2,6 +2,7 @@ package com.github.ddth.commons.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.thrift.TBase;
@@ -71,11 +72,12 @@ public class ThriftUtils {
         try {
             TTransport transport = new TIOStreamTransport(bais, null);
             TProtocol iProtocol = protocolFactory.getProtocol(transport);
-            T record = clazz.newInstance();
+            T record = clazz.getDeclaredConstructor().newInstance();
             record.read(iProtocol);
             // bais.close();
             return record;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             throw new TException(e);
         }
     }

@@ -16,6 +16,9 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+/*
+ * mvn test -DskipTests=false -Dtest=com.github.ddth.commons.test.utils.SerializationTest
+ */
 public class SerializationTest extends TestCase {
 
     public SerializationTest(String testName) {
