@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.github.ddth</groupId>
 		<artifactId>ddth-commons</artifactId>
-		<version>0.9.3</version>
+		<version>0.9.4-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>ddth-commons-jsonrpc</artifactId>
@@ -31,12 +31,12 @@
 		<dependency>
 			<groupId>com.github.ddth</groupId>
 			<artifactId>ddth-commons-core</artifactId>
-			<version>0.9.3</version>
+			<version>0.9.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
             <groupId>com.github.ddth</groupId>
             <artifactId>ddth-commons-serialization</artifactId>
-            <version>0.9.3</version>
+            <version>0.9.4-SNAPSHOT</version>
             <type>pom</type>
         </dependency>
 		
