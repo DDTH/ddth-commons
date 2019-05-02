@@ -103,7 +103,7 @@ public class QndSerialization {
 
 ## History
 
-**v0.9.4 - 2019-04-29**
+**v0.9.3 - 2019-04-29**
 - Add `FstSerDeser`.
 
 **v0.5.0 - 2016-09-28**

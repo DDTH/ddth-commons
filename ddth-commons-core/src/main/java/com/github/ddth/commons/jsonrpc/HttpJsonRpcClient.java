@@ -271,7 +271,7 @@ public class HttpJsonRpcClient implements AutoCloseable {
      * @param urlParams
      * @param requestData
      * @return
-     * @deprecated since 0.9.4
+     * @deprecated since 0.9.3
      */
     public RequestResponse doDelete(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {

@@ -52,7 +52,7 @@ public class RocksDbUtils {
      * </ul>
      * 
      * @return
-     * @since 0.9.4
+     * @since 0.9.3
      */
     public static DBOptions defaultDbOptions() {
         DBOptions opts = new DBOptions();
@@ -79,7 +79,7 @@ public class RocksDbUtils {
      * </ul>
      * 
      * @return
-     * @since 0.9.4
+     * @since 0.9.3
      */
     public static ReadOptions defaultReadOptions() {
         ReadOptions opts = new ReadOptions();
@@ -100,7 +100,7 @@ public class RocksDbUtils {
      * </ul>
      * 
      * @return
-     * @since 0.9.4
+     * @since 0.9.3
      * @return
      */
     public static WriteOptions defaultWriteOptions() {
@@ -123,7 +123,7 @@ public class RocksDbUtils {
      * </ul>
      * 
      * @return
-     * @since 0.9.4
+     * @since 0.9.3
      */
     public static ColumnFamilyOptions defaultColumnFamilyOptions() {
         ColumnFamilyOptions opts = new ColumnFamilyOptions();

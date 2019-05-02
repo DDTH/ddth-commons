@@ -7,7 +7,7 @@ import com.github.ddth.commons.utils.SerializationUtils;
  * serializing/deserializing.
  * 
  * @author Thanh Nguyen <btnguyen2k@gmail.com>
- * @since 0.9.4
+ * @since 0.9.3
  */
 public class FstSerDeser implements ISerDeser {
     /**

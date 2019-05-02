@@ -103,7 +103,7 @@ public class QndJsonRpc {
 
 ## History
 
-**v0.9.4 - 2019-04-29**
+**v0.9.3 - 2019-04-29**
 - DELETE call with body is deprecated.
 
 **v0.9.0 - 2018-01-27**

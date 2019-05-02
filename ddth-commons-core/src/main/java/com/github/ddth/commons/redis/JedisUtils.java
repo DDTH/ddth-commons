@@ -173,7 +173,7 @@ public class JedisUtils {
      * @param db
      * @param timeoutMs
      * @return
-     * @since 0.9.4
+     * @since 0.9.3
      */
     public static JedisPool newJedisPool(String hostAndPort, String password, int db,
             int timeoutMs) {
@@ -327,7 +327,7 @@ public class JedisUtils {
      * @param timeoutMs
      * @param maxAttempts
      * @return
-     * @since 0.9.4
+     * @since 0.9.3
      */
     public static JedisCluster newJedisCluster(String hostsAndPorts, String password, int timeoutMs,
             int maxAttempts) {

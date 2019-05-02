@@ -68,7 +68,7 @@ public class QndRocksDbWrapper {
 
 ## History
 
-**v0.9.4 - 2019-04-29**
+**v0.9.3 - 2019-04-29**
 - Upgrade to `rocksdbjni:6.0.1`.
 
 **v0.8.0 - 2018-01-22**

@@ -233,7 +233,7 @@ public class JsonRpcUtils {
      * @param urlParams
      * @param requestData
      * @return
-     * @deprecated since v0.9.4
+     * @deprecated since v0.9.3
      */
     public static RequestResponse callHttpDelete(String url, Map<String, Object> headers,
             Map<String, Object> urlParams, Object requestData) {
@@ -250,7 +250,7 @@ public class JsonRpcUtils {
      * @param requestData
      * @return
      * @since 0.9.1.6
-     * @deprecated since v0.9.4
+     * @deprecated since v0.9.3
      */
     public static RequestResponse callHttpDelete(HttpJsonRpcClient client, String url,
             Map<String, Object> headers, Map<String, Object> urlParams, Object requestData) {
