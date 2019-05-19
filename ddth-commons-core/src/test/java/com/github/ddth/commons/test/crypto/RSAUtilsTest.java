@@ -1,4 +1,4 @@
-package com.github.ddth.commons.test.utils;
+package com.github.ddth.commons.test.crypto;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
@@ -13,7 +13,7 @@ import javax.crypto.BadPaddingException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 
-import com.github.ddth.commons.utils.RSAUtils;
+import com.github.ddth.commons.crypto.RSAUtils;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -87,15 +87,13 @@ public class RSAUtilsTest extends TestCase {
         if (numBits / 8 < paddingSize) {
             return;
         }
-        KeyPair keypair = RSAUtils.generateKeys(numBits);
-        String publicKey = RSAUtils.extractPublicKeyAsBase64(keypair);
-        String privateKey = RSAUtils.extractPrivateKeyAsBase64(keypair);
+        KeyPair keyPair = RSAUtils.generateKeys(numBits);
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         String data = "Nguyễn Bá Thành";
         byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
-        byte[] encryptedData = RSAUtils.encryptWithPublicKey(publicKey, dataBytes, transformation,
-                paddingSize);
-        byte[] decryptedData = RSAUtils.decryptWithPrivateKey(privateKey, encryptedData,
-                transformation);
+        byte[] encryptedData = RSAUtils.encrypt(publicKey, dataBytes, transformation, paddingSize);
+        byte[] decryptedData = RSAUtils.decrypt(privateKey, encryptedData, transformation);
         Assert.assertTrue(Arrays.equals(dataBytes, decryptedData));
     }
 
@@ -135,15 +133,15 @@ public class RSAUtilsTest extends TestCase {
                 continue;
             }
             try {
-                KeyPair keypair1 = RSAUtils.generateKeys(keySize);
-                KeyPair keypair2 = RSAUtils.generateKeys(keySize);
-                String publicKey = RSAUtils.extractPublicKeyAsBase64(keypair1);
-                String privateKey = RSAUtils.extractPrivateKeyAsBase64(keypair2);
+                KeyPair keyPair1 = RSAUtils.generateKeys(keySize);
+                KeyPair keyPair2 = RSAUtils.generateKeys(keySize);
+                RSAPublicKey publicKey = (RSAPublicKey) keyPair1.getPublic();
+                RSAPrivateKey privateKey = (RSAPrivateKey) keyPair2.getPrivate();
                 String data = "Nguyễn Bá Thành";
                 byte[] dataBytes = data.getBytes(StandardCharsets.UTF_16);
-                byte[] encryptedData = RSAUtils.encryptWithPublicKey(publicKey, dataBytes,
-                        TRANSFORMATIONS[i], PADDINGS[i]);
-                byte[] decryptedData = RSAUtils.decryptWithPrivateKey(privateKey, encryptedData,
+                byte[] encryptedData = RSAUtils.encrypt(publicKey, dataBytes, TRANSFORMATIONS[i],
+                        PADDINGS[i]);
+                byte[] decryptedData = RSAUtils.decrypt(privateKey, encryptedData,
                         TRANSFORMATIONS[i]);
                 Assert.assertFalse(Arrays.equals(dataBytes, decryptedData));
             } catch (BadPaddingException e) {
@@ -157,15 +155,13 @@ public class RSAUtilsTest extends TestCase {
         if (numBits / 8 < paddingSize) {
             return;
         }
-        KeyPair keypair = RSAUtils.generateKeys(numBits);
-        String publicKey = RSAUtils.extractPublicKeyAsBase64(keypair);
-        String privateKey = RSAUtils.extractPrivateKeyAsBase64(keypair);
+        KeyPair keyPair = RSAUtils.generateKeys(numBits);
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         String data = StringUtils.repeat("Nguyễn Bá Thành", " - ", 1024);
         byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
-        byte[] encryptedData = RSAUtils.encryptWithPublicKey(publicKey, dataBytes, transformation,
-                paddingSize);
-        byte[] decryptedData = RSAUtils.decryptWithPrivateKey(privateKey, encryptedData,
-                transformation);
+        byte[] encryptedData = RSAUtils.encrypt(publicKey, dataBytes, transformation, paddingSize);
+        byte[] decryptedData = RSAUtils.decrypt(privateKey, encryptedData, transformation);
         Assert.assertTrue(Arrays.equals(dataBytes, decryptedData));
     }
 
@@ -205,15 +201,15 @@ public class RSAUtilsTest extends TestCase {
                 continue;
             }
             try {
-                KeyPair keypair1 = RSAUtils.generateKeys(keySize);
-                KeyPair keypair2 = RSAUtils.generateKeys(keySize);
-                String publicKey = RSAUtils.extractPublicKeyAsBase64(keypair1);
-                String privateKey = RSAUtils.extractPrivateKeyAsBase64(keypair2);
+                KeyPair keyPair1 = RSAUtils.generateKeys(keySize);
+                KeyPair keyPair2 = RSAUtils.generateKeys(keySize);
+                RSAPublicKey publicKey = (RSAPublicKey) keyPair1.getPublic();
+                RSAPrivateKey privateKey = (RSAPrivateKey) keyPair2.getPrivate();
                 String data = StringUtils.repeat("Nguyễn Bá Thành", " - ", 1024);
                 byte[] dataBytes = data.getBytes(StandardCharsets.UTF_16);
-                byte[] encryptedData = RSAUtils.encryptWithPublicKey(publicKey, dataBytes,
-                        TRANSFORMATIONS[i], PADDINGS[i]);
-                byte[] decryptedData = RSAUtils.decryptWithPrivateKey(privateKey, encryptedData,
+                byte[] encryptedData = RSAUtils.encrypt(publicKey, dataBytes, TRANSFORMATIONS[i],
+                        PADDINGS[i]);
+                byte[] decryptedData = RSAUtils.decrypt(privateKey, encryptedData,
                         TRANSFORMATIONS[i]);
                 Assert.assertFalse(Arrays.equals(dataBytes, decryptedData));
             } catch (BadPaddingException e) {
@@ -226,14 +222,13 @@ public class RSAUtilsTest extends TestCase {
         if (numBits < 1024 && (algorithm.startsWith("SHA384") || algorithm.startsWith("SHA512"))) {
             return;
         }
-        KeyPair keypair = RSAUtils.generateKeys(numBits);
-        String publicKey = RSAUtils.extractPublicKeyAsBase64(keypair);
-        String privateKey = RSAUtils.extractPrivateKeyAsBase64(keypair);
+        KeyPair keyPair = RSAUtils.generateKeys(numBits);
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         String data = "Nguyễn Bá Thành";
         byte[] msg = data.getBytes(StandardCharsets.UTF_8);
-        byte[] signature = RSAUtils.signMessageWithPrivateKey(privateKey, msg, algorithm);
-        Assert.assertTrue(
-                RSAUtils.verifySignatureWithPublicKey(publicKey, msg, signature, algorithm));
+        byte[] signature = RSAUtils.signMessage(privateKey, msg, algorithm);
+        Assert.assertTrue(RSAUtils.verifySignature(publicKey, msg, signature, algorithm));
     }
 
     @org.junit.Test
@@ -266,26 +261,26 @@ public class RSAUtilsTest extends TestCase {
 
     @org.junit.Test
     public void testSignVerifyDiffKeys() throws Exception {
-        KeyPair keypair1 = RSAUtils.generateKeys(1024);
-        KeyPair keypair2 = RSAUtils.generateKeys(1024);
-        String publicKey = RSAUtils.extractPublicKeyAsBase64(keypair1);
-        String privateKey = RSAUtils.extractPrivateKeyAsBase64(keypair2);
+        KeyPair keyPair1 = RSAUtils.generateKeys(1024);
+        KeyPair keyPair2 = RSAUtils.generateKeys(1024);
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair1.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair2.getPrivate();
         String data = "Nguyễn Bá Thành";
         byte[] msg = data.getBytes(StandardCharsets.UTF_8);
-        byte[] signature = RSAUtils.signMessageWithPrivateKey(privateKey, msg);
-        Assert.assertFalse(RSAUtils.verifySignatureWithPublicKey(publicKey, msg, signature));
+        byte[] signature = RSAUtils.signMessage(privateKey, msg);
+        Assert.assertFalse(RSAUtils.verifySignature(publicKey, msg, signature));
     }
 
     /*----------------------------------------------------------------------*/
 
     private void testSignVerifyLongData(int numBits) throws Exception {
-        KeyPair keypair = RSAUtils.generateKeys(numBits);
-        String publicKey = RSAUtils.extractPublicKeyAsBase64(keypair);
-        String privateKey = RSAUtils.extractPrivateKeyAsBase64(keypair);
+        KeyPair keyPair = RSAUtils.generateKeys(numBits);
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         String data = StringUtils.repeat("Nguyễn Bá Thành", " - ", 1024);
         byte[] msg = data.getBytes(StandardCharsets.UTF_8);
-        byte[] signature = RSAUtils.signMessageWithPrivateKey(privateKey, msg);
-        Assert.assertTrue(RSAUtils.verifySignatureWithPublicKey(publicKey, msg, signature));
+        byte[] signature = RSAUtils.signMessage(privateKey, msg);
+        Assert.assertTrue(RSAUtils.verifySignature(publicKey, msg, signature));
     }
 
     @org.junit.Test
@@ -310,13 +305,13 @@ public class RSAUtilsTest extends TestCase {
 
     @org.junit.Test
     public void testSignVerifyLongDataDiffKeys() throws Exception {
-        KeyPair keypair1 = RSAUtils.generateKeys(1024);
-        KeyPair keypair2 = RSAUtils.generateKeys(1024);
-        String publicKey = RSAUtils.extractPublicKeyAsBase64(keypair1);
-        String privateKey = RSAUtils.extractPrivateKeyAsBase64(keypair2);
+        KeyPair keyPair1 = RSAUtils.generateKeys(1024);
+        KeyPair keyPair2 = RSAUtils.generateKeys(1024);
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair1.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair2.getPrivate();
         String data = StringUtils.repeat("Nguyễn Bá Thành", " - ", 1024);
         byte[] msg = data.getBytes(StandardCharsets.UTF_8);
-        byte[] signature = RSAUtils.signMessageWithPrivateKey(privateKey, msg);
-        Assert.assertFalse(RSAUtils.verifySignatureWithPublicKey(publicKey, msg, signature));
+        byte[] signature = RSAUtils.signMessage(privateKey, msg);
+        Assert.assertFalse(RSAUtils.verifySignature(publicKey, msg, signature));
     }
 }

@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.github.ddth.commons.utils.AESUtils;
+import com.github.ddth.commons.crypto.AESUtils;
 
 public class QndAesUtils2 {
     static void test1(String transformation) throws Exception {

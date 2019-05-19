@@ -1,4 +1,4 @@
-package com.github.ddth.commons.utils.cipher;
+package com.github.ddth.commons.crypto.utils;
 
 /**
  * Thrown by {@link DdthCipherInputStream} and {@link DdthCipherOutputStream} to wrap the actual

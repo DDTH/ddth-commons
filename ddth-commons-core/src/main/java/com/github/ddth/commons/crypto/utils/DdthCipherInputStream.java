@@ -1,4 +1,4 @@
-package com.github.ddth.commons.utils.cipher;
+package com.github.ddth.commons.crypto.utils;
 
 import java.io.FilterInputStream;
 import java.io.IOException;

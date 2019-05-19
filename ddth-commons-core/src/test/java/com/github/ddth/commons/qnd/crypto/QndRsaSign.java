@@ -1,11 +1,11 @@
-package com.github.ddth.commons.qnd;
+package com.github.ddth.commons.qnd.crypto;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.Signature;
 
-import com.github.ddth.commons.utils.RSAUtils;
+import com.github.ddth.commons.crypto.RSAUtils;
 
 public class QndRsaSign {
 

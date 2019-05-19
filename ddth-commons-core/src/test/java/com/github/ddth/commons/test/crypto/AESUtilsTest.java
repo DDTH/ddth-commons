@@ -1,4 +1,4 @@
-package com.github.ddth.commons.test.utils;
+package com.github.ddth.commons.test.crypto;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,8 +14,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 
-import com.github.ddth.commons.utils.AESUtils;
-import com.github.ddth.commons.utils.cipher.CipherException;
+import com.github.ddth.commons.crypto.AESUtils;
+import com.github.ddth.commons.crypto.utils.CipherException;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

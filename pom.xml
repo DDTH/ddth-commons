@@ -20,6 +20,7 @@
 		<module>ddth-commons-core</module>
 		<module>ddth-commons-serialization</module>
 
+		<module>ddth-commons-crypto</module>
 		<module>ddth-commons-jedis</module>
 		<module>ddth-commons-jsonrpc</module>
 		<module>ddth-commons-rocksdb</module>
@@ -63,6 +64,7 @@
 		<version.rocksdb>6.0.1</version.rocksdb>
 		<version.okhttp3>3.14.1</version.okhttp3>
 		<version.typesafe_config>1.3.4</version.typesafe_config>
+		<version.bouncycastle>1.61</version.bouncycastle>
 	</properties>
 
 	<repositories>
@@ -209,6 +211,26 @@
 			<groupId>com.typesafe</groupId>
 			<artifactId>config</artifactId>
 			<version>${version.typesafe_config}</version>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- for PGPUtils, RSAUtils, KeyPairUtils -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>${version.bouncycastle}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+			<version>${version.bouncycastle}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpg-jdk15on</artifactId>
+			<version>${version.bouncycastle}</version>
 			<optional>true</optional>
 		</dependency>
 	</dependencies>

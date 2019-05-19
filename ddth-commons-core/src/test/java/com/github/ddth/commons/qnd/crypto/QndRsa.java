@@ -1,4 +1,4 @@
-package com.github.ddth.commons.qnd;
+package com.github.ddth.commons.qnd.crypto;
 
 import java.security.Key;
 import java.security.KeyPair;
@@ -6,7 +6,7 @@ import java.security.interfaces.RSAKey;
 
 import javax.crypto.Cipher;
 
-import com.github.ddth.commons.utils.RSAUtils;
+import com.github.ddth.commons.crypto.RSAUtils;
 
 public class QndRsa {
 

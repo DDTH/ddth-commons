@@ -8,7 +8,6 @@
 	</parent>
 
 	<artifactId>ddth-commons-serialization</artifactId>
-	<!-- <version>0.9.3-SNAPSHOT</version> -->
 	<packaging>pom</packaging>
 
 	<name>ddth-commons-serialization</name>

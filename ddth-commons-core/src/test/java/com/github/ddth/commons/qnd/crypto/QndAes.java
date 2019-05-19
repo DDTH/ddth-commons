@@ -1,8 +1,8 @@
-package com.github.ddth.commons.qnd;
+package com.github.ddth.commons.qnd.crypto;
 
 import javax.crypto.Cipher;
 
-import com.github.ddth.commons.utils.AESUtils;
+import com.github.ddth.commons.crypto.AESUtils;
 
 public class QndAes {
 

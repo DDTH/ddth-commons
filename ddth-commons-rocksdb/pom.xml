@@ -8,7 +8,6 @@
 	</parent>
 
 	<artifactId>ddth-commons-rocksdb</artifactId>
-	<!-- <version>0.9.3-SNAPSHOT</version> -->
 	<packaging>pom</packaging>
 
 	<name>ddth-commons-rocksdb</name>

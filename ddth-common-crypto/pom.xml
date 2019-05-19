@@ -7,10 +7,10 @@
 		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ddth-commons-thrift</artifactId>
+	<artifactId>ddth-commons-pgp</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ddth-commons-thrift</name>
+	<name>ddth-commons-pgp</name>
 	<description>DDTH's Java Common Libraries and Utilities</description>
 	<url>https://github.com/DDTH/ddth-commons</url>
 
@@ -33,11 +33,21 @@
 			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 
-		<!-- for ThriftUtils -->
+		<!-- for PGPUtils, RSAUtils, KeyPairUtils -->
 		<dependency>
-			<groupId>org.apache.thrift</groupId>
-			<artifactId>libthrift</artifactId>
-			<version>${version.libthrift}</version>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>${version.bouncycastle}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+			<version>${version.bouncycastle}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpg-jdk15on</artifactId>
+			<version>${version.bouncycastle}</version>
 		</dependency>
 	</dependencies>
 </project>
