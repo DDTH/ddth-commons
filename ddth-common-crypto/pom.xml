@@ -7,10 +7,10 @@
 		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ddth-commons-pgp</artifactId>
+	<artifactId>ddth-commons-crypto</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ddth-commons-pgp</name>
+	<name>ddth-commons-crypto</name>
 	<description>DDTH's Java Common Libraries and Utilities</description>
 	<url>https://github.com/DDTH/ddth-commons</url>
 

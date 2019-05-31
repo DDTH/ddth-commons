@@ -12,6 +12,11 @@
 </dependency>
 ```
 
+**New since v1.1.0**
+
+`AESUtils` & `RSAUtils` are moved to `ddth-common-crypto` (package `com.github.ddth.commons.crypto`).
+
+
 ### AESUtils
 
 AES encryption utility class.
@@ -21,6 +26,10 @@ AES encryption utility class.
 - Support custom transformation and IV
 
 See [Java Cryptography Architecture Oracle Providers Documentation for JDK 8](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#cipherTable)
+
+**New since v1.1.0**
+
+`AESUtils` is moved to `ddth-common-crypto` (package `com.github.ddth.commons.crypto`).
 
 **New since v0.9.2**
 
@@ -209,6 +218,10 @@ RSA encryption utility class.
 - Support: 512, 1024, 2048 bit encryption key
 - Default: `RSA/ECB/PKCS1Padding` transformation (11-byte padding size)
 - Support custom transformation and padding size
+
+**New since v1.1.0**
+
+`RSAUtils` is moved to `ddth-common-crypto` (package `com.github.ddth.commons.crypto`).
 
 **New since v0.9.2**
 

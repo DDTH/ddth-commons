@@ -38,7 +38,7 @@ public class QndPgpLoadKeys {
     }
 
     public static void main(String[] args) throws Exception {
-        String id = "Scommerce";
+        String id = "DDTH";
         String password = "demo";
         PGPKeyRingGenerator keyRingGenerator = PGPUtils.createPGPKeyRingGenerator(1024, id, password);
 

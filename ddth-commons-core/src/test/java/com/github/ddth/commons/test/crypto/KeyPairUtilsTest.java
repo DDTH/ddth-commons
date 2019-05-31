@@ -81,249 +81,81 @@ public class KeyPairUtilsTest extends TestCase {
         }
     }
 
-    // /*----------------------------------------------------------------------*/
-    // static final String[] TRANSFORMATIONS = new String[RSAUtils.CIPHER_PADDINGS.length];
-    // final static int[] PADDINGS = RSAUtils.CIPHER_PADDINGS_SIZE;
-    //
-    // static {
-    // int index = 0;
-    // for (String padding : RSAUtils.CIPHER_PADDINGS) {
-    // String transformation = RSAUtils.CIPHER_ALGORITHM + "/" + RSAUtils.CIPHER_MODE + "/" +
-    // padding;
-    // TRANSFORMATIONS[index] = transformation;
-    // PADDINGS[index] = RSAUtils.CIPHER_PADDINGS_SIZE[index];
-    // index++;
-    // }
-    // }
-    //
-    // private void testEncryptDecrypt(int numBits, String transformation, int paddingSize) throws
-    // Exception {
-    // if (numBits / 8 < paddingSize) {
-    // return;
-    // }
-    // KeyPair keyPair = RSAUtils.generateKeys(numBits);
-    // RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-    // RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-    // String data = "Nguyễn Bá Thành";
-    // byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
-    // byte[] encryptedData = RSAUtils.encrypt(publicKey, dataBytes, transformation, paddingSize);
-    // byte[] decryptedData = RSAUtils.decrypt(privateKey, encryptedData, transformation);
-    // Assert.assertTrue(Arrays.equals(dataBytes, decryptedData));
-    // }
-    //
-    // @org.junit.Test
-    // public void testEncryptDecrypt512() throws Exception {
-    // for (int i = 0; i < TRANSFORMATIONS.length; i++) {
-    // testEncryptDecrypt(512, TRANSFORMATIONS[i], PADDINGS[i]);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testEncryptDecrypt1024() throws Exception {
-    // for (int i = 0; i < TRANSFORMATIONS.length; i++) {
-    // testEncryptDecrypt(1024, TRANSFORMATIONS[i], PADDINGS[i]);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testEncryptDecrypt2048() throws Exception {
-    // for (int i = 0; i < TRANSFORMATIONS.length; i++) {
-    // testEncryptDecrypt(2048, TRANSFORMATIONS[i], PADDINGS[i]);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testEncryptDecrypt4096() throws Exception {
-    // for (int i = 0; i < TRANSFORMATIONS.length; i++) {
-    // testEncryptDecrypt(4096, TRANSFORMATIONS[i], PADDINGS[i]);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testEncryptDecryptDiffKeys() throws Exception {
-    // int keySize = 1024;
-    // for (int i = 0; i < TRANSFORMATIONS.length; i++) {
-    // if (keySize / 8 < PADDINGS[i]) {
-    // continue;
-    // }
-    // try {
-    // KeyPair keyPair1 = RSAUtils.generateKeys(keySize);
-    // KeyPair keyPair2 = RSAUtils.generateKeys(keySize);
-    // RSAPublicKey publicKey = (RSAPublicKey) keyPair1.getPublic();
-    // RSAPrivateKey privateKey = (RSAPrivateKey) keyPair2.getPrivate();
-    // String data = "Nguyễn Bá Thành";
-    // byte[] dataBytes = data.getBytes(StandardCharsets.UTF_16);
-    // byte[] encryptedData = RSAUtils.encrypt(publicKey, dataBytes, TRANSFORMATIONS[i],
-    // PADDINGS[i]);
-    // byte[] decryptedData = RSAUtils.decrypt(privateKey, encryptedData, TRANSFORMATIONS[i]);
-    // Assert.assertFalse(Arrays.equals(dataBytes, decryptedData));
-    // } catch (BadPaddingException e) {
-    // }
-    // }
-    // }
-    //
-    // /*----------------------------------------------------------------------*/
-    // private void testEncryptDecryptLongData(int numBits, String transformation, int paddingSize)
-    // throws Exception {
-    // if (numBits / 8 < paddingSize) {
-    // return;
-    // }
-    // KeyPair keyPair = RSAUtils.generateKeys(numBits);
-    // RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-    // RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-    // String data = StringUtils.repeat("Nguyễn Bá Thành", " - ", 1024);
-    // byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
-    // byte[] encryptedData = RSAUtils.encrypt(publicKey, dataBytes, transformation, paddingSize);
-    // byte[] decryptedData = RSAUtils.decrypt(privateKey, encryptedData, transformation);
-    // Assert.assertTrue(Arrays.equals(dataBytes, decryptedData));
-    // }
-    //
-    // @org.junit.Test
-    // public void testEncryptDecryptLongData512() throws Exception {
-    // for (int i = 0; i < TRANSFORMATIONS.length; i++) {
-    // testEncryptDecryptLongData(512, TRANSFORMATIONS[i], PADDINGS[i]);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testEncryptDecryptLongData1024() throws Exception {
-    // for (int i = 0; i < TRANSFORMATIONS.length; i++) {
-    // testEncryptDecryptLongData(1024, TRANSFORMATIONS[i], PADDINGS[i]);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testEncryptDecryptLongData2048() throws Exception {
-    // for (int i = 0; i < TRANSFORMATIONS.length; i++) {
-    // testEncryptDecryptLongData(2048, TRANSFORMATIONS[i], PADDINGS[i]);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testEncryptDecryptLongData4096() throws Exception {
-    // for (int i = 0; i < TRANSFORMATIONS.length; i++) {
-    // testEncryptDecryptLongData(4096, TRANSFORMATIONS[i], PADDINGS[i]);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testEncryptDecryptLongDataDiffKeys() throws Exception {
-    // int keySize = 1024;
-    // for (int i = 0; i < TRANSFORMATIONS.length; i++) {
-    // if (keySize / 8 < PADDINGS[i]) {
-    // continue;
-    // }
-    // try {
-    // KeyPair keyPair1 = RSAUtils.generateKeys(keySize);
-    // KeyPair keyPair2 = RSAUtils.generateKeys(keySize);
-    // RSAPublicKey publicKey = (RSAPublicKey) keyPair1.getPublic();
-    // RSAPrivateKey privateKey = (RSAPrivateKey) keyPair2.getPrivate();
-    // String data = StringUtils.repeat("Nguyễn Bá Thành", " - ", 1024);
-    // byte[] dataBytes = data.getBytes(StandardCharsets.UTF_16);
-    // byte[] encryptedData = RSAUtils.encrypt(publicKey, dataBytes, TRANSFORMATIONS[i],
-    // PADDINGS[i]);
-    // byte[] decryptedData = RSAUtils.decrypt(privateKey, encryptedData, TRANSFORMATIONS[i]);
-    // Assert.assertFalse(Arrays.equals(dataBytes, decryptedData));
-    // } catch (BadPaddingException e) {
-    // }
-    // }
-    // }
-    //
-    // /*----------------------------------------------------------------------*/
-    // private void testSignVerify(int numBits, String algorithm) throws Exception {
-    // if (numBits < 1024 && (algorithm.startsWith("SHA384") || algorithm.startsWith("SHA512"))) {
-    // return;
-    // }
-    // KeyPair keyPair = RSAUtils.generateKeys(numBits);
-    // RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-    // RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-    // String data = "Nguyễn Bá Thành";
-    // byte[] msg = data.getBytes(StandardCharsets.UTF_8);
-    // byte[] signature = RSAUtils.signMessage(privateKey, msg, algorithm);
-    // Assert.assertTrue(RSAUtils.verifySignature(publicKey, msg, signature, algorithm));
-    // }
-    //
-    // @org.junit.Test
-    // public void testSignVerify512() throws Exception {
-    // for (String algo : RSAUtils.SIGNATURE_ALGORITHMS) {
-    // testSignVerify(512, algo);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testSignVerify1024() throws Exception {
-    // for (String algo : RSAUtils.SIGNATURE_ALGORITHMS) {
-    // testSignVerify(1024, algo);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testSignVerify2048() throws Exception {
-    // for (String algo : RSAUtils.SIGNATURE_ALGORITHMS) {
-    // testSignVerify(2048, algo);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testSignVerify4096() throws Exception {
-    // for (String algo : RSAUtils.SIGNATURE_ALGORITHMS) {
-    // testSignVerify(4096, algo);
-    // }
-    // }
-    //
-    // @org.junit.Test
-    // public void testSignVerifyDiffKeys() throws Exception {
-    // KeyPair keyPair1 = RSAUtils.generateKeys(1024);
-    // KeyPair keyPair2 = RSAUtils.generateKeys(1024);
-    // RSAPublicKey publicKey = (RSAPublicKey) keyPair1.getPublic();
-    // RSAPrivateKey privateKey = (RSAPrivateKey) keyPair2.getPrivate();
-    // String data = "Nguyễn Bá Thành";
-    // byte[] msg = data.getBytes(StandardCharsets.UTF_8);
-    // byte[] signature = RSAUtils.signMessage(privateKey, msg);
-    // Assert.assertFalse(RSAUtils.verifySignature(publicKey, msg, signature));
-    // }
-    //
-    // /*----------------------------------------------------------------------*/
-    //
-    // private void testSignVerifyLongData(int numBits) throws Exception {
-    // KeyPair keyPair = RSAUtils.generateKeys(numBits);
-    // RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-    // RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-    // String data = StringUtils.repeat("Nguyễn Bá Thành", " - ", 1024);
-    // byte[] msg = data.getBytes(StandardCharsets.UTF_8);
-    // byte[] signature = RSAUtils.signMessage(privateKey, msg);
-    // Assert.assertTrue(RSAUtils.verifySignature(publicKey, msg, signature));
-    // }
-    //
-    // @org.junit.Test
-    // public void testSignVerifyLongData512() throws Exception {
-    // testSignVerifyLongData(512);
-    // }
-    //
-    // @org.junit.Test
-    // public void testSignVerifyLongData1024() throws Exception {
-    // testSignVerifyLongData(1024);
-    // }
-    //
-    // @org.junit.Test
-    // public void testSignVerifyLongData2048() throws Exception {
-    // testSignVerifyLongData(2048);
-    // }
-    //
-    // @org.junit.Test
-    // public void testSignVerifyLongData4096() throws Exception {
-    // testSignVerifyLongData(4096);
-    // }
-    //
-    // @org.junit.Test
-    // public void testSignVerifyLongDataDiffKeys() throws Exception {
-    // KeyPair keyPair1 = RSAUtils.generateKeys(1024);
-    // KeyPair keyPair2 = RSAUtils.generateKeys(1024);
-    // RSAPublicKey publicKey = (RSAPublicKey) keyPair1.getPublic();
-    // RSAPrivateKey privateKey = (RSAPrivateKey) keyPair2.getPrivate();
-    // String data = StringUtils.repeat("Nguyễn Bá Thành", " - ", 1024);
-    // byte[] msg = data.getBytes(StandardCharsets.UTF_8);
-    // byte[] signature = RSAUtils.signMessage(privateKey, msg);
-    // Assert.assertFalse(RSAUtils.verifySignature(publicKey, msg, signature));
-    // }
+    /*----------------------------------------------------------------------*/
+
+    @org.junit.Test
+    public void testExportPublicKeyX509() throws Exception {
+        for (String algo : ALGORITHMS) {
+            KeyPair keyPair = KeyPairUtils.generateKeyPair(1024, algo, null);
+            PublicKey pubKey = keyPair.getPublic();
+            String pemPubKey = KeyPairUtils.exportPemX509(pubKey, true);
+            Assert.assertTrue(
+                    pemPubKey.startsWith("-----BEGIN " + KeyPairUtils.PEM_TYPE_X509_PUBLIC_KEY));
+        }
+    }
+
+    @org.junit.Test
+    public void testExportPrivateKeyPKCS8NoPassword() throws Exception {
+        for (String algo : ALGORITHMS) {
+            KeyPair keyPair = KeyPairUtils.generateKeyPair(1024, algo, null);
+            PrivateKey privKey = keyPair.getPrivate();
+            String pemPrivKey = KeyPairUtils.exportPemPKCS8(privKey, null, true);
+            Assert.assertTrue(
+                    pemPrivKey.startsWith("-----BEGIN " + KeyPairUtils.PEM_TYPE_PKCS8_PRIVATE_KEY));
+        }
+    }
+
+    @org.junit.Test
+    public void testExportPrivateKeyPKCS8WithPassword() throws Exception {
+        for (String algo : ALGORITHMS) {
+            KeyPair keyPair = KeyPairUtils.generateKeyPair(1024, algo, null);
+            PrivateKey privKey = keyPair.getPrivate();
+            String pemPrivKey = KeyPairUtils.exportPemPKCS8(privKey, "password", true);
+            Assert.assertTrue(pemPrivKey
+                    .startsWith("-----BEGIN " + KeyPairUtils.PEM_TYPE_PKCS8_ENCRYPTED_PRIVATE_KEY));
+        }
+    }
+
+    @org.junit.Test
+    public void testLoadPublicKey() throws Exception {
+        for (String algo : ALGORITHMS) {
+            KeyPair keyPair = KeyPairUtils.generateKeyPair(1024, algo, null);
+            PublicKey pubKey = keyPair.getPublic();
+            String pemPubKey = KeyPairUtils.exportPemX509(pubKey, true);
+            PublicKey loadPubKey = KeyPairUtils.loadPublicKeyFromPem(pemPubKey);
+            Assert.assertNotNull(loadPubKey);
+            Assert.assertEquals(pubKey.getAlgorithm(), loadPubKey.getAlgorithm());
+            Assert.assertEquals(pubKey.getFormat(), loadPubKey.getFormat());
+            Assert.assertArrayEquals(pubKey.getEncoded(), loadPubKey.getEncoded());
+        }
+    }
+
+    @org.junit.Test
+    public void testLoadPrivateKeyNoPassword() throws Exception {
+        for (String algo : ALGORITHMS) {
+            KeyPair keyPair = KeyPairUtils.generateKeyPair(1024, algo, null);
+            PrivateKey privKey = keyPair.getPrivate();
+            String pemPrivKey = KeyPairUtils.exportPemPKCS8(privKey, null, true);
+            PrivateKey loadPrivKey = KeyPairUtils.loadPrivateKeyFromPem(pemPrivKey, null);
+            Assert.assertNotNull(loadPrivKey);
+            Assert.assertEquals(privKey.getAlgorithm(), loadPrivKey.getAlgorithm());
+            Assert.assertEquals(privKey.getFormat(), loadPrivKey.getFormat());
+            Assert.assertArrayEquals(privKey.getEncoded(), loadPrivKey.getEncoded());
+        }
+    }
+
+    @org.junit.Test
+    public void testLoadPrivateKeyWithPassword() throws Exception {
+        String password = "s3cr3t";
+        for (String algo : ALGORITHMS) {
+            KeyPair keyPair = KeyPairUtils.generateKeyPair(1024, algo, null);
+            PrivateKey privKey = keyPair.getPrivate();
+            String pemPrivKey = KeyPairUtils.exportPemPKCS8(privKey, password, true);
+            PrivateKey loadPrivKey = KeyPairUtils.loadPrivateKeyFromPem(pemPrivKey, password);
+            Assert.assertNotNull(loadPrivKey);
+            Assert.assertEquals(privKey.getAlgorithm(), loadPrivKey.getAlgorithm());
+            Assert.assertEquals(privKey.getFormat(), loadPrivKey.getFormat());
+            Assert.assertArrayEquals(privKey.getEncoded(), loadPrivKey.getEncoded());
+        }
+    }
 }
